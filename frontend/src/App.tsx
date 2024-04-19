@@ -4,7 +4,7 @@ import {Link, Outlet} from "react-router-dom";
 function App() {
     return (
         <>
-            <div className="flex flex-row h-20 justify-center items-center bg-amber-900 text-white text-2xl font-medium">
+            <div className="flex flex-row sticky top-0 h-20 justify-center items-center bg-amber-900 text-white text-2xl font-medium">
                 <Link to="/" className="flex w-52 justify-center items-center hover:cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                          stroke="currentColor" className="w-6 h-6 mx-1">
