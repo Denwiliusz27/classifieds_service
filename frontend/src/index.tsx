@@ -8,6 +8,7 @@ import UserHome from "./pages/UserHome";
 import SearchSpecialists from "./pages/SearchSpecialists";
 import CreateOffer from "./pages/CreateOffer";
 import LoginRegister from "./pages/LoginRegister";
+import SpecialistHome from "./pages/SpecialistHome";
 
 const router = createBrowserRouter([
     {
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
             {
                 path: "/klient/stworz_oferte",
                 element: <CreateOffer />,
+            },
+            {
+                path: "/specjalista/strona_glowna",
+                element: <SpecialistHome />,
             },
         ]
     }
