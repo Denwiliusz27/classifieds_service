@@ -5,6 +5,8 @@ function App() {
     return (
         <>
             <div className="flex flex-row sticky top-0 h-20 justify-center items-center bg-amber-900 text-white text-2xl font-medium">
+
+                {/* Logo */}
                 <Link to="/" className="flex w-52 justify-center items-center hover:cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                          stroke="currentColor" className="w-6 h-6 mx-1">
@@ -18,6 +20,7 @@ function App() {
                     </p>
                 </Link>
 
+                {/* Middle links */}
                 <div className="flex flex-1 justify-center items-center">
                     <div className="flex justify-center items-center space-x-4">
                         <Link to="/wyszukaj"
@@ -44,6 +47,7 @@ function App() {
                     </div>
                 </div>
 
+                {/* Login/Logout button */}
                 <Link to="/wybor_konta" className="flex w-52 justify-center items-center">
                     <div className="border-2 border-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
                         <span>zaloguj</span>

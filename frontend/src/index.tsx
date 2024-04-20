@@ -3,30 +3,30 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
-import ErrorPage from "./components/ErrorPage";
-import UserHomePage from "./components/UserHomePage";
-import SearchSpecialistsPage from "./components/SearchSpecialistsPage";
-import CreateOfferPage from "./components/CreateOfferPage";
-import LoginRegisterPage from "./components/LoginRegisterPage";
+import Error from "./pages/Error";
+import UserHome from "./pages/UserHome";
+import SearchSpecialists from "./pages/SearchSpecialists";
+import CreateOffer from "./pages/CreateOffer";
+import LoginRegister from "./pages/LoginRegister";
 
 const router = createBrowserRouter([
     {
         path: "/",
         element: <App />,
-        errorElement: <ErrorPage />,
+        errorElement: <Error />,
         children: [
-            {index: true, element: <UserHomePage />},
+            {index: true, element: <UserHome />},
             {
                 path: "/wybor_konta",
-                element: <LoginRegisterPage />,
+                element: <LoginRegister />,
             },
             {
                 path: "/wyszukaj",
-                element: <SearchSpecialistsPage />,
+                element: <SearchSpecialists />,
             },
             {
                 path: "/klient/stworz_oferte",
-                element: <CreateOfferPage />,
+                element: <CreateOffer />,
             },
         ]
     }

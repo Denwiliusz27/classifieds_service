@@ -5,10 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/components/Arrow.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/HomepageOptionElement.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/UserHome.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../baza_danych.dia" beforeDir="false" afterPath="$PROJECT_DIR$/../baza_danych.dia" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/UserHomePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/UserHomePage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/CreateOfferPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/CreateOffer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ErrorPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Error.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/LoginRegisterPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/LoginRegister.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/SearchSpecialistsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/SearchSpecialists.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/UserHomePage.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,7 +64,8 @@
       <workItem from="1713440131789" duration="8965000" />
       <workItem from="1713529572068" duration="6076000" />
       <workItem from="1713550720259" duration="5691000" />
-      <workItem from="1713557475438" duration="3513000" />
+      <workItem from="1713557475438" duration="3634000" />
+      <workItem from="1713602124463" duration="7617000" />
     </task>
     <servers />
   </component>

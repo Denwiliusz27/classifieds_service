@@ -1,4 +1,4 @@
-function LoginRegisterPage() {
+function LoginRegister() {
     return(
         <>
             <p>Login or register here</p>
@@ -6,4 +6,4 @@ function LoginRegisterPage() {
     )
 }
 
-export default LoginRegisterPage;
+export default LoginRegister;

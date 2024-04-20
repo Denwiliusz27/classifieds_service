@@ -1,4 +1,4 @@
-function CreateOfferPage() {
+function CreateOffer() {
     return(
         <>
             <p>Here you can create offers</p>
@@ -6,4 +6,4 @@ function CreateOfferPage() {
     )
 }
 
-export default CreateOfferPage;
+export default CreateOffer;

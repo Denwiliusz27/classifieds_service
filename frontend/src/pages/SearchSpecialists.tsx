@@ -1,4 +1,4 @@
-function SearchSpecialistsPage() {
+function SearchSpecialists() {
     return(
         <>
             <p>Search for specialists</p>
@@ -6,4 +6,4 @@ function SearchSpecialistsPage() {
     )
 }
 
-export default SearchSpecialistsPage;
+export default SearchSpecialists;
