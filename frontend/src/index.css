@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.zooming_card {
+    @apply relative flex items-center justify-center w-full h-full overflow-hidden;
+}
+.zooming_card_img {
+    @apply absolute w-full h-full transition-all duration-500 ease-in-out transform bg-cover bg-center opacity-60;
+}
+.zooming_card_txt {
+    @apply absolute text-5xl font-extrabold transition-all duration-500 ease-in-out transform scale-110 text-amber-900 ;
+}
+.zooming_card:hover .zooming_card_img {
+    @apply scale-150;
+}
+.zooming_card:hover .zooming_card_txt {
+    @apply scale-90;
+}
