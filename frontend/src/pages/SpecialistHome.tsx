@@ -32,7 +32,6 @@ function SpecialistHome() {
                             img="https://logowik.com/content/uploads/images/calendar5662.jpg"
                             alt="calendar"
                             text="Edytuj kalendarz z terminami swojej dostępności"
-                            w={36}
                         />
 
                         {/* Arrow */}
@@ -43,7 +42,6 @@ function SpecialistHome() {
                             img="https://icon-library.com/images/icon-form/icon-form-20.jpg"
                             alt="reservations"
                             text="Odpowiedz na rezerwacje wysłane przez klientów"
-                            w={28}
                             h={24}
                         />
 
@@ -55,7 +53,6 @@ function SpecialistHome() {
                             img="https://icon-library.com/images/handshake-icon/handshake-icon-3.jpg"
                             alt="handshake1"
                             text="Dogadaj szczegóły z klientem i zaakceptuj wykonanie usługi"
-                            w={32}
                             h={24}
                         />
                     </div>
@@ -79,7 +76,6 @@ function SpecialistHome() {
                             img="https://icon-library.com/images/hammer-icon-png/hammer-icon-png-5.jpg"
                             alt="action"
                             text="Złóż propozycję ceny i terminu wykonania usługi"
-                            w={36}
                             h={32}
                         />
 
@@ -91,7 +87,6 @@ function SpecialistHome() {
                             img="https://icon-library.com/images/handshake-icon/handshake-icon-3.jpg"
                             alt="handshake"
                             text="Dogadaj szczegóły z klientem"
-                            w={32}
                             h={24}
                         />
                     </div>

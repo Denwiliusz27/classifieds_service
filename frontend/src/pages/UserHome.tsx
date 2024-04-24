@@ -53,7 +53,6 @@ function UserHome() {
                             img="https://logowik.com/content/uploads/images/calendar5662.jpg"
                             alt="calendar"
                             text="Wybierz usługę oraz dogodny dla siebie termin i zarezerwuj wizytę"
-                            w={40}
                         />
                     </div>
 
@@ -77,8 +76,7 @@ function UserHome() {
                             alt="action"
                             text="Zainteresowani specjaliści wyślą ci swoją ofertę z proponowaną ceną i terminem
                                 realizacji"
-                            w={36}
-                            h={32}
+                            // h={32}
                         />
 
                         {/* Arrow */}
@@ -89,8 +87,7 @@ function UserHome() {
                             img="https://icon-library.com/images/handshake-icon/handshake-icon-3.jpg"
                             alt="handshake"
                             text="Wybierz najlepszą ofertę i zarezerwuj usługę"
-                            w={36}
-                            h={28}
+                            h={32}
                         />
                     </div>
                 </div>

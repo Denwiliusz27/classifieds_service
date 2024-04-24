@@ -3,17 +3,21 @@
 @tailwind utilities;
 
 .zooming_card {
-    @apply relative flex items-center justify-center w-full h-full overflow-hidden;
+    @apply flex relative items-center w-full h-full overflow-hidden justify-center;
 }
-.zooming_card_img {
-    @apply absolute w-full h-full transition-all duration-500 ease-in-out transform bg-cover bg-center opacity-60;
-}
+
 .zooming_card_txt {
-    @apply absolute text-5xl font-extrabold transition-all duration-500 ease-in-out transform scale-110 text-amber-900 ;
+    @apply text-5xl font-extrabold absolute transition-all duration-500 ease-in-out transform text-amber-900 scale-110;
 }
-.zooming_card:hover .zooming_card_img {
-    @apply scale-150;
+
+.zooming_card_img {
+    @apply w-full h-full opacity-60 absolute bg-cover bg-center transition-all duration-500 ease-in-out transform ;
 }
+
 .zooming_card:hover .zooming_card_txt {
     @apply scale-90;
+}
+
+.zooming_card:hover .zooming_card_img {
+    @apply scale-150;
 }
