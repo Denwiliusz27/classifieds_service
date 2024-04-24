@@ -1,3 +1,5 @@
+import {Link} from "react-router-dom";
+
 function LoginRegister() {
     return (
         <div
@@ -12,8 +14,8 @@ function LoginRegister() {
                     <h1 className="text-3xl font-bold">Zaloguj jako</h1>
 
                     <div className="flex flex-row my-10 space-x-10 ">
-                        {/* Element with client*/}
-                        <div
+                        {/* Login for client*/}
+                        <Link to="/klient/login"
                             className="flex items-center bg-white rounded-2xl w-80 h-80 text-xl font-bold overflow-hidden shadow-2xl">
                             <div className="zooming_card">
                                 <div className="zooming_card_img"
@@ -21,10 +23,10 @@ function LoginRegister() {
                                 </div>
                                 <h1 className="zooming_card_txt">Klient</h1>
                             </div>
-                        </div>
+                        </Link>
 
-                        {/* Element with specialist*/}
-                        <div
+                        {/* Login for specialist*/}
+                        <Link to="/specjalista/login"
                             className="flex items-center bg-white rounded-2xl w-80 h-80 text-xl font-bold overflow-hidden shadow-2xl">
                             <div className="zooming_card">
                                 <div className="zooming_card_img"
@@ -32,7 +34,7 @@ function LoginRegister() {
                                 </div>
                                 <h1 className="zooming_card_txt">Specjalista</h1>
                             </div>
-                        </div>
+                        </Link>
                     </div>
                 </div>
 
@@ -41,7 +43,8 @@ function LoginRegister() {
                     <h1 className="text-3xl font-bold">Nie masz jeszcze konta? Zarejestruj się!</h1>
 
                     <div className="flex flex-row my-10 space-x-10 ">
-                        <div
+                        {/* Register for client */}
+                        <Link to="/klient/rejestracja"
                             className="flex flex-row items-center justify-center bg-amber-900 text-white rounded-2xl w-80 h-20 text-xl font-bold overflow-hidden shadow-2xl transition-transform hover:-translate-y-2 duration-300">
                             <div className="flex flex-row items-center w-full justify-center">
                                 <div className="w-1/4 flex flex-row items-center justify-center">
@@ -54,9 +57,10 @@ function LoginRegister() {
 
                                 <p className="w-3/4 text-2xl drop-shadow-xl">Jako klient</p>
                             </div>
-                        </div>
+                        </Link>
 
-                        <div
+                        {/* Register for specialist */}
+                        <Link to="/specjalista/rejestracja"
                             className="flex flex-row items-center justify-center bg-amber-900 text-white rounded-2xl w-80 h-20 text-xl font-bold overflow-hidden shadow-2xl transition-transform hover:-translate-y-2 duration-300">
                             <div className="flex flex-row items-center w-full justify-center">
                                 <div className="w-1/4 flex flex-row items-center justify-center">
@@ -70,7 +74,7 @@ function LoginRegister() {
 
                                 <p className="w-3/4 text-2xl drop-shadow-xl">Jako specjalista</p>
                             </div>
-                        </div>
+                        </Link>
                     </div>
 
                 </div>

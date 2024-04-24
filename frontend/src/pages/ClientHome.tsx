@@ -2,7 +2,7 @@ import React from "react";
 import Arrow from "../components/Arrow";
 import HomepageOptionElement from "../components/HomepageOptionElement";
 
-function UserHome() {
+function ClientHome() {
     return (
         <div className="flex flex-col items-center m-4">
             <div className="w-2/3">
@@ -96,4 +96,4 @@ function UserHome() {
     )
 }
 
-export default UserHome;
+export default ClientHome;
