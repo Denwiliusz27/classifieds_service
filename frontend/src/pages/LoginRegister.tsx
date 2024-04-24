@@ -3,15 +3,18 @@ import {Link} from "react-router-dom";
 function LoginRegister() {
     return (
         <div
-            className="overflow-hidden bg-cover bg-no-repeat text-center h-screen"
-            style={{backgroundImage: `url(https://www.dfdhouseplans.com/blog/wp-content/uploads/2022/11/Blueprint-1024x678.jpg)`}}>
+            className="overflow-hidden bg-cover bg-no-repeat text-center flex flex-col "
+            style={{
+                backgroundImage: `url(https://www.dfdhouseplans.com/blog/wp-content/uploads/2022/11/Blueprint-1024x678.jpg)`,
+                height: '91vh',
+            }}>
             <div
-                className="flex flex-col items-center bottom-0 left-0 right-0 top-0 h-screen w-full overflow-hidden bg-fixed"
+                className="flex flex-col  items-center left-0 right-0 top-0 w-full overflow-hidden h-full bg-fixed"
                 style={{backgroundColor: `rgba(255, 255, 255, 0.7)`}}>
 
                 {/* Login elements*/}
                 <div className="flex flex-col items-center m-4 pt-8 w-2/3">
-                    <h1 className="text-3xl font-bold">Zaloguj jako</h1>
+                    <h1 className="text-3xl font-bold">Zaloguj się jako</h1>
 
                     <div className="flex flex-row my-10 space-x-10 ">
                         {/* Login for client*/}
