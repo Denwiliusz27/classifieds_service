@@ -1,7 +1,7 @@
 import React from "react";
 
 function HomepageOptionElement(
-    {img, alt, text,h = 24} : {
+    {img, alt, text,h = 32} : {
         img: string,
         alt: string,
         text: string,

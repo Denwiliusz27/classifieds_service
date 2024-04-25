@@ -1,6 +1,6 @@
 import React from "react";
-import Arrow from "../components/Arrow";
-import HomepageOptionElement from "../components/HomepageOptionElement";
+import Arrow from "../../components/Arrow";
+import HomepageOptionElement from "../../components/HomepageOptionElement";
 
 function SpecialistHome() {
     return (
