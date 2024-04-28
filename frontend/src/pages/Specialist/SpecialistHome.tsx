@@ -42,7 +42,6 @@ function SpecialistHome() {
                             img="https://icon-library.com/images/icon-form/icon-form-20.jpg"
                             alt="reservations"
                             text="Odpowiedz na rezerwacje wysłane przez klientów"
-                            h={24}
                         />
 
                         {/* Arrow */}
