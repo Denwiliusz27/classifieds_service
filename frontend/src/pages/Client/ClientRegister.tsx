@@ -4,68 +4,125 @@ import Select from "../../components/form/Select";
 import {City} from "../../models/City";
 
 function ClientRegister() {
-    const [name, setName] = useState("")
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [city, setCity] = useState("")
-    const [street, setStreet] = useState("")
-    const [buildingNr, setBuildingNr] = useState(0)
-    const [flatNr, setFlatNr] = useState(0)
+    const [client, setClient] = useState({
+        name: "",
+        email: "",
+        password: "",
+        city: 0,
+        street: "",
+        buildingNr: 0,
+        flatNr: 0
+    })
 
-    const [nameError, setNameError] = useState("")
-    const [emailError, setEmailError] = useState("")
-    const [passwordError, setPasswordError] = useState("")
-    const [cityError, setCityError] = useState("")
-    const [streetError, setStreetError] = useState("")
-    const [buildingNrError, setBuildingNrError] = useState("")
-    const [flatNrError, setFlatNrError] = useState("")
+    const [errors, setErrors] = useState({
+        name: "",
+        email: "",
+        password: "",
+        city: "",
+        street: "",
+        buildingNr: "",
+        flatNr: "",
+    })
 
     const cities: City[] = [
-        {id: 1, name:"Kraków"},
-        {id: 2, name:"Warszawa"},
-        {id: 3, name:"Poznań"},
+        {id: 1, name: "Kraków"},
+        {id: 2, name: "Warszawa"},
+        {id: 3, name: "Poznań"},
     ]
 
-    const handleNameChange = (event: React.FormEvent<HTMLInputElement>) => {
-        setName(event.currentTarget.value)
-        setNameError("")
-    }
+    const handleClientChange = () => (event: React.FormEvent<HTMLInputElement>) => {
+        let value = event.currentTarget.value
+        let name = event.currentTarget.name
+        setClient({
+            ...client,
+            [name]: value,
+        })
 
-    const handleEmailChange = (event: React.FormEvent<HTMLInputElement>) => {
-        setEmail(event.currentTarget.value)
-        setEmailError("")
-    }
-
-    const handlePasswordChange = (event: React.FormEvent<HTMLInputElement>) => {
-        setPassword(event.currentTarget.value)
-        setPasswordError("")
+        setErrors({
+            ...errors,
+            [name]: ""
+        })
     }
 
     const handleCityChange = (event: React.FormEvent<HTMLSelectElement>) => {
-        setCity(event.currentTarget.value)
-        setCityError("")
+        let name = event.currentTarget.name
+
+        setClient({
+            ...client,
+            [name]: event.currentTarget.value,
+        })
+
+        setErrors({
+            ...errors,
+            [name]: ""
+        })
     }
 
-    const handleStreetChange = (event: React.FormEvent<HTMLInputElement>) => {
-        setStreet(event.currentTarget.value)
-        setStreetError("")
+    function checkName() {
+        const regex = new RegExp('^[a-zA-Z]+$');
+
+        if (client.name.length === 0){
+            setErrors({
+                ...errors,
+                name: "Wprowadź adres email"
+            });
+            errors["name"] = "Wprowadź swoje imie"
+            return
+        }
+
+        if (!regex.test(client.name)){
+            errors["name"] = "Imie powinno składać się jedynie z liter"
+            return
+        }
+
+        let newName = client.name.toLowerCase()
+        newName = newName.charAt(0).toUpperCase() + newName.slice(1)
+        setClient({
+            ...client,
+            name: newName
+        })
     }
 
-    const handleBuildingNrChange = (event: React.FormEvent<HTMLInputElement>) => {
-        setBuildingNr(parseInt(event.currentTarget.value))
-        setBuildingNrError("")
+    function checkEmail() {
+        if (client.email.length === 0) {
+            setErrors({
+                ...errors,
+                email: "Wprowadź adres email"
+            });
+            return;
+        }
+
+        setClient({
+            ...client,
+            email: client.email.toLowerCase()
+        });
     }
 
-    const handleFlatNrChange = (event: React.FormEvent<HTMLInputElement>) => {
-        setFlatNr(parseInt(event.currentTarget.value))
-        setFlatNrError("")
+    function checkPassword() {
+        if (client.password.length === 0) {
+            // errors["password"] = "Wprowadź hasło do konta"
+            setErrors({
+                ...errors,
+                password: "Wprowadź hasło do konta"
+            })
+            return
+        }
     }
+
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+
+        checkName()
+        checkEmail()
+        checkPassword()
+
+        console.log(client)
+        console.log(errors)
+
     }
 
-    return(
+    return (
         <div
             className="overflow-hidden bg-no-repeat bg-contain text-center flex flex-col bg-right-top"
             style={{
@@ -77,7 +134,7 @@ function ClientRegister() {
                 style={{backgroundColor: `rgba(255, 255, 255, 0.4)`}}>
 
                 {/* Login elements*/}
-                <div className="flex flex-col items-center my-4 py-8 w-1/4 min-w-96">
+                <div className="flex flex-col items-center my-4 py-8 w-[550px]">
                     <div className="w-96">
                         <h1 className="text-3xl font-bold">Załóż konto klienta</h1>
 
@@ -90,31 +147,31 @@ function ClientRegister() {
                         <Input
                             labelName="Imie*"
                             name="name"
-                            onChange={handleNameChange}
+                            onChange={handleClientChange()}
                             placeholder="Imie"
                             type="text"
-                            value={name}
-                            error={nameError}
+                            value={client.name}
+                            error={errors["name"]}
                         />
 
                         <Input
                             labelName="Email*"
                             name="email"
-                            onChange={handleEmailChange}
+                            onChange={handleClientChange()}
                             placeholder="Adres email"
                             type="email"
-                            value={email}
-                            error={emailError}
+                            value={client.email}
+                            error={errors["email"]}
                         />
 
                         <Input
                             labelName="Hasło*"
                             name="password"
-                            onChange={handlePasswordChange}
+                            onChange={handleClientChange()}
                             placeholder="Hasło"
                             type="password"
-                            value={password}
-                            error={passwordError}
+                            value={client.password}
+                            error={errors["password"]}
                         />
 
                         <div className="flex flex-row justify-items-center space-x-4">
@@ -123,41 +180,41 @@ function ClientRegister() {
                                 name="city"
                                 placeholder="Nazwa miasta"
                                 onChange={handleCityChange}
-                                value={city}
+                                value={client.city}
                                 options={cities}
-                                error={cityError}
+                                error={errors["city"]}
                             />
 
                             <Input
                                 labelName="Ulica*"
                                 name="street"
-                                onChange={handleStreetChange}
+                                onChange={handleClientChange()}
                                 placeholder="Nazwa ulicy"
                                 type="text"
-                                value={street}
-                                error={streetError}
+                                value={client.street}
+                                error={errors["street"]}
                             />
                         </div>
 
                         <div className="flex flex-row justify-items-center space-x-4">
                             <Input
                                 labelName="Nr budynku*"
-                                name="building"
-                                onChange={handleBuildingNrChange}
+                                name="buildingNr"
+                                onChange={handleClientChange()}
                                 placeholder="Numer budynku"
                                 type="number"
-                                value={buildingNr}
-                                error={buildingNrError}
+                                value={client.buildingNr}
+                                error={errors["buildingNr"]}
                             />
 
                             <Input
                                 labelName="Nr mieszkania"
-                                name="flat"
-                                onChange={handleFlatNrChange}
+                                name="flatNr"
+                                onChange={handleClientChange()}
                                 placeholder="Numer mieszkania"
                                 type="number"
-                                value={flatNr}
-                                error={flatNrError}
+                                value={client.flatNr}
+                                error={errors["flatNr"]}
                             />
                         </div>
 
