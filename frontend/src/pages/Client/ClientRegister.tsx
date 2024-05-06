@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {Suspense, useState} from "react";
 import Input from "../../components/form/Input";
 import Select from "../../components/form/Select";
 import {City} from "../../models/City";
@@ -6,6 +6,7 @@ import {City} from "../../models/City";
 function ClientRegister() {
     const [client, setClient] = useState({
         name: "",
+        surname: "",
         email: "",
         password: "",
         city: 0,
@@ -16,6 +17,7 @@ function ClientRegister() {
 
     const [errors, setErrors] = useState({
         name: "",
+        surname: "",
         email: "",
         password: "",
         city: "",
@@ -58,68 +60,92 @@ function ClientRegister() {
         })
     }
 
-    function checkName() {
-        const regex = new RegExp('^[a-zA-Z]+$');
+    function checkForm() {
+        const nameRegex = new RegExp('^[a-zA-Z]+$');
+        const streetRegex = new RegExp('^[a-zA-Z0-9\\s-]+$');
+        let nameError = ""
+        let surnameError = ""
+        let emailError = ""
+        let passwordError = ""
+        let cityError = ""
+        let streetError = ""
+        let buildingNrError = ""
 
+        // name
         if (client.name.length === 0){
-            setErrors({
-                ...errors,
-                name: "Wprowadź adres email"
-            });
-            errors["name"] = "Wprowadź swoje imie"
-            return
+            nameError = "Wprowadź swoje imie"
+        } else if (!nameRegex.test(client.name)){
+            nameError = "Imie powinno składać się jedynie z liter"
         }
 
-        if (!regex.test(client.name)){
-            errors["name"] = "Imie powinno składać się jedynie z liter"
-            return
+        // surname
+        if (client.name.length === 0){
+            surnameError = "Wprowadź swoje nazwisko"
+        } else if (!nameRegex.test(client.name)){
+            surnameError = "Nazwisko powinno składać się jedynie z liter"
         }
+
+        // email
+        if (client.email.length === 0) {
+            emailError = "Wprowadź adres email"
+        }
+
+        // password
+        if (client.password.length === 0) {
+            passwordError = "Wprowadź hasło do konta"
+        }
+
+        // city
+        if (client.city === 0) {
+            cityError = "Wybierz miasto z listy"
+        }
+
+        // street
+        if (client.street === "") {
+            streetError = "Wprowadź nazwę ulicy"
+        } else if (!streetRegex.test(client.street)){
+            streetError = "Nazwa ulicy powinna składać się jedynie z liter i cyfr"
+        }
+
+        // buildingNr
+        if (client.buildingNr === 0) {
+            buildingNrError = "Wprowadź numer budynku"
+        } else if (client.buildingNr < 0) {
+            buildingNrError = "Numer budynku powinien być liczbą dodatnią"
+        }
+
+        setErrors({
+            ...errors,
+            name: nameError,
+            surname: surnameError,
+            email: emailError,
+            password: passwordError,
+            city: cityError,
+            street: streetError,
+            buildingNr: buildingNrError
+        })
 
         let newName = client.name.toLowerCase()
         newName = newName.charAt(0).toUpperCase() + newName.slice(1)
-        setClient({
-            ...client,
-            name: newName
-        })
-    }
 
-    function checkEmail() {
-        if (client.email.length === 0) {
-            setErrors({
-                ...errors,
-                email: "Wprowadź adres email"
-            });
-            return;
-        }
+        let newSurname = client.surname.toLowerCase()
+        newSurname = newSurname.charAt(0).toUpperCase() + newSurname.slice(1)
 
         setClient({
             ...client,
+            name: newName,
+            surname: newSurname,
             email: client.email.toLowerCase()
         });
     }
 
-    function checkPassword() {
-        if (client.password.length === 0) {
-            // errors["password"] = "Wprowadź hasło do konta"
-            setErrors({
-                ...errors,
-                password: "Wprowadź hasło do konta"
-            })
-            return
-        }
-    }
-
-
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        checkName()
-        checkEmail()
-        checkPassword()
+        checkForm()
 
         console.log(client)
         console.log(errors)
-
     }
 
     return (
@@ -152,6 +178,16 @@ function ClientRegister() {
                             type="text"
                             value={client.name}
                             error={errors["name"]}
+                        />
+
+                        <Input
+                            labelName="Nazwisko*"
+                            name="surame"
+                            onChange={handleClientChange()}
+                            placeholder="Nazwisko"
+                            type="text"
+                            value={client.surname}
+                            error={errors["surname"]}
                         />
 
                         <Input

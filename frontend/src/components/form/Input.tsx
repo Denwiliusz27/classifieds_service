@@ -21,10 +21,10 @@ function Input(
                 placeholder={placeholder}
                 onChange={onChange}
                 value={value || ''}
-                className={`w-full h-14 drop-shadow-2xl border-2 focus:border-4 rounded-2xl text-2xl px-6  ${error ? 'border-red-500' : 'border-amber-900 mb-7'}`}
+                className={`w-full h-14 drop-shadow-2xl border-2 focus:border-4 rounded-2xl text-2xl px-6  ${error ? 'border-red-500' : 'border-amber-900 mb-8'}`}
             />
             {error && (
-                <div className="italic text-red-500 drop-shadow-xl font-bold text-lg text-center w-full h-7">
+                <div className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full h-7 mt-1 leading-none">
                     <p>{error}</p>
                 </div>
             )}
