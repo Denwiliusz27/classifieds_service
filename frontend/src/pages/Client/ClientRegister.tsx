@@ -1,7 +1,10 @@
-import React, {Suspense, useState} from "react";
+import React, {useState} from "react";
 import Input from "../../components/form/Input";
 import Select from "../../components/form/Select";
 import {City} from "../../models/City";
+import Swal from "sweetalert2";
+import {createPortal} from "react-dom";
+import {Link} from "react-router-dom";
 
 function ClientRegister() {
     const [client, setClient] = useState({
@@ -72,16 +75,16 @@ function ClientRegister() {
         let buildingNrError = ""
 
         // name
-        if (client.name.length === 0){
+        if (client.name.length === 0) {
             nameError = "Wprowadź swoje imie"
-        } else if (!nameRegex.test(client.name)){
+        } else if (!nameRegex.test(client.name)) {
             nameError = "Imie powinno składać się jedynie z liter"
         }
 
         // surname
-        if (client.name.length === 0){
+        if (client.name.length === 0) {
             surnameError = "Wprowadź swoje nazwisko"
-        } else if (!nameRegex.test(client.name)){
+        } else if (!nameRegex.test(client.name)) {
             surnameError = "Nazwisko powinno składać się jedynie z liter"
         }
 
@@ -103,7 +106,7 @@ function ClientRegister() {
         // street
         if (client.street === "") {
             streetError = "Wprowadź nazwę ulicy"
-        } else if (!streetRegex.test(client.street)){
+        } else if (!streetRegex.test(client.street)) {
             streetError = "Nazwa ulicy powinna składać się jedynie z liter i cyfr"
         }
 
@@ -114,35 +117,52 @@ function ClientRegister() {
             buildingNrError = "Numer budynku powinien być liczbą dodatnią"
         }
 
-        setErrors({
-            ...errors,
-            name: nameError,
-            surname: surnameError,
-            email: emailError,
-            password: passwordError,
-            city: cityError,
-            street: streetError,
-            buildingNr: buildingNrError
-        })
+        if (nameError === "" && surnameError === "" && emailError === "" && passwordError === "" && cityError === "" && streetError === "" && buildingNrError === "") {
+            let newName = client.name.toLowerCase()
+            newName = newName.charAt(0).toUpperCase() + newName.slice(1)
 
-        let newName = client.name.toLowerCase()
-        newName = newName.charAt(0).toUpperCase() + newName.slice(1)
+            let newSurname = client.surname.toLowerCase()
+            newSurname = newSurname.charAt(0).toUpperCase() + newSurname.slice(1)
 
-        let newSurname = client.surname.toLowerCase()
-        newSurname = newSurname.charAt(0).toUpperCase() + newSurname.slice(1)
+            setClient({
+                ...client,
+                name: newName,
+                surname: newSurname,
+                email: client.email.toLowerCase()
+            });
 
-        setClient({
-            ...client,
-            name: newName,
-            surname: newSurname,
-            email: client.email.toLowerCase()
-        });
+            return true
+        } else {
+            setErrors({
+                ...errors,
+                name: nameError,
+                surname: surnameError,
+                email: emailError,
+                password: passwordError,
+                city: cityError,
+                street: streetError,
+                buildingNr: buildingNrError
+            })
+
+            return false
+        }
     }
+
+    const [showSuccessMsg, setShowSuccessMsg] = useState(false)
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        checkForm()
+        if (checkForm()) {
+            console.log("zalogowano pomyślnie!")
+            Swal.fire({
+                didOpen: () => setShowSuccessMsg(true),
+                didClose: () => setShowSuccessMsg(false),
+                showConfirmButton: false,
+            })
+        } else {
+            console.log("ERRORS")
+        }
 
         console.log(client)
         console.log(errors)
@@ -182,7 +202,7 @@ function ClientRegister() {
 
                         <Input
                             labelName="Nazwisko*"
-                            name="surame"
+                            name="surname"
                             onChange={handleClientChange()}
                             placeholder="Nazwisko"
                             type="text"
@@ -262,9 +282,24 @@ function ClientRegister() {
                     </form>
                 </div>
             </div>
+
+            {showSuccessMsg &&
+                createPortal(
+                    <div className="flex flex-col items-center">
+                        <h1 className="text-3xl font-bold my-4">Pomyślnie zalogowano!</h1>
+                        <p className="text-xl my-2">Kliknij poniższy przycisk aby przejść do logowania</p>
+
+                        <Link to="/klient/login" onClick={() => Swal.close()} className="flex w-52 justify-center items-center mt-5">
+                            <div className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
+                                <span className="mx-3 my-2 text-xl">zaloguj</span>
+                            </div>
+                        </Link>
+                    </div>,
+                    Swal.getHtmlContainer()!,
+                )
+            }
         </div>
     )
-
 }
 
 export default ClientRegister

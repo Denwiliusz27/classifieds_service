@@ -7,7 +7,8 @@
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../baza_danych.dia" beforeDir="false" afterPath="$PROJECT_DIR$/../baza_danych.dia" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/form/Input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/form/Input.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -91,7 +92,8 @@
       <workItem from="1714313779356" duration="6440000" />
       <workItem from="1714416890188" duration="6365000" />
       <workItem from="1714842837965" duration="8881000" />
-      <workItem from="1715029215545" duration="5191000" />
+      <workItem from="1715029215545" duration="5883000" />
+      <workItem from="1715114758788" duration="3537000" />
     </task>
     <servers />
   </component>
