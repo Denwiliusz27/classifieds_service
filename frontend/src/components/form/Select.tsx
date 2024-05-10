@@ -27,7 +27,7 @@ function Select<T extends DefaultType>(
                 onChange={onChange}
                 className={`w-full h-14 drop-shadow-2xl border-2 focus:border-4 rounded-2xl text-2xl px-6  ${error ? 'border-red-500' : 'border-amber-900 mb-7'}`}
             >
-                <option value="">{placeholder}</option>
+                <option value="" disabled={value !== 0}>{placeholder}</option>
                 {options.map((option) => {
                     return (
                         <option
