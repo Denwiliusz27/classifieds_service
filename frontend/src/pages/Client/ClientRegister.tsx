@@ -286,7 +286,7 @@ function ClientRegister() {
             {showSuccessMsg &&
                 createPortal(
                     <div className="flex flex-col items-center">
-                        <h1 className="text-3xl font-bold my-4">Pomyślnie zalogowano!</h1>
+                        <h1 className="text-3xl font-bold my-4">Pomyślnie zarejestrowano!</h1>
                         <p className="text-xl my-2">Kliknij poniższy przycisk aby przejść do logowania</p>
 
                         <Link to="/klient/login" onClick={() => Swal.close()} className="flex w-52 justify-center items-center mt-5">

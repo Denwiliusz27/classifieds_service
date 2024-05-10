@@ -6,6 +6,8 @@ import Swal from "sweetalert2";
 import {PhoneInput} from 'react-international-phone';
 import 'react-international-phone/style.css';
 import {Service, Speciaization} from "../../models/Speciaization";
+import {createPortal} from "react-dom";
+import {Link} from "react-router-dom";
 
 export interface SpecialistService {
     id: number
@@ -91,30 +93,6 @@ function SpecialistRegister() {
         })
     }
 
-    function checkForm() {
-        return true
-    }
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-
-        if (checkForm()) {
-            console.log("zalogowano pomyślnie!")
-            Swal.fire({
-                didOpen: () => setShowSuccessMsg(true),
-                didClose: () => setShowSuccessMsg(false),
-                showConfirmButton: false,
-            })
-        } else {
-            console.log("ERRORS")
-        }
-
-        console.log(specialist)
-        console.log(errors)
-    }
-
-    // ////////////////////////////////////////////////////////////////////////
-
     const handleServiceChange = (event: React.ChangeEvent<HTMLInputElement>, serviceId: number) => {
         if (event.target.checked) {
             const newService: SpecialistService = {id: serviceId, minPrice: 0, maxPrice: 0}
@@ -149,6 +127,28 @@ function SpecialistRegister() {
         });
     };
 
+    function checkForm() {
+        return true
+    }
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+
+        if (checkForm()) {
+            console.log("zalogowano pomyślnie!")
+            Swal.fire({
+                didOpen: () => setShowSuccessMsg(true),
+                didClose: () => setShowSuccessMsg(false),
+                showConfirmButton: false,
+            })
+        } else {
+            console.log("ERRORS")
+        }
+
+        console.log(specialist)
+        console.log(errors)
+    }
+
     return (
         <div
             className="overflow-hidden bg-no-repeat bg-contain text-center flex flex-col bg-left-top"
@@ -167,7 +167,7 @@ function SpecialistRegister() {
                         <h1 className="text-3xl font-bold">Załóż konto specjalisty</h1>
 
                         <div className="flex flex-col items-end w-full">
-                            <div className="flex justify-self-end bg-amber-900 rounded-md h-1 mb-3 mx-16 w-20"></div>
+                            <div className="flex justify-self-end bg-amber-900 rounded-md h-1 mb-3 mx-10 w-32"></div>
                         </div>
                     </div>
 
@@ -249,7 +249,7 @@ function SpecialistRegister() {
                             <div className="flex flex-col items-start mb-4 w-full">
                                 <p className="font-bold text-2xl mx-6 mb-3">Usługi*</p>
                                 <div
-                                    className="flex flex-col bg-white w-full drop-shadow-2xl border-2 border-amber-900 focus:border-4 rounded-2xl text-2xl px-6 py-3">
+                                    className="flex flex-col bg-white w-full drop-shadow-2xl border-2 border-amber-900 focus:border-4 rounded-2xl text-2xl px-6 py-3 mb-4">
                                     <div className="flex flex-row font-bold items-center">
                                         <p className="w-2/4">Usługa</p>
                                         <p className="w-1/4">Cena min</p>
@@ -278,28 +278,52 @@ function SpecialistRegister() {
                                                             id="minPrice"
                                                             name="minPrice"
                                                             placeholder="Cena"
-                                                            disabled={tempSpecialistService === undefined }
+                                                            disabled={tempSpecialistService === undefined}
                                                             onChange={e => handlePriceChange(e, service.id, "min")}
                                                             value={tempSpecialistService?.minPrice}
-                                                            className={`w-1/4 h-14 drop-shadow-2xl border-2 focus:border-4 rounded-2xl text-2xl px-6 'border-amber-900 mb-8'`}
+                                                            className={`w-1/4 h-14 drop-shadow-2xl border-2 focus:border-4 rounded-2xl text-2xl px-6 border-amber-900 mr-1`}
                                                         />
                                                         <input
                                                             type="number"
                                                             id="maxPrice"
                                                             name="maxPrice"
                                                             placeholder="Cena"
-                                                            disabled={tempSpecialistService === undefined }
+                                                            disabled={tempSpecialistService === undefined}
                                                             onChange={e => handlePriceChange(e, service.id, "max")}
                                                             value={tempSpecialistService?.maxPrice}
-                                                            className={`w-1/4 h-14 drop-shadow-2xl border-2 focus:border-4 rounded-2xl text-2xl px-6 'border-amber-900 mb-8'`}
+                                                            className={`w-1/4 h-14 drop-shadow-2xl border-2 focus:border-4 rounded-2xl text-2xl px-6 border-amber-900 ml-1`}
                                                         />
                                                     </div>
                                                 )
                                             }
                                         )}
                                 </div>
+
+                                {errors.services && (
+                                    <div className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full h-7 mt-1 leading-none">
+                                        <p>{errors.services}</p>
+                                    </div>
+                                )}
                             </div>
+
+
                         }
+
+                        <div className="flex flex-col items-start mb-4 w-full">
+                            <label className="font-bold text-2xl mx-6 mb-3">Opis*</label>
+                            <textarea
+                                id={specialist.description}
+                                name="description"
+                                rows={8}
+                                cols={40}
+                                className={`w-full drop-shadow-2xl border-2 focus:border-4 rounded-2xl text-2xl p-6  ${errors.description ? 'border-red-500' : 'border-amber-900 mb-8'}`}
+                            />
+                            {errors.description && (
+                                <div className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full h-7 mt-1 leading-none">
+                                    <p>{errors.description}</p>
+                                </div>
+                            )}
+                        </div>
 
                         <input
                             type="submit"
@@ -309,6 +333,24 @@ function SpecialistRegister() {
                     </form>
                 </div>
             </div>
+
+            {showSuccessMsg &&
+                createPortal(
+                    <div className="flex flex-col items-center">
+                        <h1 className="text-3xl font-bold my-4">Pomyślnie zarejestrowano!</h1>
+                        <p className="text-xl my-2">Kliknij poniższy przycisk aby przejść do logowania</p>
+
+                        <Link to="/specjalista/login" onClick={() => Swal.close()}
+                              className="flex w-52 justify-center items-center mt-5">
+                            <div
+                                className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
+                                <span className="mx-3 my-2 text-xl">zaloguj</span>
+                            </div>
+                        </Link>
+                    </div>,
+                    Swal.getHtmlContainer()!,
+                )
+            }
         </div>
     )
 }
