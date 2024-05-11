@@ -1,8 +1,8 @@
 import React from "react";
-import Arrow from "../components/Arrow";
-import HomepageOptionElement from "../components/HomepageOptionElement";
+import Arrow from "../../components/Arrow";
+import HomepageOptionElement from "../../components/HomepageOptionElement";
 
-function UserHome() {
+function SpecialistHome() {
     return (
         <div className="flex flex-col items-center m-4">
             <div className="w-2/3">
@@ -10,39 +10,38 @@ function UserHome() {
                 {/* Header with general info */}
                 <div className="flex flex-col text-center pt-8">
                     <div className="flex flex-row text-3xl font-bold mb-6 justify-center">
-                        <h1 className="mx-2">Nasi specjaliści wyciągną do ciebie </h1>
-                        <h1 className="text-amber-900">pomocną dłoń</h1>
-                        <h1>!</h1>
+                        <h1 className="mx-2">Z nami będziesz miał pełne </h1>
+                        <h1 className="text-amber-900">ręce</h1>
+                        <h1 className="ml-2">roboty!</h1>
                     </div>
                     <p className="text-xl text-gray-500">Działamy na rynku już od 5 lat. Nasze grono specjalistów
-                        pomogło już niejednej
-                        osobie, może ty będziesz następny?</p>
+                        pomogło niejednej osobie, może ty będziesz jednym z nich?</p>
                 </div>
 
                 <div className="bg-amber-900 rounded-md h-1 my-6"></div>
 
                 <div className="flex flex-col items-center">
-                    <h1 className="font-bold text-2xl mb-8">Jak uzyskać pomoc?</h1>
+                    <h1 className="font-bold text-2xl mb-8">Jak zaoferować pomoc?</h1>
 
-                    {/* First option - searching for specialists */}
+                    {/* First option - accept reservations */}
                     <div className="flex flex-row items-center  justify-center text-center text-gray-500 my-6">
                         <p className="text-amber-900 font-bold text-3xl">1.</p>
 
                         {/* First element with magnifier */}
                         <HomepageOptionElement
-                            img="https://pl.fotoomnia.com/zdjecia/0af5daa5857ff82c673a6295654b777e.jpg"
-                            alt="lupa"
-                            text="Korzystając z wyszukiwarki wybierz lokalizację i interesującą cię usługę"
+                            img="https://logowik.com/content/uploads/images/calendar5662.jpg"
+                            alt="calendar"
+                            text="Edytuj kalendarz z terminami swojej dostępności"
                         />
 
                         {/* Arrow */}
                         <Arrow/>
 
-                        {/* Second element with people */}
+                        {/* Second element answering to reservations */}
                         <HomepageOptionElement
-                            img="https://icon-library.com/images/icon-group-people/icon-group-people-23.jpg"
-                            alt="people"
-                            text="Z list specjalistów wybierz tego, który spełnia twoje wymagania"
+                            img="https://icon-library.com/images/icon-form/icon-form-20.jpg"
+                            alt="reservations"
+                            text="Odpowiedz na rezerwacje wysłane przez klientów"
                         />
 
                         {/* Arrow */}
@@ -50,10 +49,10 @@ function UserHome() {
 
                         {/* Third element with calendar */}
                         <HomepageOptionElement
-                            img="https://logowik.com/content/uploads/images/calendar5662.jpg"
-                            alt="calendar"
-                            text="Wybierz usługę oraz dogodny dla siebie termin i zarezerwuj wizytę"
-                            w={40}
+                            img="https://icon-library.com/images/handshake-icon/handshake-icon-3.jpg"
+                            alt="handshake1"
+                            text="Dogadaj szczegóły z klientem i zaakceptuj wykonanie usługi"
+                            h={24}
                         />
                     </div>
 
@@ -61,11 +60,11 @@ function UserHome() {
                     <div className="flex flex-row items-center  justify-center text-center text-gray-500 my-6">
                         <p className="text-amber-900 font-bold text-3xl">2.</p>
 
-                        {/* First element with document */}
+                        {/* First element with searching offers */}
                         <HomepageOptionElement
-                            img="https://icon-library.com/images/create-document-icon/create-document-icon-22.jpg"
-                            alt="doc"
-                            text="Utwórz nową ofertę, dodaj opis i szczegóły"
+                            img="https://icon-library.com/images/free-icon-list/free-icon-list-27.jpg"
+                            alt="list"
+                            text="Sprawdź listę dostępnych ofert utworzonych przez użytkowników"
                         />
 
                         {/* Arrow */}
@@ -75,9 +74,7 @@ function UserHome() {
                         <HomepageOptionElement
                             img="https://icon-library.com/images/hammer-icon-png/hammer-icon-png-5.jpg"
                             alt="action"
-                            text="Zainteresowani specjaliści wyślą ci swoją ofertę z proponowaną ceną i terminem
-                                realizacji"
-                            w={36}
+                            text="Złóż propozycję ceny i terminu wykonania usługi"
                             h={32}
                         />
 
@@ -88,9 +85,8 @@ function UserHome() {
                         <HomepageOptionElement
                             img="https://icon-library.com/images/handshake-icon/handshake-icon-3.jpg"
                             alt="handshake"
-                            text="Wybierz najlepszą ofertę i zarezerwuj usługę"
-                            w={36}
-                            h={28}
+                            text="Dogadaj szczegóły z klientem"
+                            h={24}
                         />
                     </div>
                 </div>
@@ -99,4 +95,4 @@ function UserHome() {
     )
 }
 
-export default UserHome;
+export default SpecialistHome;

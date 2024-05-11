@@ -4,11 +4,15 @@ import './index.css';
 import App from './App';
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Error from "./pages/Error";
-import UserHome from "./pages/UserHome";
+import ClientHome from "./pages/Client/ClientHome";
 import SearchSpecialists from "./pages/SearchSpecialists";
-import CreateOffer from "./pages/CreateOffer";
+import CreateOffer from "./pages/Client/CreateOffer";
 import LoginRegister from "./pages/LoginRegister";
-import SpecialistHome from "./pages/SpecialistHome";
+import SpecialistHome from "./pages/Specialist/SpecialistHome";
+import ClientLogin from "./pages/Client/ClientLogin";
+import ClientRegister from "./pages/Client/ClientRegister";
+import SpecialistLogin from "./pages/Specialist/SpecialistLogin";
+import SpecialistRegister from "./pages/Specialist/SpecialistRegister";
 
 const router = createBrowserRouter([
     {
@@ -16,7 +20,7 @@ const router = createBrowserRouter([
         element: <App />,
         errorElement: <Error />,
         children: [
-            {index: true, element: <UserHome />},
+            {index: true, element: <ClientHome />},
             {
                 path: "/wybor_konta",
                 element: <LoginRegister />,
@@ -30,8 +34,24 @@ const router = createBrowserRouter([
                 element: <CreateOffer />,
             },
             {
+                path: "/klient/login",
+                element: <ClientLogin />,
+            },
+            {
+                path: "/klient/rejestracja",
+                element: <ClientRegister />,
+            },
+            {
                 path: "/specjalista/strona_glowna",
                 element: <SpecialistHome />,
+            },
+            {
+                path: "/specjalista/login",
+                element: <SpecialistLogin />,
+            },
+            {
+                path: "/specjalista/rejestracja",
+                element: <SpecialistRegister />,
             },
         ]
     }
