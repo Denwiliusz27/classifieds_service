@@ -7,7 +7,6 @@
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../baza_danych.dia" beforeDir="false" afterPath="$PROJECT_DIR$/../baza_danych.dia" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -98,7 +97,8 @@
       <workItem from="1715247135177" duration="7554000" />
       <workItem from="1715263421968" duration="2757000" />
       <workItem from="1715271070436" duration="6088000" />
-      <workItem from="1715346283961" duration="13214000" />
+      <workItem from="1715346283961" duration="13712000" />
+      <workItem from="1715418479156" duration="7364000" />
     </task>
     <servers />
   </component>

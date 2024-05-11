@@ -1,9 +1,8 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import Input from "../../components/form/Input";
 import Select from "../../components/form/Select";
 import {City} from "../../models/City";
 import Swal from "sweetalert2";
-import {PhoneInput} from 'react-international-phone';
 import 'react-international-phone/style.css';
 import {Service, Speciaization} from "../../models/Speciaization";
 import {createPortal} from "react-dom";
@@ -64,6 +63,13 @@ function SpecialistRegister() {
         {id: 6, name: "Naprawa szafki", specializationId: 3},
     ]
 
+    const clearErrors = (name: string) => {
+        setErrors({
+            ...errors,
+            [name]: ""
+        })
+    }
+
     const handleSpecialistChange = () => (event: React.FormEvent<HTMLInputElement>) => {
         let value = event.currentTarget.value
         let name = event.currentTarget.name
@@ -73,24 +79,27 @@ function SpecialistRegister() {
             [name]: value,
         })
 
-        setErrors({
-            ...errors,
-            [name]: ""
-        })
+        clearErrors(name)
     }
 
     const handleSelectChange = (event: React.FormEvent<HTMLSelectElement>) => {
         let name = event.currentTarget.name
 
-        setSpecialist({
-            ...specialist,
-            [name]: event.currentTarget.value,
-        })
+        if (name === "specializationId") {
+            setSpecialist({
+                ...specialist,
+                specializationId: parseInt(event.currentTarget.value),
+                services: [],
+            })
+        } else {
+            setSpecialist({
+                ...specialist,
+                [name]: event.currentTarget.value,
+            })
+        }
 
-        setErrors({
-            ...errors,
-            [name]: ""
-        })
+
+        clearErrors(name)
     }
 
     const handleServiceChange = (event: React.ChangeEvent<HTMLInputElement>, serviceId: number) => {
@@ -107,7 +116,8 @@ function SpecialistRegister() {
                 services: specialist.services.filter(service => service.id !== serviceId)
             })
         }
-        console.log(specialist)
+
+        clearErrors("services")
     };
 
     const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>, serviceId: number, priceType: 'min' | 'max') => {
@@ -125,17 +135,136 @@ function SpecialistRegister() {
             ...specialist,
             services: updatedServices
         });
+
+        clearErrors("services")
     };
 
     function checkForm() {
-        return true
+        const nameRegex = new RegExp('^[a-zA-Z]+$');
+        const phoneRegex = new RegExp('^([0-9]{9})$');
+        let nameError = ""
+        let surnameError = ""
+        let emailError = ""
+        let passwordError = ""
+        let cityError = ""
+        let phoneError = ""
+        let specializationError = ""
+        let servicesError = ""
+        let descriptionError = ""
+
+        // name
+        if (specialist.name.length === 0) {
+            nameError = "Wprowadź swoje imie"
+        } else if (!nameRegex.test(specialist.name)) {
+            nameError = "Imie powinno składać się jedynie z liter"
+        }
+
+        // surname
+        if (specialist.name.length === 0) {
+            surnameError = "Wprowadź swoje nazwisko"
+        } else if (!nameRegex.test(specialist.name)) {
+            surnameError = "Nazwisko powinno składać się jedynie z liter"
+        }
+
+        // email
+        if (specialist.email.length === 0) {
+            emailError = "Wprowadź adres email"
+        }
+
+        // password
+        if (specialist.password.length === 0) {
+            passwordError = "Wprowadź hasło do konta"
+        }
+
+        // city
+        if (specialist.city === 0) {
+            cityError = "Wybierz miasto z listy"
+        }
+
+        // phone
+        if (specialist.phoneNr.length === 0){
+            phoneError = "Wprowadź numer telefonu"
+        } else if (!phoneRegex.test(specialist.phoneNr)) {
+            phoneError = "Podaj dokładnie 9 cyfr"
+        }
+
+        // specialization
+        if (specialist.specializationId === 0){
+            specializationError = "Wybierz specjalizację"
+        }
+
+        // services
+        if (specialist.specializationId !== 0) {
+            if (specialist.services.length === 0) {
+                servicesError = "Wybierz przynajmniej jedną usługę"
+            } else {
+                specialist.services.forEach(s => {
+                    if (s.minPrice === 0 || s.maxPrice === 0) {
+                        servicesError = "Podaj cenę minimalną i maksymalną wybranych usług"
+                    } else if (s.minPrice < 0 || s.maxPrice < 0 ) {
+                        servicesError = "Ceny powinny btćliczbami dodatnimi"
+                    } else if (s.minPrice > s.maxPrice) {
+                        servicesError = "Cenę minimalna powinna być mniejsza od ceny maksymalnej"
+                    }
+                })
+            }
+        }
+
+        // description
+        if (specialist.description.length === 0) {
+            descriptionError = "Wprowadź opis"
+        }
+
+        if (nameError === "" && surnameError === "" && emailError === "" && passwordError === "" && cityError === "" &&
+            phoneError === "" && specializationError === "" && servicesError === "" && descriptionError === "") {
+            let newName = specialist.name.toLowerCase()
+            newName = newName.charAt(0).toUpperCase() + newName.slice(1)
+
+            let newSurname = specialist.surname.toLowerCase()
+            newSurname = newSurname.charAt(0).toUpperCase() + newSurname.slice(1)
+
+            setSpecialist({
+                ...specialist,
+                name: newName,
+                surname: newSurname,
+                email: specialist.email.toLowerCase()
+            });
+
+            return true
+        } else {
+            setErrors({
+                ...errors,
+                name: nameError,
+                surname: surnameError,
+                email: emailError,
+                password: passwordError,
+                city: cityError,
+                phoneNr: phoneError,
+                specializationId: specializationError,
+                services: servicesError,
+                description: descriptionError
+            })
+
+            return false
+        }
+    }
+
+    const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        let name = event.currentTarget.name
+
+        setSpecialist({
+            ...specialist,
+            [name]: event.currentTarget.value,
+        })
+
+        clearErrors(name)
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         if (checkForm()) {
-            console.log("zalogowano pomyślnie!")
+            console.log("Zarejestrowano pomyślnie!")
             Swal.fire({
                 didOpen: () => setShowSuccessMsg(true),
                 didClose: () => setShowSuccessMsg(false),
@@ -170,7 +299,6 @@ function SpecialistRegister() {
                             <div className="flex justify-self-end bg-amber-900 rounded-md h-1 mb-3 mx-10 w-32"></div>
                         </div>
                     </div>
-
 
                     <form className="flex flex-col items-center w-full my-8" onSubmit={handleSubmit}>
                         <Input
@@ -249,7 +377,7 @@ function SpecialistRegister() {
                             <div className="flex flex-col items-start mb-4 w-full">
                                 <p className="font-bold text-2xl mx-6 mb-3">Usługi*</p>
                                 <div
-                                    className="flex flex-col bg-white w-full drop-shadow-2xl border-2 border-amber-900 focus:border-4 rounded-2xl text-2xl px-6 py-3 mb-4">
+                                    className={`flex flex-col bg-white w-full drop-shadow-2xl border-2 ${errors.services ? 'border-red-500' : 'border-amber-900 mb-8'} focus:border-4 rounded-2xl text-2xl px-6 py-3`}>
                                     <div className="flex flex-row font-bold items-center">
                                         <p className="w-2/4">Usługa</p>
                                         <p className="w-1/4">Cena min</p>
@@ -280,7 +408,7 @@ function SpecialistRegister() {
                                                             placeholder="Cena"
                                                             disabled={tempSpecialistService === undefined}
                                                             onChange={e => handlePriceChange(e, service.id, "min")}
-                                                            value={tempSpecialistService?.minPrice}
+                                                            value={tempSpecialistService?.minPrice || 0}
                                                             className={`w-1/4 h-14 drop-shadow-2xl border-2 focus:border-4 rounded-2xl text-2xl px-6 border-amber-900 mr-1`}
                                                         />
                                                         <input
@@ -290,7 +418,7 @@ function SpecialistRegister() {
                                                             placeholder="Cena"
                                                             disabled={tempSpecialistService === undefined}
                                                             onChange={e => handlePriceChange(e, service.id, "max")}
-                                                            value={tempSpecialistService?.maxPrice}
+                                                            value={tempSpecialistService?.maxPrice || 0}
                                                             className={`w-1/4 h-14 drop-shadow-2xl border-2 focus:border-4 rounded-2xl text-2xl px-6 border-amber-900 ml-1`}
                                                         />
                                                     </div>
@@ -305,16 +433,17 @@ function SpecialistRegister() {
                                     </div>
                                 )}
                             </div>
-
-
                         }
 
                         <div className="flex flex-col items-start mb-4 w-full">
                             <label className="font-bold text-2xl mx-6 mb-3">Opis*</label>
                             <textarea
-                                id={specialist.description}
+                                id="description"
                                 name="description"
-                                rows={8}
+                                placeholder="Pare słów o tobie"
+                                value={specialist.description}
+                                onChange={handleDescriptionChange}
+                                rows={6}
                                 cols={40}
                                 className={`w-full drop-shadow-2xl border-2 focus:border-4 rounded-2xl text-2xl p-6  ${errors.description ? 'border-red-500' : 'border-amber-900 mb-8'}`}
                             />
