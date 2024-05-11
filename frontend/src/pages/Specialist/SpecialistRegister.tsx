@@ -4,7 +4,7 @@ import Select from "../../components/form/Select";
 import {City} from "../../models/City";
 import Swal from "sweetalert2";
 import 'react-international-phone/style.css';
-import {Service, Speciaization} from "../../models/Speciaization";
+import {Service, Specialization} from "../../models/Specialization";
 import {createPortal} from "react-dom";
 import {Link} from "react-router-dom";
 
@@ -47,7 +47,7 @@ function SpecialistRegister() {
         {id: 3, name: "Poznań"},
     ]
 
-    const specializations: Speciaization[] = [
+    const specializations: Specialization[] = [
         {id: 1, name: "Elektryk"},
         {id: 2, name: "Hydraulik"},
         {id: 3, name: "Stolarz"},
@@ -363,7 +363,7 @@ function SpecialistRegister() {
                             />
                         </div>
 
-                        <Select<Speciaization>
+                        <Select<Specialization>
                             labelName="Specjalizacja*"
                             name="specializationId"
                             placeholder="Nazwa specjalizacji"
