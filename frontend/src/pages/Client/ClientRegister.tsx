@@ -29,12 +29,6 @@ function ClientRegister() {
         flatNr: "",
     })
 
-    // const cities: City[] = [
-    //     {id: 1, name: "Kraków"},
-    //     {id: 2, name: "Warszawa"},
-    //     {id: 3, name: "Poznań"},
-    // ]
-
     const [cities, setCities] = useState([])
 
     useEffect(() => {

@@ -5,14 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../backend/cmd/api/handlers.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/cmd/api/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/cmd/api/middleware.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/cmd/api/routes.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/internal/models/City.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/cmd/api/db.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/internal/repository/dbrepository/postgres_dbrepository.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/internal/repository/query/query.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/internal/repository/repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/.idea/sqldialects.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/handlers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/sql/init_database.sql" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../baza_danych.dia" beforeDir="false" afterPath="$PROJECT_DIR$/../baza_danych.dia" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -60,7 +64,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "ts.external.directory.path": "D:\\PROGRAMY\\WebStorm\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external",
+    "ts.external.directory.path": "C:\\Users\\danwi\\OneDrive\\Pulpit\\Things\\STUDIA\\classifieds_service\\frontend\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -105,7 +109,10 @@
       <workItem from="1715271070436" duration="6088000" />
       <workItem from="1715346283961" duration="13712000" />
       <workItem from="1715418479156" duration="10108000" />
-      <workItem from="1715626147219" duration="2496000" />
+      <workItem from="1715626147219" duration="3097000" />
+      <workItem from="1715721574385" duration="70000" />
+      <workItem from="1715943244953" duration="1000" />
+      <workItem from="1716063554009" duration="800000" />
     </task>
     <servers />
   </component>
