@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"encoding/json"
@@ -11,7 +11,7 @@ type JSONResponse struct {
 	Data    any    `json:"data,omitempty"`
 }
 
-func (app *application) writeJSON(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
+func (app *Application) writeJSON(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
 	out, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -34,7 +34,7 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data any, h
 	return nil
 }
 
-func (app *application) readJSON(w http.ResponseWriter, r *http.Request, data any) error {
+func (app *Application) readJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	maxB := 1024 * 1024 * 10
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxB))
 
@@ -49,7 +49,7 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, data an
 	return nil
 }
 
-func (app *application) errorJSON(w http.ResponseWriter, err error, status ...int) error {
+func (app *Application) errorJSON(w http.ResponseWriter, err error, status ...int) error {
 	var payload JSONResponse
 	statusCode := http.StatusBadRequest
 

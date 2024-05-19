@@ -1,30 +1,21 @@
-package dbrepository
+package postgres
 
 import (
+	"backend/internal/dal/sql"
 	"backend/internal/models"
-	"backend/internal/repository/query"
 	"context"
-	"database/sql"
 	"fmt"
 	"time"
 )
 
-type PostgresDBRepository struct {
-	DB *sql.DB
-}
-
 const timeout = time.Second * 5
 
-func (m *PostgresDBRepository) Connection() *sql.DB {
-	return m.DB
-}
-
-func (m *PostgresDBRepository) AllCities() ([]*models.City, error) {
+func (m *PG) AllCities() ([]*models.City, error) {
 	var cities []*models.City
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	q := query.GetCities
+	q := sql.GetCities
 
 	rows, err := m.DB.QueryContext(ctx, q)
 	if err != nil {

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"backend/internal/repository"
+	"backend/cmd/api"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,21 +9,15 @@ import (
 
 const port = 8080
 
-type application struct {
-	Domain         string
-	DataSourceName string
-	DB             repository.DBRepository
-}
-
 func main() {
 	// set application config
-	var app application
+	var app api.Application
 
 	// read from command line
-	app.setFlags()
+	app.SetFlags()
 
 	// connect to database
-	err := app.connectToDB()
+	err := app.ConnectToDB()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,10 +26,9 @@ func main() {
 	}()
 
 	log.Println("Backend is starting on port", port)
-	app.Domain = "example.com"
 
 	// start a web server
-	err = http.ListenAndServe(fmt.Sprintf(":%d", port), app.routes())
+	err = http.ListenAndServe(fmt.Sprintf(":%d", port), app.Routes())
 	if err != nil {
 		log.Fatal(err)
 	}
