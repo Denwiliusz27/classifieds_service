@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Input from "../../components/form/Input";
 import Select from "../../components/form/Select";
 import {City} from "../../models/City";
@@ -29,11 +29,26 @@ function ClientRegister() {
         flatNr: "",
     })
 
-    const cities: City[] = [
-        {id: 1, name: "Kraków"},
-        {id: 2, name: "Warszawa"},
-        {id: 3, name: "Poznań"},
-    ]
+    const [cities, setCities] = useState([])
+
+    useEffect(() => {
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+
+        const requestOptions = {
+            method: "GET",
+            headers: headers
+        }
+
+        fetch(`http://localhost:8080/cities`, requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+                setCities(data)
+            })
+            .catch(err => {
+                console.log("Error retrieving Cities: ", err)
+            })
+    }, [])
 
     const handleClientChange = () => (event: React.FormEvent<HTMLInputElement>) => {
         let value = event.currentTarget.value
