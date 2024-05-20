@@ -5,19 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../backend/cmd/api/db.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/internal/repository/dbrepository/postgres_dbrepository.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/internal/repository/query/query.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/internal/repository/repository.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/.idea/sqldialects.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/handlers.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/sql/init_database.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../baza_danych.dia" beforeDir="false" afterPath="$PROJECT_DIR$/../baza_danych.dia" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/clients.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/users.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/internal/models/ClientRegister.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/models/ClintRegister.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/api.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/routes.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/dal.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/dal.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/postgres/cities.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/cities.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/postgres/postgres.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/postgres.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +57,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "03__backend__init",
+    "git-widget-placeholder": "04__register__users__logic",
     "last_opened_file_path": "C:/Users/danwi/OneDrive/Pulpit/Things/STUDIA/classifieds_service/frontend/src/pages",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -113,6 +113,7 @@
       <workItem from="1715721574385" duration="70000" />
       <workItem from="1715943244953" duration="1000" />
       <workItem from="1716063554009" duration="800000" />
+      <workItem from="1716115182523" duration="2760000" />
     </task>
     <servers />
   </component>

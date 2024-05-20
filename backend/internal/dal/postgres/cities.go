@@ -5,10 +5,7 @@ import (
 	"backend/internal/models"
 	"context"
 	"fmt"
-	"time"
 )
-
-const timeout = time.Second * 5
 
 func (m *PG) AllCities() ([]*models.City, error) {
 	var cities []*models.City

@@ -5,14 +5,16 @@ import {City} from "../../models/City";
 import Swal from "sweetalert2";
 import {createPortal} from "react-dom";
 import {Link} from "react-router-dom";
+import {Client} from "../../models/ClintRegister";
+
 
 function ClientRegister() {
-    const [client, setClient] = useState({
+    const [client, setClient] = useState<Client>({
         name: "",
         surname: "",
         email: "",
         password: "",
-        city: 0,
+        cityId: 0,
         street: "",
         buildingNr: 0,
         flatNr: 0
@@ -23,7 +25,7 @@ function ClientRegister() {
         surname: "",
         email: "",
         password: "",
-        city: "",
+        cityId: "",
         street: "",
         buildingNr: "",
         flatNr: "",
@@ -44,6 +46,7 @@ function ClientRegister() {
             .then((response) => response.json())
             .then((data) => {
                 setCities(data)
+                console.log("succesfully retrieved Cities: ", data)
             })
             .catch(err => {
                 console.log("Error retrieving Cities: ", err)
@@ -52,11 +55,21 @@ function ClientRegister() {
 
     const handleClientChange = () => (event: React.FormEvent<HTMLInputElement>) => {
         let value = event.currentTarget.value
-        let name = event.currentTarget.name
-        setClient({
-            ...client,
-            [name]: value,
-        })
+        let name = event.currentTarget.name as keyof Client
+
+        const fieldType = typeof client[name]
+
+        if (fieldType === "number") {
+            setClient({
+                ...client,
+                [name]: parseInt(value),
+            })
+        } else {
+            setClient({
+                ...client,
+                [name]: value,
+            })
+        }
 
         setErrors({
             ...errors,
@@ -69,7 +82,7 @@ function ClientRegister() {
 
         setClient({
             ...client,
-            [name]: event.currentTarget.value,
+            [name]: parseInt(event.currentTarget.value),
         })
 
         setErrors({
@@ -114,7 +127,7 @@ function ClientRegister() {
         }
 
         // city
-        if (client.city === 0) {
+        if (client.cityId === 0) {
             cityError = "Wybierz miasto z listy"
         }
 
@@ -143,7 +156,7 @@ function ClientRegister() {
                 ...client,
                 name: newName,
                 surname: newSurname,
-                email: client.email.toLowerCase()
+                email: client.email.toLowerCase(),
             });
 
             return true
@@ -154,7 +167,7 @@ function ClientRegister() {
                 surname: surnameError,
                 email: emailError,
                 password: passwordError,
-                city: cityError,
+                cityId: cityError,
                 street: streetError,
                 buildingNr: buildingNrError
             })
@@ -248,12 +261,12 @@ function ClientRegister() {
                         <div className="flex flex-row justify-items-center space-x-4">
                             <Select<City>
                                 labelName="Miasto*"
-                                name="city"
+                                name="cityId"
                                 placeholder="Nazwa miasta"
                                 onChange={handleCityChange}
-                                value={client.city}
+                                value={client.cityId}
                                 options={cities}
-                                error={errors["city"]}
+                                error={errors["cityId"]}
                             />
 
                             <Input

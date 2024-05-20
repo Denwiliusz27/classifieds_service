@@ -14,6 +14,10 @@ func (app *Application) Routes() http.Handler {
 
 	mux.Get("/cities", app.AllCities)
 
+	mux.Route("/client", func(mux chi.Router) {
+		mux.Post("/register", app.CreateClient)
+	})
+
 	return mux
 }
 

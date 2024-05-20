@@ -2,7 +2,9 @@ package api
 
 import (
 	"backend/internal/dal"
+	"backend/internal/models"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -19,4 +21,44 @@ func (app *Application) AllCities(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = app.writeJSON(w, http.StatusOK, cities)
+}
+
+func (app *Application) CreateClient(w http.ResponseWriter, r *http.Request) {
+	var newClient models.ClientRegister
+
+	err := app.readJSON(w, r, &newClient)
+	if err != nil {
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	log.Println("I got new Client to create: ", newClient)
+
+	client, err := app.DB.GetUserByEmailAndRole(newClient.Email, "client")
+	if client != nil {
+		log.Println("User with email '", newClient.Email, "' already exists")
+		_ = app.errorJSON(w, err)
+	}
+
+	userId, err := app.DB.CreateUser(newClient)
+	if err != nil {
+		log.Println(err)
+		_ = app.errorJSON(w, err, http.StatusBadRequest)
+	}
+
+	clientId, err := app.DB.CreateClient(userId)
+	if err != nil {
+		log.Println(err)
+		_ = app.errorJSON(w, err, http.StatusBadRequest)
+	}
+
+	for _, address := range newClient.Addresses {
+		_, err := app.DB.CreateClientAddress(address, clientId)
+		if err != nil {
+			log.Println(err)
+			_ = app.errorJSON(w, err, http.StatusBadRequest)
+		}
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, clientId)
 }

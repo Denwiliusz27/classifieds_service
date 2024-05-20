@@ -20,7 +20,7 @@ function SpecialistRegister() {
         surname: "",
         email: "",
         password: "",
-        city: 0,
+        cityId: 0,
         phoneNr: "",
         specializationId: 0,
         services: [] as SpecialistService[],
@@ -32,7 +32,7 @@ function SpecialistRegister() {
         surname: "",
         email: "",
         password: "",
-        city: "",
+        cityId: "",
         phoneNr: "",
         specializationId: "",
         services: "",
@@ -177,7 +177,7 @@ function SpecialistRegister() {
         }
 
         // city
-        if (specialist.city === 0) {
+        if (specialist.cityId === 0) {
             cityError = "Wybierz miasto z listy"
         }
 
@@ -238,7 +238,7 @@ function SpecialistRegister() {
                 surname: surnameError,
                 email: emailError,
                 password: passwordError,
-                city: cityError,
+                cityId: cityError,
                 phoneNr: phoneError,
                 specializationId: specializationError,
                 services: servicesError,
@@ -347,9 +347,9 @@ function SpecialistRegister() {
                                 name="city"
                                 placeholder="Nazwa miasta"
                                 onChange={handleSelectChange}
-                                value={specialist.city}
+                                value={specialist.cityId}
                                 options={cities}
-                                error={errors["city"]}
+                                error={errors["cityId"]}
                             />
 
                             <Input

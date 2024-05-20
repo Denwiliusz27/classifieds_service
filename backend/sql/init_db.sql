@@ -48,7 +48,6 @@ CREATE TABLE public.users
     second_name character varying(255) NOT NULL,
     email       character varying(255) NOT NULL,
     password    character varying(255) NOT NULL,
-    city_id     integer                NOT NULL,
     role        character varying(255) NOT NULL
 );
 
@@ -57,11 +56,8 @@ CREATE TABLE public.users
 --
 CREATE TABLE public.clients
 (
-    id          integer PRIMARY KEY    NOT NULL,
-    street      character varying(255) NOT NULL,
-    building_nr integer                NOT NULL,
-    flat_nr     integer,
-    user_id     integer                NOT NULL
+    id      integer PRIMARY KEY NOT NULL,
+    user_id integer             NOT NULL
 );
 
 --
@@ -72,8 +68,22 @@ CREATE TABLE public.specialists
     id                integer PRIMARY KEY    NOT NULL,
     phone_nr          character varying(255) NOT NULL,
     description       text                   NOT NULL,
+    city_id           integer                NOT NULL,
     user_id           integer                NOT NULL,
     specialization_id integer                NOT NULL
+);
+
+--
+-- Name: clients_addresses; Type: TABLE; Schema: public; Owner: -
+--
+CREATE TABLE public.clients_addresses
+(
+    id          integer PRIMARY KEY    NOT NULL,
+    street      character varying(255) NOT NULL,
+    building_nr integer                NOT NULL,
+    flat_nr     integer,
+    city_id     integer                NOT NULL,
+    client_id   integer                NOT NULL
 );
 
 --
@@ -234,6 +244,18 @@ ALTER TABLE public.specialists ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY 
 );
 
 --
+-- Name: clients_addresses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+ALTER TABLE public.clients_addresses ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.clients_addresses_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+--
 -- Name: specializations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 ALTER TABLE public.specializations ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
@@ -354,23 +376,30 @@ VALUES ('Gdańsk'),
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
-INSERT INTO public.users (name, second_name, email, password, city_id, role)
-VALUES ('Marek', 'Nowak', 'marek@gmail.com', 'marek1', 1, 'client'),
-       ('Stanisław', 'Cięciwka', 'stas@gmail.com', 'stas1', 1, 'specialist');
+INSERT INTO public.users (name, second_name, email, password, role)
+VALUES ('Marek', 'Nowak', 'marek@gmail.com', 'marek1', 'client'),
+       ('Stanisław', 'Cięciwka', 'stas@gmail.com', 'stas1', 'specialist');
 
 --
 -- Data for Name: clients; Type: TABLE DATA; Schema: public; Owner: -
 --
-INSERT INTO public.clients (street, building_nr, flat_nr, user_id)
-VALUES ('Słoneczna', 7, 27, 1);
+INSERT INTO public.clients (user_id)
+VALUES (1);
 
 --
 -- Data for Name: specialists; Type: TABLE DATA; Schema: public; Owner: -
 --
-INSERT INTO public.specialists (phone_nr, description, user_id, specialization_id)
+INSERT INTO public.specialists (phone_nr, description, city_id, user_id, specialization_id)
 VALUES ('990427111',
         'Kocham swoją pracę, od dziecka marzyłem o byciu elektrykiem, dlatego uczyłem się fachu w najleszych szkołach w kraju, a dzisiaj starannie pomagam innym',
+        1,
         2, 1);
+
+--
+-- Data for Name: clients_addresses; Type: TABLE DATA; Schema: public; Owner: -
+--
+INSERT INTO public.clients_addresses (street, building_nr, flat_nr, city_id, client_id)
+VALUES ('Bieszczadzka', 10, 27, 1, 1);
 
 --
 -- Data for Name: specializations; Type: TABLE DATA; Schema: public; Owner: -
@@ -489,6 +518,11 @@ SELECT pg_catalog.setval('public.clients_id_seq', 1, true);
 SELECT pg_catalog.setval('public.specialists_id_seq', 1, true);
 
 --
+-- Name: clients_addresses_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+SELECT pg_catalog.setval('public.clients_addresses_id_seq', 1, true);
+
+--
 -- Name: specializations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 SELECT pg_catalog.setval('public.specializations_id_seq', 8, true);
@@ -545,22 +579,21 @@ ALTER TABLE public.users
 ALTER TABLE public.visits
     ADD CONSTRAINT visit_status CHECK ( visits.status IN ('accepted', 'declined', 'specialist_action_required',
                                                           'client_action_required'));
-
 --
--- Name: users users_city_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: clients clients_user_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_city_id_fk FOREIGN KEY (city_id) REFERENCES public.cities(id) ON
+ALTER TABLE ONLY public.clients
+    ADD CONSTRAINT clients_user_id_fk FOREIGN KEY (user_id) REFERENCES public.users(id) ON
 UPDATE CASCADE
 ON
 DELETE
 CASCADE;
 
 --
--- Name: clients clients_user_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: clients specialists_city_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
-ALTER TABLE ONLY public.clients
-    ADD CONSTRAINT clients_user_id_fk FOREIGN KEY (user_id) REFERENCES public.users(id) ON
+ALTER TABLE ONLY public.specialists
+    ADD CONSTRAINT specialists_city_id_fk FOREIGN KEY (city_id) REFERENCES public.cities(id) ON
 UPDATE CASCADE
 ON
 DELETE
@@ -581,6 +614,26 @@ CASCADE;
 --
 ALTER TABLE ONLY public.specialists
     ADD CONSTRAINT specialists_specialization_id_fk FOREIGN KEY (specialization_id) REFERENCES public.specializations(id) ON
+UPDATE CASCADE
+ON
+DELETE
+CASCADE;
+
+--
+-- Name: clients clients_addresses_city_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+ALTER TABLE ONLY public.clients_addresses
+    ADD CONSTRAINT clients_addresses_city_id_fk FOREIGN KEY (city_id) REFERENCES public.cities(id) ON
+UPDATE CASCADE
+ON
+DELETE
+CASCADE;
+
+--
+-- Name: clients clients_addresses_client_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+ALTER TABLE ONLY public.clients_addresses
+    ADD CONSTRAINT clients_addresses_client_id_fk FOREIGN KEY (client_id) REFERENCES public.clients(id) ON
 UPDATE CASCADE
 ON
 DELETE
