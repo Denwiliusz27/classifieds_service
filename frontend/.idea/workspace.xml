@@ -5,19 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/clients.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/users.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/internal/models/ClientRegister.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/models/ClintRegister.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/models/ClientAddress.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/models/ClientRequest.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../backend/cmd/api/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/routes.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/dal.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/dal.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/postgres/cities.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/cities.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/postgres/postgres.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/postgres.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/ClintRegister.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,22 +45,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "04__register__users__logic",
-    "last_opened_file_path": "C:/Users/danwi/OneDrive/Pulpit/Things/STUDIA/classifieds_service/frontend/src/pages",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "ts.external.directory.path": "C:\\Users\\danwi\\OneDrive\\Pulpit\\Things\\STUDIA\\classifieds_service\\frontend\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;04__register__users__logic&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/danwi/OneDrive/Pulpit/Things/STUDIA/React-Go_course/project-front-end&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\danwi\\OneDrive\\Pulpit\\Things\\STUDIA\\classifieds_service\\frontend\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\danwi\OneDrive\Pulpit\Things\STUDIA\classifieds_service\frontend\src\pages" />
@@ -114,6 +107,12 @@
       <workItem from="1715943244953" duration="1000" />
       <workItem from="1716063554009" duration="800000" />
       <workItem from="1716115182523" duration="2760000" />
+      <workItem from="1716239504269" duration="2227000" />
+      <workItem from="1716398541952" duration="4161000" />
+      <workItem from="1716405690766" duration="438000" />
+      <workItem from="1716408319494" duration="2522000" />
+      <workItem from="1716454892506" duration="4332000" />
+      <workItem from="1716464140120" duration="3588000" />
     </task>
     <servers />
   </component>
