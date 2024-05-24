@@ -7,14 +7,14 @@ import (
 	"log"
 )
 
-func (m *PG) CreateClient(newUserId int) (int, error) {
+func (m *PG) CreateClient(userId int) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
 	q := sql.CreateClient
 	var newClientId int
 	err := m.DB.QueryRowContext(ctx, q,
-		newUserId,
+		userId,
 	).Scan(&newClientId)
 
 	if err != nil {

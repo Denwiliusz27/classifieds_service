@@ -8,18 +8,18 @@ import (
 	"log"
 )
 
-func (m *PG) CreateUser(client models.ClientRegister) (int, error) {
+func (m *PG) CreateUser(name string, secondName string, email string, password string, role string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
 	q := sql.CreateUser
 	var newUserId int
 	err := m.DB.QueryRowContext(ctx, q,
-		client.Name,
-		client.SecondName,
-		client.Email,
-		client.Password,
-		"client",
+		name,
+		secondName,
+		email,
+		password,
+		role,
 	).Scan(&newUserId)
 
 	if err != nil {

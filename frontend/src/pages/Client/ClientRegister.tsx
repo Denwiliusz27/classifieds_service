@@ -55,27 +55,23 @@ function ClientRegister() {
             })
     }, [])
 
-    const handleClientChange = () => (event: React.FormEvent<HTMLInputElement>) => {
-        let value = event.currentTarget.value
-        let name = event.currentTarget.name as keyof ClientRequest
-        const fieldType = typeof client[name]
-
-        if (fieldType === "number") {
-            setClient({
-                ...client,
-                [name]: parseInt(value),
-            })
-        } else {
-            setClient({
-                ...client,
-                [name]: value,
-            })
-        }
-
+    const clearErrors = (name: string) => {
         setErrors({
             ...errors,
             [name]: ""
         })
+    }
+
+    const handleClientChange = () => (event: React.FormEvent<HTMLInputElement>) => {
+        let value = event.currentTarget.value
+        let name = event.currentTarget.name
+
+        setClient({
+            ...client,
+            [name]: value,
+        })
+
+        clearErrors(name)
     }
 
     const handleCityChange = (event: React.FormEvent<HTMLSelectElement>, i: number) => {
@@ -88,10 +84,7 @@ function ClientRegister() {
             addresses: addresses,
         })
 
-        setErrors({
-            ...errors,
-            clientAddresses: ""
-        })
+        clearErrors("clientAddresses")
     }
 
     const handleStreetChange = (event: React.FormEvent<HTMLInputElement>, i: number) => {
@@ -104,10 +97,7 @@ function ClientRegister() {
             addresses: addresses,
         })
 
-        setErrors({
-            ...errors,
-            clientAddresses: ""
-        })
+        clearErrors("clientAddresses")
     }
 
     const handleBuildingNrChange = (event: React.FormEvent<HTMLInputElement>, i: number) => {
@@ -120,10 +110,7 @@ function ClientRegister() {
             addresses: addresses,
         })
 
-        setErrors({
-            ...errors,
-            clientAddresses: ""
-        })
+        clearErrors("clientAddresses")
     }
 
     const handleFlatNrChange = (event: React.FormEvent<HTMLInputElement>, i: number) => {
@@ -136,10 +123,7 @@ function ClientRegister() {
             addresses: addresses,
         })
 
-        setErrors({
-            ...errors,
-            clientAddresses: ""
-        })
+        clearErrors("clientAddresses")
     }
 
     const addAddress = () => {
@@ -198,7 +182,7 @@ function ClientRegister() {
         if (client.second_name.length === 0) {
             second_nameError = "Wprowadź swoje nazwisko"
         } else if (!nameRegex.test(client.second_name)) {
-            second_nameError = "Nazwisko powinno składać się jedynie z liter"
+            second_nameError = "Nazwisko zawiera niewłaściwe znaki"
         }
 
         // email

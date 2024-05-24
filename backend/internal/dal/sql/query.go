@@ -49,3 +49,41 @@ const CreateClientAddress = `
 	    ($1, $2, $3, $4, $5)
 	RETURNING id;
 `
+
+// --- SPECIALIZATIONS ---
+
+const GetSpecializations = `
+	SELECT *
+	FROM
+		specializations;
+`
+
+// --- SERVICES ---
+
+const GetServices = `
+	SELECT * 
+	FROM
+		services;
+`
+
+// --- SPECIALIST ---
+
+const CreateSpecialist = `
+	INSERT INTO
+		specialists
+	(phone_nr, description, city_id, user_id, specialization_id)
+	VALUES
+	    ($1, $2, $3, $4, $5)
+	RETURNING id;
+`
+
+// --- SPECIALIST_SERVICE ---
+
+const CreateSpecialistService = `
+	INSERT INTO
+		specialists_services
+	(price_min, price_max, specialist_id, service_id)
+	VALUES
+	    ($1, $2, $3, $4)
+	RETURNING id;
+`

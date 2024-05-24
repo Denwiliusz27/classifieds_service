@@ -102,6 +102,7 @@ CREATE TABLE public.services
 (
     id                integer PRIMARY KEY    NOT NULL,
     name              character varying(255) NOT NULL,
+    price_per         character varying(255),
     specialization_id integer                NOT NULL
 );
 
@@ -417,77 +418,78 @@ VALUES ('Elektryk'),
 --
 -- Data for Name: services; Type: TABLE DATA; Schema: public; Owner: -
 --
-INSERT INTO public.services (name, specialization_id)
-VALUES ('Wymiana instalacji elektrycznej', 1),
-       ('Montaż instalacji elektrycznej', 1),
-       ('Montaż domofonu', 1),
-       ('Instalacja oświetlenia ogrodowego', 1),
-       ('Instalacja gniazdek', 1),
-       ('Instalacja urządzeń "Smart Home"', 1),
+INSERT INTO public.services (name, price_per, specialization_id)
+VALUES ('Wymiana instalacji elektrycznej', 'meter', 1),
+       ('Montaż instalacji elektrycznej', 'meter', 1),
+       ('Montaż domofonu', '', 1),
+       ('Instalacja oświetlenia ogrodowego', 'meter', 1),
+       ('Instalacja gniazdek', 'amount', 1),
+       ('Instalacja urządzeń "Smart Home"', '', 1),
 
-       ('Montaż kabiny prysznicowej', 2),
-       ('Montaż umywalki', 2),
-       ('Montaż wanny', 2),
-       ('Montaż WC', 2),
-       ('Naprawa spłuczki', 2),
-       ('Udrażnianie rur', 2),
-       ('Podłączenie bojlera', 2),
+       ('Montaż kabiny prysznicowej', '', 2),
+       ('Montaż umywalki', '', 2),
+       ('Montaż wanny', '', 2),
+       ('Montaż WC', '', 2),
+       ('Naprawa spłuczki', '', 2),
+       ('Udrażnianie rur', '', 2),
+       ('Podłączenie bojlera', '', 2),
 
-       ('Koszenie trawy', 3),
-       ('Aeracja trawnika', 3),
-       ('Zasadzenie trawnika', 3),
-       ('Sadzenie drzew', 3),
-       ('Przycięcie drzew', 3),
-       ('Przekopanie ogródka', 3),
-       ('Sadzenie warzyw w ogrodzie', 3),
+       ('Koszenie trawy', 'meter', 3),
+       ('Aeracja trawnika', 'meter', 3),
+       ('Zasadzenie trawnika', 'meter', 3),
+       ('Sadzenie drzew', 'amount', 3),
+       ('Przycięcie drzew', 'amount', 3),
+       ('Przekopanie ogródka', 'meter', 3),
+       ('Sadzenie warzyw w ogrodzie', 'meter', 3),
 
-       ('Malowanie ścian', 4),
-       ('Gruntowanie ścian', 4),
-       ('Malowanie drzwi', 4),
-       ('Malowanie elewacji', 4),
-       ('Malowanie mebli', 4),
+       ('Malowanie ścian', 'meter', 4),
+       ('Gruntowanie ścian', 'meter', 4),
+       ('Malowanie drzwi', 'amount', 4),
+       ('Malowanie elewacji', 'meter', 4),
+       ('Malowanie mebli', 'amount',4),
 
-       ('Pranie i czyszczenie tapicerki samochodowej', 5),
-       ('Pranie i czyszczenie wykładzin dywanowych', 5),
-       ('Pranie i czyszczenie tapicerki skórzanej', 5),
-       ('Pranie krzeseł/puf', 5),
-       ('Pranie foteli/sof', 5),
-       ('Mycie i odkurzenie samochodu', 5),
+       ('Pranie i czyszczenie tapicerki samochodowej', 'amount', 5),
+       ('Pranie i czyszczenie wykładzin dywanowych', 'meter', 5),
+       ('Pranie i czyszczenie tapicerki skórzanej', 'amount', 5),
+       ('Pranie krzeseł/puf', 'amount', 5),
+       ('Pranie foteli/sof', 'amount',5),
+       ('Mycie i odkurzenie samochodu', '', 5),
 
-       ('Sprzątanie po remoncie', 6),
-       ('Sprzątanie mieszkania', 6),
-       ('Mycie okien', 6),
-       ('Mycie kostki brukowej', 6),
-       ('Mycie elewacji', 6),
-       ('Odgrzybianie', 6),
+       ('Sprzątanie po remoncie', 'meter', 6),
+       ('Sprzątanie mieszkania', 'meter', 6),
+       ('Mycie okien', 'amount', 6),
+       ('Mycie kostki brukowej', 'meter', 6),
+       ('Mycie elewacji', 'meter', 6),
+       ('Odgrzybianie', 'meter', 6),
 
-       ('Montaż drzwi', 7),
-       ('Skręcanie mebli', 7),
-       ('Montaż karniszy', 7),
-       ('Montaż rolet', 7),
-       ('Montaż telewizora', 7),
-       ('Montaż oświetlenia', 7),
-       ('Montaż parapetów', 7),
-       ('Naprawa okien', 7),
-       ('Naprawa drzwi', 7),
-       ('Montaż bramy garażowej', 7),
-       ('Montaż klimatyzacji', 7),
-       ('Naprawa roweru', 7),
-       ('Wymiana zamka w drzwiach', 7),
-       ('Montaż mebli naściennych', 7),
-       ('Naprawa kuchenki', 7),
-       ('Montaż kuchenki', 7),
-       ('Naprawa lodówki', 7),
-       ('Naprawa pralki', 7),
-       ('Montaż pralki', 7),
-       ('Naprawa telewizora', 7),
-       ('Naprawa zmywarki', 7),
-       ('Montaż zmywarki', 7),
+       ('Montaż drzwi', '', 7),
+       ('Montaż okien', 'amount', 7),
+       ('Skręcanie mebli', 'amount', 7),
+       ('Montaż karniszy', 'amount', 7),
+       ('Montaż rolet', 'amount', 7),
+       ('Montaż telewizora', '', 7),
+       ('Montaż oświetlenia', 'amount', 7),
+       ('Montaż parapetów', 'amount', 7),
+       ('Naprawa okna', '', 7),
+       ('Naprawa drzwi', '', 7),
+       ('Montaż bramy garażowej', '', 7),
+       ('Montaż klimatyzacji', 'amount', 7),
+       ('Naprawa roweru', '', 7),
+       ('Wymiana zamka w drzwiach', '', 7),
+       ('Montaż mebli naściennych', 'amount' ,7),
+       ('Naprawa kuchenki', '', 7),
+       ('Montaż kuchenki', '', 7),
+       ('Naprawa lodówki', '', 7),
+       ('Naprawa pralki', '', 7),
+       ('Montaż pralki', '', 7),
+       ('Naprawa telewizora', '', 7),
+       ('Naprawa zmywarki', '', 7),
+       ('Montaż zmywarki', '', 7),
 
-       ('Naprawa drukarki', 8),
-       ('Naprawa laptopa', 8),
-       ('Naprawa telefonu', 8),
-       ('Instalacja systemu w laptopie', 8);
+       ('Naprawa drukarki', '', 8),
+       ('Naprawa laptopa', '', 8),
+       ('Naprawa telefonu', '', 8),
+       ('Instalacja systemu w laptopie', '', 8);
 
 --
 -- Data for Name: specialists_services; Type: TABLE DATA; Schema: public; Owner: -
@@ -530,7 +532,7 @@ SELECT pg_catalog.setval('public.specializations_id_seq', 8, true);
 --
 -- Name: services_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
-SELECT pg_catalog.setval('public.services_id_seq', 8, true);
+SELECT pg_catalog.setval('public.services_id_seq', 64, true);
 
 --
 -- Name: specialists_services_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
@@ -572,6 +574,13 @@ SELECT pg_catalog.setval('public.reviews_id_seq', 1, true);
 --
 ALTER TABLE public.users
     ADD CONSTRAINT users_role CHECK ( role IN ('client', 'specialist'));
+
+--
+-- Name: services services_price_per; Type: CONSTRAINT; Schema: public; Owner: -
+--
+ALTER TABLE public.services
+    ADD CONSTRAINT service_price_per CHECK ( price_per IN ('meter', 'amount', ''));
+
 
 --
 -- Name: visits visit_status; Type: CONSTRAINT; Schema: public; Owner: -
