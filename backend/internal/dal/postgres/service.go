@@ -7,12 +7,12 @@ import (
 	"fmt"
 )
 
-func (m *PG) GetCities() ([]models.City, error) {
-	var cities []models.City
+func (m *PG) GetServices() ([]models.Service, error) {
+	var services []models.Service
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	q := sql.GetCities
+	q := sql.GetServices
 
 	rows, err := m.DB.QueryContext(ctx, q)
 	if err != nil {
@@ -23,15 +23,20 @@ func (m *PG) GetCities() ([]models.City, error) {
 	}()
 
 	for rows.Next() {
-		var city models.City
+		var service models.Service
 
-		err := rows.Scan(&city.Id, &city.Name)
+		err := rows.Scan(
+			&service.Id,
+			&service.Name,
+			&service.PricePer,
+			&service.SpecializationId,
+		)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %w", err)
 		}
 
-		cities = append(cities, city)
+		services = append(services, service)
 	}
 
-	return cities, nil
+	return services, nil
 }

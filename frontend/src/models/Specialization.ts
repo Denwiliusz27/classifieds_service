@@ -6,5 +6,6 @@ export interface Specialization {
 export interface Service {
     id: number
     name: string
-    specializationId: number
+    price_per: string
+    specialization_id: number
 }

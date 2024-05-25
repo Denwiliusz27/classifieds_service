@@ -12,7 +12,19 @@ func (app *Application) Routes() http.Handler {
 	mux.Use(middleware.Recoverer)
 	mux.Use(app.enableCORS)
 
-	mux.Get("/cities", app.AllCities)
+	mux.Get("/cities", app.GetAllCities)
+
+	mux.Route("/client", func(mux chi.Router) {
+		mux.Post("/register", app.CreateClient)
+	})
+
+	mux.Route("/specialist", func(mux chi.Router) {
+		mux.Post("/register", app.CreateSpecialist)
+	})
+
+	mux.Get("/specializations", app.GetAllSpecializations)
+
+	mux.Get("/services", app.GetAllServices)
 
 	return mux
 }
