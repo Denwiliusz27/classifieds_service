@@ -32,5 +32,10 @@ func (app *Application) ConnectToDB() error {
 
 func (app *Application) SetFlags() {
 	flag.StringVar(&app.DataSourceName, "dsn", "host=localhost dbname=classifieds_service port=5432 user=admin password=password timezone=UTC sslmode=disable connect_timeout=5", "Text for connecting to Postgres db")
+	flag.StringVar(&app.JWTSecret, "jwt-secret", "jwttopsecret", "signing secret")
+	flag.StringVar(&app.JWTIssuer, "jwt-issuer", "zlota_raczka.com", "signing issuer")
+	flag.StringVar(&app.JWTAudience, "jwt-audience", "zlota_raczka.com", "signing audience")
+	flag.StringVar(&app.CookieDomain, "cookie-domain", "localhost", "cookie domain")
+	flag.StringVar(&app.Domain, "domain", "zlota_raczka.com", "domain")
 	flag.Parse()
 }

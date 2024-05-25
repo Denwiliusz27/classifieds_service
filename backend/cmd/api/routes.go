@@ -22,6 +22,8 @@ func (app *Application) Routes() http.Handler {
 		mux.Post("/register", app.CreateSpecialist)
 	})
 
+	mux.Get("/authenticate", app.Authenticate)
+
 	mux.Get("/specializations", app.GetAllSpecializations)
 
 	mux.Get("/services", app.GetAllServices)

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"backend/cmd/auth"
 	"backend/internal/dal"
 	"backend/internal/models"
 	"fmt"
@@ -11,6 +12,49 @@ import (
 type Application struct {
 	DataSourceName string
 	DB             dal.DAL
+	Domain         string
+	Auth           auth.Auth
+	JWTSecret      string
+	JWTIssuer      string
+	JWTAudience    string
+	CookieDomain   string
+}
+
+func (app *Application) Authenticate(w http.ResponseWriter, r *http.Request) {
+	// read json payload
+	var userRequest models.UserLogin
+
+	err := app.readJSON(w, r, &userRequest)
+	if err != nil {
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	// validate user against database
+	user, err := app.DB.GetUserByEmailAndRole(userRequest.Email, userRequest.Role)
+	if err != nil {
+		_ = app.errorJSON(w, fmt.Errorf("%s o adresie email '%s' nie istnieje", userRequest.Role, userRequest.Email), http.StatusBadRequest)
+		return
+	}
+
+	// check password
+	// TODO change password to be a hash in DB
+	if user.Password != userRequest.Password {
+		_ = app.errorJSON(w, fmt.Errorf("niepoprawne hasło"), http.StatusBadRequest)
+	}
+
+	// generate tokens
+	tokens, err := app.Auth.GenerateTokenPair(user)
+	if err != nil {
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	log.Println("Got token: ", tokens.Token)
+	refreshCookie := app.Auth.GetRefreshCookie(tokens.RefreshToken)
+	http.SetCookie(w, refreshCookie)
+
+	app.writeJSON(w, http.StatusAccepted, tokens)
 }
 
 func (app *Application) GetAllCities(w http.ResponseWriter, r *http.Request) {
