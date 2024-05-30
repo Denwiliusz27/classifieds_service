@@ -1,37 +1,103 @@
 import Input from "../../components/form/Input";
 import React, {useState} from "react";
+import {UserLogin} from "../../models/UserLogin";
+import {useNavigate, useOutletContext} from "react-router-dom";
+import Swal from "sweetalert2";
+import {AuthContextType} from "../../App";
+import {createPortal} from "react-dom";
 
 function ClientLogin() {
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
+    const [user, setUser] = useState<UserLogin>({
+        email: "",
+        password: "",
+        role: "client",
+    })
     const [emailError, setEmailError] = useState("")
     const [passwordError, setPasswordError] = useState("")
+    const [errorMsg, setErrorMsg] = useState("")
+    const [successLogin, setSuccessLogin] = useState(false)
+    const [showErrorMsg, setShowErrorMsg] = useState(false)
+
+    const {jwtToken, setJwtToken, userType, setUserType, toggleRefresh} = useOutletContext<AuthContextType>();
+    const navigate = useNavigate()
 
     const handleEmailChange = (event: React.FormEvent<HTMLInputElement>) => {
-        setEmail(event.currentTarget.value)
+        setUser({
+            ...user,
+            email: event.currentTarget.value
+        })
+
         setEmailError("")
     }
 
     const handlePasswordChange = (event: React.FormEvent<HTMLInputElement>) => {
-        setPassword(event.currentTarget.value)
+        setUser({
+            ...user,
+            password: event.currentTarget.value
+        })
+
         setPasswordError("")
+    }
+
+    function checkForm() {
+        if (user.email === "") {
+            setEmailError("Podaj adres email")
+        }
+        if (user.password === "") {
+            setPasswordError("Podaj hasło")
+        }
+
+        if (user.email === "" || user.password === "") {
+            return false
+        }
+
+        return true
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        if (email === "") {
-            setEmailError("Podaj adres email")
-        }
-        if (password === "") {
-            setPasswordError("Podaj hasło")
-        }
+        if (checkForm()) {
+            const headers = new Headers()
+            headers.append("Content-Type", "application/json")
+            const method = "POST"
 
-        if(email === "" || password === ""){
-            return
-        }
+            fetch(`/authenticate`, {
+                body: JSON.stringify(user),
+                method: method,
+                headers: headers,
+                credentials: 'include',
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        console.log("ERRORS")
+                        setErrorMsg(data.message)
 
-        console.log(`Hello ${email} ${password}`)
+                        Swal.fire({
+                            didOpen: () => setShowErrorMsg(true),
+                            didClose: () => setShowErrorMsg(false),
+                            showConfirmButton: false,
+                        })
+                    } else {
+                        console.log("SUCCESSFULLY LOGGED IN")
+                        setSuccessLogin(true)
+                        document.body.style.cursor = "wait"
+
+                        setTimeout(() => {
+                            setJwtToken(data.access_token)
+                            setUserType("client")
+                            toggleRefresh(true)
+                            document.body.style.cursor = "default"
+
+                            navigate("/")
+                        }, 2000)
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
     }
 
     return (
@@ -60,7 +126,7 @@ function ClientLogin() {
                             onChange={handleEmailChange}
                             placeholder="Adres email"
                             type="email"
-                            value={email}
+                            value={user.email}
                             error={emailError}
                         />
 
@@ -70,7 +136,7 @@ function ClientLogin() {
                             onChange={handlePasswordChange}
                             placeholder="Hasło"
                             type="password"
-                            value={password}
+                            value={user.password}
                             error={passwordError}
                         />
 
@@ -79,9 +145,32 @@ function ClientLogin() {
                             value="Zaloguj"
                             className="flex flex-row justify-center cursor-pointer drop-shadow-xl mt-4 bg-amber-900 text-white rounded-2xl w-40 h-14 text-xl font-bold overflow-hidden shadow-2xl transition-transform hover:-translate-y-2 duration-300"
                         />
+
+                        {successLogin &&
+                            <div className="my-6 drop-shadow-xl text-xl font-bold text-green-500">
+                                <p>Pomyślnie zalogowano</p>
+                            </div>
+                        }
                     </form>
                 </div>
             </div>
+
+            {showErrorMsg &&
+                createPortal(
+                    <div className="flex flex-col items-center">
+                        <h1 className="text-3xl font-bold my-4">BŁĄD</h1>
+                        <p className="text-xl my-2">{errorMsg}</p>
+
+                        <div className="flex w-52 justify-center items-center mt-5">
+                            <div onClick={() => Swal.close()}
+                                 className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
+                                <span className="mx-3 my-2 text-xl">Ok</span>
+                            </div>
+                        </div>
+                    </div>,
+                    Swal.getHtmlContainer()!,
+                )
+            }
         </div>
     )
 }

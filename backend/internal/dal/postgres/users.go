@@ -56,3 +56,28 @@ func (m *PG) GetUserByEmailAndRole(email string, role string) (*models.User, err
 
 	return &user, nil
 }
+
+func (m *PG) GetUserById(id int) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	q := sql.GetUserById
+	var user models.User
+	row := m.DB.QueryRowContext(ctx, q,
+		id,
+	)
+	err := row.Scan(
+		&user.Id,
+		&user.Name,
+		&user.SecondName,
+		&user.Email,
+		&user.Password,
+		&user.Role,
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("error getting User: %w", err)
+	}
+
+	return &user, nil
+}

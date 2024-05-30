@@ -13,6 +13,7 @@ import ClientLogin from "./pages/Client/ClientLogin";
 import ClientRegister from "./pages/Client/ClientRegister";
 import SpecialistLogin from "./pages/Specialist/SpecialistLogin";
 import SpecialistRegister from "./pages/Specialist/SpecialistRegister";
+import SpecialistSearchOffers from "./pages/Specialist/SpecialistSearchOffers";
 
 const router = createBrowserRouter([
     {
@@ -42,16 +43,20 @@ const router = createBrowserRouter([
                 element: <ClientRegister />,
             },
             {
-                path: "/specjalista/strona_glowna",
-                element: <SpecialistHome />,
-            },
-            {
                 path: "/specjalista/login",
                 element: <SpecialistLogin />,
             },
             {
                 path: "/specjalista/rejestracja",
                 element: <SpecialistRegister />,
+            },
+            {
+                path: "/specjalista/strona_glowna",
+                element: <SpecialistHome />,
+            },
+            {
+                path: "/specjalista/oferty",
+                element: <SpecialistSearchOffers />,
             },
         ]
     }

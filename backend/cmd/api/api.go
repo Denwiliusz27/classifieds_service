@@ -5,8 +5,10 @@ import (
 	"backend/internal/dal"
 	"backend/internal/models"
 	"fmt"
+	"github.com/golang-jwt/jwt/v4"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type Application struct {
@@ -33,7 +35,13 @@ func (app *Application) Authenticate(w http.ResponseWriter, r *http.Request) {
 	// validate user against database
 	user, err := app.DB.GetUserByEmailAndRole(userRequest.Email, userRequest.Role)
 	if err != nil {
-		_ = app.errorJSON(w, fmt.Errorf("%s o adresie email '%s' nie istnieje", userRequest.Role, userRequest.Email), http.StatusBadRequest)
+		if userRequest.Role == "client" {
+			_ = app.errorJSON(w, fmt.Errorf("klient o adresie email '%s' nie istnieje", userRequest.Email), http.StatusBadRequest)
+
+		} else {
+			_ = app.errorJSON(w, fmt.Errorf("specjalista o adresie email '%s' nie istnieje", userRequest.Email), http.StatusBadRequest)
+		}
+
 		return
 	}
 
@@ -41,6 +49,7 @@ func (app *Application) Authenticate(w http.ResponseWriter, r *http.Request) {
 	// TODO change password to be a hash in DB
 	if user.Password != userRequest.Password {
 		_ = app.errorJSON(w, fmt.Errorf("niepoprawne hasło"), http.StatusBadRequest)
+		return
 	}
 
 	// generate tokens
@@ -113,6 +122,14 @@ func (app *Application) CreateClient(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, clientId)
 }
 
+func (app *Application) GetClientReservations(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (app *Application) GetSpecialistReservations(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func (app *Application) CreateSpecialist(w http.ResponseWriter, r *http.Request) {
 	var newSpecialist models.SpecialistRegister
 
@@ -182,4 +199,51 @@ func (app *Application) GetAllServices(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = app.writeJSON(w, http.StatusOK, services)
+}
+
+func (app *Application) RefreshToken(w http.ResponseWriter, r *http.Request) {
+	for _, cookie := range r.Cookies() {
+		if cookie.Name == app.Auth.CookieName {
+			claims := &auth.Claims{}
+			refreshToken := cookie.Value
+
+			// parse the token to get the claims
+			_, err := jwt.ParseWithClaims(refreshToken, claims, func(token *jwt.Token) (interface{}, error) {
+				return []byte(app.JWTSecret), nil
+			})
+
+			if err != nil {
+				_ = app.errorJSON(w, fmt.Errorf("błąd autoryzacji"), http.StatusUnauthorized)
+				return
+			}
+
+			// get userId from token claims
+			userId, err := strconv.Atoi(claims.Subject)
+			if err != nil {
+				_ = app.errorJSON(w, fmt.Errorf("nieznany użytkownik"), http.StatusUnauthorized)
+				return
+			}
+
+			user, err := app.DB.GetUserById(userId)
+			if err != nil {
+				_ = app.errorJSON(w, fmt.Errorf("nieznany użytkownik"), http.StatusUnauthorized)
+				return
+			}
+
+			tokenPairs, err := app.Auth.GenerateTokenPair(user)
+			if err != nil {
+				_ = app.errorJSON(w, fmt.Errorf("błąd generowania tokenu"), http.StatusUnauthorized)
+				return
+			}
+
+			http.SetCookie(w, app.Auth.GetRefreshCookie(tokenPairs.RefreshToken))
+
+			app.writeJSON(w, http.StatusOK, tokenPairs)
+		}
+	}
+}
+
+func (app *Application) Logout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, app.Auth.GetExpiredRefreshCookie())
+	w.WriteHeader(http.StatusAccepted)
 }

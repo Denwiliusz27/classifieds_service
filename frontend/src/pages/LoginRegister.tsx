@@ -1,6 +1,10 @@
-import {Link} from "react-router-dom";
+import {Link, Outlet, useOutletContext} from "react-router-dom";
+import React from "react";
+import {AuthContextType} from "../App";
 
 function LoginRegister() {
+    const { jwtToken, setJwtToken } = useOutletContext<AuthContextType>();
+
     return (
         <div
             className="overflow-hidden bg-cover bg-no-repeat text-center flex flex-col "
@@ -81,6 +85,12 @@ function LoginRegister() {
                     </div>
 
                 </div>
+            </div>
+
+            <div>
+                <Outlet context={{
+                    jwtToken, setJwtToken,
+                }}/>
             </div>
         </div>
 

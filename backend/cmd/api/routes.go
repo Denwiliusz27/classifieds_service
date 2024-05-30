@@ -15,14 +15,22 @@ func (app *Application) Routes() http.Handler {
 	mux.Get("/cities", app.GetAllCities)
 
 	mux.Route("/client", func(mux chi.Router) {
-		mux.Post("/register", app.CreateClient)
+		mux.Use(app.authRequired)
+		mux.Get("/reservations", app.GetClientReservations)
 	})
+
+	mux.Post("/register_client", app.CreateClient)
 
 	mux.Route("/specialist", func(mux chi.Router) {
-		mux.Post("/register", app.CreateSpecialist)
+		mux.Use(app.authRequired)
+		mux.Get("/reservations", app.GetSpecialistReservations)
 	})
 
-	mux.Get("/authenticate", app.Authenticate)
+	mux.Post("/register_specialist", app.CreateSpecialist)
+
+	mux.Post("/authenticate", app.Authenticate)
+	mux.Get("/refresh_token", app.RefreshToken)
+	mux.Get("/logout", app.Logout)
 
 	mux.Get("/specializations", app.GetAllSpecializations)
 
@@ -43,5 +51,17 @@ func (app *Application) enableCORS(h http.Handler) http.Handler {
 		} else {
 			h.ServeHTTP(w, r)
 		}
+	})
+}
+
+func (app *Application) authRequired(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _, err := app.Auth.GetTokenFromHeaderAndVerify(w, r)
+		if err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r)
 	})
 }

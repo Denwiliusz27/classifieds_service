@@ -290,7 +290,7 @@ function SpecialistRegister() {
                 headers: headers,
             }
 
-            fetch(`/specialist/register`, requestOptions)
+            fetch(`/register_specialist`, requestOptions)
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.error) {

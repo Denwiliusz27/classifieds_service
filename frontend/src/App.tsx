@@ -1,10 +1,95 @@
-import React from 'react';
-import {Link, Outlet} from "react-router-dom";
+import React, {useCallback, useEffect, useState} from 'react';
+import {Link, Outlet, useNavigate} from "react-router-dom";
+
+export interface AuthContextType {
+    jwtToken: string;
+    setJwtToken: React.Dispatch<React.SetStateAction<string>>;
+    userType: string;
+    setUserType: React.Dispatch<React.SetStateAction<string>>;
+    toggleRefresh: (status: boolean) => void;
+}
 
 function App() {
+    const [jwtToken, setJwtToken] = useState("")
+    const [userType, setUserType] = useState("")
+    const [tickInterval, setTickInterval] = useState<any>()
+
+    const navigate = useNavigate()
+
+    const logout = () => {
+        fetch(`/logout`, {
+            method: "GET",
+            credentials: 'include',
+        })
+            .catch((err) => {
+                console.log("Error logging out user", err)
+            })
+            .finally(() => {
+                setJwtToken("")
+                setUserType("")
+                toggleRefresh(false)
+            })
+
+        navigate("/wybor_konta")
+    }
+
+    const toggleRefresh = useCallback((status: boolean) => {
+        console.log("tick")
+
+        if (status) {
+            console.log("turning ticking")
+            let i = window.setInterval(() => {
+                fetch(`/refresh_token`, {
+                    method: "GET",
+                    credentials: 'include',
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.access_token) {
+                            console.log("Successfully refreshed token")
+                            setJwtToken(data.access_token)
+                        }
+                    })
+                    .catch((err) => {
+                        console.log("user isn't logged")
+                    })
+
+                console.log("will run per sec")
+            }, 600000)
+            setTickInterval(i)
+            console.log("setting interval to", i)
+        } else {
+            console.log("turning off ticking")
+            console.log("turning off tickInterval", tickInterval)
+            setTickInterval(null)
+            clearInterval(tickInterval)
+        }
+    }, [tickInterval])
+
+    useEffect(() => {
+        if (jwtToken === "") {
+            fetch(`/refresh_token`, {
+                method: "GET",
+                credentials: 'include',
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.access_token) {
+                        console.log("Successfully refreshed token")
+                        setJwtToken(data.access_token)
+                        toggleRefresh(true)
+                    }
+                })
+                .catch((err) => {
+                    console.log("user isn't logged", err)
+                })
+        }
+    }, [jwtToken, toggleRefresh])
+
     return (
         <>
-            <div className="flex flex-row sticky top-0 h-20 justify-center items-center bg-amber-900 text-white text-2xl font-medium">
+            <div
+                className="flex flex-row sticky top-0 h-20 justify-center items-center bg-amber-900 text-white text-2xl font-medium">
 
                 {/* Logo */}
                 <Link to="/" className="flex w-52 justify-center items-center hover:cursor-pointer">
@@ -23,43 +108,82 @@ function App() {
                 {/* Middle links */}
                 <div className="flex flex-1 justify-center items-center">
                     <div className="flex justify-center items-center space-x-4">
-                        <Link to="/wyszukaj"
-                            className="flex items-center p-6 drop-shadow-lg transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110 duration-300 ...">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                 stroke="currentColor" className="w-6 h-6 mx-2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                      d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
-                            </svg>
-                            <p className="drop-shadow-lg">wyszukaj</p>
-                        </Link>
 
-                        <div className="w-1 bg-white rounded-md h-10"></div>
+                        {userType !== "specialist" &&
+                            <Link to="/wyszukaj"
+                                  className="flex items-center p-6 drop-shadow-lg transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110 duration-300 ...">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     stroke-width="1.5"
+                                     stroke="currentColor" className="w-6 h-6 mx-2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+                                </svg>
+                                <p className="drop-shadow-lg">wyszukaj usługę</p>
+                            </Link>
+                        }
 
-                        <Link to="/klient/stworz_oferte"
-                            className="flex items-center p-6 drop-shadow-lg transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110 duration-300 ...">
-                            <p className="drop-shadow-lg">stwórz ofertę</p>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                 stroke="currentColor" className="w-6 h-6 mx-2">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                      d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
-                            </svg>
-                        </Link>
+                        {jwtToken !== "" && userType === "client" &&
+                            <>
+                                <div className="w-1 bg-white rounded-md h-10"></div>
+
+                                <Link to="/klient/stworz_oferte"
+                                      className="flex items-center p-6 drop-shadow-lg transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110 duration-300 ...">
+                                    <p className="drop-shadow-lg">stwórz ofertę</p>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                         stroke-width="1.5"
+                                         stroke="currentColor" className="w-6 h-6 mx-2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+                                    </svg>
+                                </Link>
+                            </>
+                        }
+
+                        {jwtToken !== "" && userType === "specialist" &&
+                            <>
+                                <Link to="/specjalista/oferty"
+                                      className="flex items-center p-6 drop-shadow-lg transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110 duration-300 ...">
+                                    <p className="drop-shadow-lg">przeglądaj oferty</p>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                         stroke-width="1.5"
+                                         stroke="currentColor" className="w-6 h-6 mx-2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+                                    </svg>
+                                </Link>
+                            </>
+                        }
                     </div>
                 </div>
 
                 {/* Login/Logout button */}
-                <Link to="/wybor_konta" className="flex w-52 justify-center items-center">
-                    <div className="border-2 border-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
-                        <span>zaloguj</span>
+                {jwtToken === "" ?
+                    <Link to="/wybor_konta" className="flex w-52 justify-center items-center">
+                        <div
+                            className="border-2 border-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
+                            <span>zaloguj</span>
+                        </div>
+                    </Link>
+                    :
+                    <div onClick={logout} className="flex w-52 justify-center items-center">
+                        <div
+                            className="border-2 border-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
+                            <span>wyloguj</span>
+                        </div>
                     </div>
-                </Link>
+                }
             </div>
 
             <div>
-                <Outlet />
+                <Outlet context={{
+                    jwtToken,
+                    setJwtToken,
+                    userType,
+                    setUserType,
+                    toggleRefresh,
+                }}/>
             </div>
         </>
-
     );
 }
 

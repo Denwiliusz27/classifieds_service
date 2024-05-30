@@ -28,6 +28,14 @@ const GetUserByEmailAndRole = `
 	    role = $2;
 `
 
+const GetUserById = `
+	SELECT * 
+	FROM
+	    users
+	WHERE 
+	    id = $1;
+`
+
 // --- CLIENTS ---
 
 const CreateClient = `

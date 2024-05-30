@@ -261,7 +261,7 @@ function ClientRegister() {
                 headers: headers,
             }
 
-            fetch(`/client/register`, requestOptions)
+            fetch(`/register_client`, requestOptions)
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.error) {

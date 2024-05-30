@@ -11,6 +11,7 @@ type DAL interface {
 
 	CreateUser(name string, secondName string, email string, password string, role string) (int, error)
 	GetUserByEmailAndRole(email string, role string) (*models.User, error)
+	GetUserById(id int) (*models.User, error)
 
 	CreateClient(userId int) (int, error)
 
