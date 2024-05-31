@@ -202,6 +202,9 @@ func (app *Application) GetAllServices(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Application) RefreshToken(w http.ResponseWriter, r *http.Request) {
+	log.Println("Got refresh request")
+	log.Println(r.Cookies())
+
 	for _, cookie := range r.Cookies() {
 		if cookie.Name == app.Auth.CookieName {
 			claims := &auth.Claims{}
@@ -235,6 +238,8 @@ func (app *Application) RefreshToken(w http.ResponseWriter, r *http.Request) {
 				_ = app.errorJSON(w, fmt.Errorf("błąd generowania tokenu"), http.StatusUnauthorized)
 				return
 			}
+
+			log.Println("Refreshed token: ", tokenPairs.Token)
 
 			http.SetCookie(w, app.Auth.GetRefreshCookie(tokenPairs.RefreshToken))
 

@@ -83,10 +83,12 @@ function ClientLogin() {
                         console.log("SUCCESSFULLY LOGGED IN")
                         setSuccessLogin(true)
                         document.body.style.cursor = "wait"
+                        console.log(data)
 
                         setTimeout(() => {
                             setJwtToken(data.access_token)
                             setUserType("client")
+
                             toggleRefresh(true)
                             document.body.style.cursor = "default"
 

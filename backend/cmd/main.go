@@ -35,7 +35,7 @@ func main() {
 		RefreshExpiry: time.Hour * 24,
 		CookieDomain:  app.CookieDomain,
 		CookiePath:    "/",
-		CookieName:    "__Host-refresh_token",
+		CookieName:    "refresh_token",
 	}
 
 	log.Println("Backend is starting on port", port)

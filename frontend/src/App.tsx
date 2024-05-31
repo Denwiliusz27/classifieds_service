@@ -19,7 +19,7 @@ function App() {
     const logout = () => {
         fetch(`/logout`, {
             method: "GET",
-            credentials: 'include',
+            credentials: "include",
         })
             .catch((err) => {
                 console.log("Error logging out user", err)
@@ -41,7 +41,7 @@ function App() {
             let i = window.setInterval(() => {
                 fetch(`/refresh_token`, {
                     method: "GET",
-                    credentials: 'include',
+                    credentials: "include",
                 })
                     .then((response) => response.json())
                     .then((data) => {
@@ -67,6 +67,8 @@ function App() {
     }, [tickInterval])
 
     useEffect(() => {
+        console.log("Refreshing token")
+        console.log("JWT: ", jwtToken)
         if (jwtToken === "") {
             fetch(`/refresh_token`, {
                 method: "GET",
@@ -75,7 +77,8 @@ function App() {
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.access_token) {
-                        console.log("Successfully refreshed token")
+                        console.log("Successfully refreshed token: ", data.access_token)
+                        console.log(data)
                         setJwtToken(data.access_token)
                         toggleRefresh(true)
                     }
