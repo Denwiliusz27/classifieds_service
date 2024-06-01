@@ -38,6 +38,9 @@ func (m *PG) GetClientByUserId(userId int) (*models.Client, error) {
 
 	err := row.Scan(
 		&client.Id,
+		&client.Name,
+		&client.SecondName,
+		&client.Email,
 		&client.UserId,
 	)
 

@@ -23,22 +23,9 @@ type Auth struct {
 type TokenPairs struct {
 	Token        string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
+	UserId       int    `json:"user_id"`
 	UserRole     string `json:"user_role"`
 }
-
-//type ClientTokenPairs struct {
-//	Token        string                `json:"access_token"`
-//	RefreshToken string                `json:"refresh_token"`
-//	UserRole     string                `json:"user_role"`
-//	Client       models.ClientResponse `json:"client"`
-//}
-//
-//type SpecialistTokenPairs struct {
-//	Token        string                `json:"access_token"`
-//	RefreshToken string                `json:"refresh_token"`
-//	UserRole     string                `json:"user_role"`
-//	Client       models.ClientResponse `json:"client"`
-//}
 
 type Claims struct {
 	jwt.RegisteredClaims
@@ -86,6 +73,7 @@ func (j *Auth) GenerateTokenPair(user *models.User) (TokenPairs, error) {
 	var tokenPairs = TokenPairs{
 		Token:        signedAccessToken,
 		RefreshToken: signedRefreshToken,
+		UserId:       user.Id,
 		UserRole:     user.Role,
 	}
 

@@ -17,14 +17,15 @@ func (app *Application) Routes() http.Handler {
 	mux.Route("/client", func(mux chi.Router) {
 		mux.Use(app.authRequired)
 		mux.Get("/reservations", app.GetClientReservations)
+		mux.Get("/info/{user_id}", app.GetClientInfoByUserId)
 	})
 
 	mux.Post("/register_client", app.CreateClient)
-	mux.Get("/client_details", app.GetClientDetails)
 
 	mux.Route("/specialist", func(mux chi.Router) {
 		mux.Use(app.authRequired)
 		mux.Get("/reservations", app.GetSpecialistReservations)
+		mux.Get("/info/{user_id}", app.GetSpecialistInfoByUserId)
 	})
 
 	mux.Post("/register_specialist", app.CreateSpecialist)
@@ -62,7 +63,6 @@ func (app *Application) authRequired(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-
 		next.ServeHTTP(w, r)
 	})
 }

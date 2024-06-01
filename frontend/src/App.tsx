@@ -1,5 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Link, Outlet, useNavigate} from "react-router-dom";
+import {Client} from "./models/Client";
+import {Specialist} from "./models/Specialist";
 
 export interface AuthContextType {
     jwtToken: string;
@@ -7,6 +9,7 @@ export interface AuthContextType {
     userRole: string;
     setUserRole: React.Dispatch<React.SetStateAction<string>>;
     toggleRefresh: (status: boolean) => void;
+    setName: React.Dispatch<React.SetStateAction<string>>;
 }
 
 function App() {
@@ -14,6 +17,7 @@ function App() {
     const [userRole, setUserRole] = useState("")
     const [tickInterval, setTickInterval] = useState<any>()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [name, setName] = useState("")
 
     const navigate = useNavigate()
     const menuRef = useRef<HTMLDivElement | null>(null);
@@ -31,10 +35,12 @@ function App() {
             .finally(() => {
                 setJwtToken("")
                 setUserRole("")
+                setIsMenuOpen(false)
                 toggleRefresh(false)
+                setName("")
+                sessionStorage.removeItem(userRole)
+                navigate("/wybor_konta")
             })
-
-        navigate("/wybor_konta")
     }
 
     const toggleRefresh = useCallback((status: boolean) => {
@@ -73,6 +79,8 @@ function App() {
 
     useEffect(() => {
         if (jwtToken === "") {
+            console.log("HI THERE")
+
             fetch(`/refresh_token`, {
                 method: "GET",
                 credentials: 'include',
@@ -188,21 +196,20 @@ function App() {
 
                 {/* CLIENT MENU */}
                 {jwtToken !== "" && userRole === "client" &&
-                    <div className={`flex w-52 h-full justify-center items-center text-center ${isMenuOpen ? 'border-t-4 border-x-4 border-amber-950': ''}`}>
+                    <div className={`flex w-52 h-full justify-center items-center text-center ${isMenuOpen ? 'border-t-4 border-x-4 border-amber-950': ''}`} ref={menuRef}>
                         <div id="menu"
-                             className="flex items-center justify-center w-32 top-0 right-2 text-white rounded cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 duration-300 ..."
-                             onClick={e => setIsMenuOpen(!isMenuOpen)}
-                             ref={menuRef}>
+                             className="flex items-center justify-center mx-5 top-0 right-2 text-white rounded cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 duration-300 ..."
+                             onClick={e => setIsMenuOpen(!isMenuOpen)}>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                             </svg>
-                            <p className="ml-2">open</p>
+                            <p className="ml-2">{name? name : "Konto"}</p>
                         </div>
                         <div className={`absolute w-52 top-20 flex flex-col items-center bg-amber-900  border-x-4 border-amber-950 shadow-lg transition-max-height duration-300 ease-out overflow-hidden ${isMenuOpen ? 'border-b-4 max-h-[600px]' : 'max-h-0'}`}>
                             <div className="bg-white rounded-md h-1 mb-6 w-2/3"></div>
 
                             <div className="flex flex-col items-center justify-items-center">
-                                <Link to="/klient/moje_oferty"
+                                <Link to="/klient/moje_oferty" onClick={e => setIsMenuOpen(false)}
                                       className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
                                     <p className="drop-shadow-lg mr-2 ">moje oferty</p>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
@@ -210,7 +217,7 @@ function App() {
                                     </svg>
                                 </Link>
 
-                                <Link to="/klient/rezerwacje"
+                                <Link to="/klient/rezerwacje" onClick={e => setIsMenuOpen(false)}
                                       className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
                                     <p className="drop-shadow-lg mr-2 ">moje rezerwacje</p>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
@@ -218,7 +225,7 @@ function App() {
                                     </svg>
                                 </Link>
 
-                                <Link to="/klient/czaty"
+                                <Link to="/klient/czaty" onClick={e => setIsMenuOpen(false)}
                                       className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
                                     <p className="drop-shadow-lg mr-2 ">czaty</p>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
@@ -226,7 +233,7 @@ function App() {
                                     </svg>
                                 </Link>
 
-                                <Link to="/klient/profil"
+                                <Link to="/klient/profil" onClick={e => setIsMenuOpen(false)}
                                       className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
                                     <p className="drop-shadow-lg mr-2 ">edytuj profil</p>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
@@ -249,21 +256,20 @@ function App() {
 
                 {/* SPECIALIST MENU */}
                 {jwtToken !== "" && userRole === "specialist" &&
-                    <div className={`flex w-52 h-full justify-center items-center text-center ${isMenuOpen ? 'border-t-4 border-x-4 border-amber-950': ''}`}>
+                    <div className={`flex w-52 h-full justify-center items-center text-center ${isMenuOpen ? 'border-t-4 border-x-4 border-amber-950': ''}`} ref={menuRef}>
                         <div id="menu"
-                             className="flex items-center justify-center w-32 top-0 right-2 text-white rounded cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 duration-300 ..."
-                             onClick={e => setIsMenuOpen(!isMenuOpen)}
-                             ref={menuRef}>
+                             className="flex items-center justify-center mx-5 top-0 right-2 text-white rounded cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 duration-300 ..."
+                             onClick={e => setIsMenuOpen(!isMenuOpen)}>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                             </svg>
-                            <p className="ml-2">open</p>
+                            <p className="ml-2">{name? name : "Konto"}</p>
                         </div>
                         <div className={`absolute w-52 top-20 flex flex-col items-center bg-amber-900  border-x-4 border-amber-950 shadow-lg transition-max-height duration-300 ease-out overflow-hidden ${isMenuOpen ? 'border-b-4 max-h-[600px]' : 'max-h-0'}`}>
                             <div className="bg-white rounded-md h-1 mb-6 w-2/3"></div>
 
                             <div className="flex flex-col items-center justify-items-center">
-                                <Link to="/specjalista/rezerwacje"
+                                <Link to="/specjalista/rezerwacje" onClick={e => setIsMenuOpen(false)}
                                       className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
                                     <p className="drop-shadow-lg mr-2 ">moje rezerwacje</p>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
@@ -271,7 +277,7 @@ function App() {
                                     </svg>
                                 </Link>
 
-                                <Link to="/specjalista/czaty"
+                                <Link to="/specjalista/czaty" onClick={e => setIsMenuOpen(false)}
                                       className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
                                     <p className="drop-shadow-lg mr-2 ">czaty</p>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
@@ -279,7 +285,7 @@ function App() {
                                     </svg>
                                 </Link>
 
-                                <Link to="/specjalista/profil"
+                                <Link to="/specjalista/profil" onClick={e => setIsMenuOpen(false)}
                                       className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
                                     <p className="drop-shadow-lg mr-2 ">edytuj profil</p>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
@@ -307,9 +313,10 @@ function App() {
                 <Outlet context={{
                     jwtToken,
                     setJwtToken,
-                    userType: userRole,
-                    setUserRole: setUserRole,
+                    userRole,
+                    setUserRole,
                     toggleRefresh,
+                    setName,
                 }}/>
             </div>
         </>

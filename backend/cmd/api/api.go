@@ -5,6 +5,7 @@ import (
 	"backend/internal/dal"
 	"backend/internal/models"
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt/v4"
 	"log"
 	"net/http"
@@ -66,31 +67,6 @@ func (app *Application) Authenticate(w http.ResponseWriter, r *http.Request) {
 	userRoleCookie := app.Auth.GetUserRoleCookie(user.Role)
 	http.SetCookie(w, userRoleCookie)
 
-	//if user.Role == "client" {
-	//	client, err := app.DB.GetClientByUserId(user.Id)
-	//	if err != nil {
-	//		_ = app.errorJSON(w, fmt.Errorf("klient nie istnieje: %v", err), http.StatusBadRequest)
-	//	}
-	//
-	//	clientResponse := models.ClientResponse{
-	//		Id:         client.Id,
-	//		Name:       user.Name,
-	//		SecondName: user.SecondName,
-	//		UserId:     user.Id,
-	//	}
-	//
-	//	resp := auth.ClientTokenPairs{
-	//		Token:        tokens.Token,
-	//		RefreshToken: tokens.RefreshToken,
-	//		UserRole:     "client",
-	//		Client:       clientResponse,
-	//	}
-	//
-	//	_ = app.writeJSON(w, http.StatusAccepted, resp)
-	//} else {
-	//
-	//}
-
 	app.writeJSON(w, http.StatusAccepted, tokens)
 }
 
@@ -150,8 +126,21 @@ func (app *Application) CreateClient(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, clientId)
 }
 
-func (app *Application) GetClientDetails(w http.ResponseWriter, r *http.Request) {
+func (app *Application) GetClientInfoByUserId(w http.ResponseWriter, r *http.Request) {
+	userId, err := strconv.Atoi(chi.URLParam(r, "user_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
 
+	client, err := app.DB.GetClientByUserId(userId)
+	if err != nil {
+		fmt.Println("error getting Client by user_id from db: ", err)
+		_ = app.errorJSON(w, err)
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, client)
 }
 
 func (app *Application) GetClientReservations(w http.ResponseWriter, r *http.Request) {
@@ -205,6 +194,23 @@ func (app *Application) CreateSpecialist(w http.ResponseWriter, r *http.Request)
 	}
 
 	_ = app.writeJSON(w, http.StatusOK, specialistId)
+}
+
+func (app *Application) GetSpecialistInfoByUserId(w http.ResponseWriter, r *http.Request) {
+	userId, err := strconv.Atoi(chi.URLParam(r, "user_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	specialist, err := app.DB.GetSpecialistByUserId(userId)
+	if err != nil {
+		fmt.Println("error getting Specialist by user_id from db: ", err)
+		_ = app.errorJSON(w, err)
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, specialist)
 }
 
 func (app *Application) GetAllSpecializations(w http.ResponseWriter, r *http.Request) {

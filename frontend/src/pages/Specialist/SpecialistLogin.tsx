@@ -5,6 +5,8 @@ import Swal from "sweetalert2";
 import {useNavigate, useOutletContext} from "react-router-dom";
 import {AuthContextType} from "../../App";
 import {createPortal} from "react-dom";
+import {Client} from "../../models/Client";
+import {Specialist} from "../../models/Specialist";
 
 function SpecialistLogin() {
     const [user, setUser] = useState<UserLogin>({
@@ -14,12 +16,11 @@ function SpecialistLogin() {
     })
     const [emailError, setEmailError] = useState("")
     const [passwordError, setPasswordError] = useState("")
-
     const [errorMsg, setErrorMsg] = useState("")
     const [successLogin, setSuccessLogin] = useState(false)
     const [showErrorMsg, setShowErrorMsg] = useState(false)
 
-    const { setJwtToken, setUserRole, toggleRefresh} = useOutletContext<AuthContextType>();
+    const {setJwtToken, setUserRole, toggleRefresh, setName} = useOutletContext<AuthContextType>();
     const navigate = useNavigate()
 
     const handleEmailChange = (event: React.FormEvent<HTMLInputElement>) => {
@@ -82,6 +83,31 @@ function SpecialistLogin() {
                         })
                     } else {
                         console.log("SUCCESSFULLY LOGGED IN")
+                        headers.append("Authorization", "Bearer " + data.access_token)
+
+                        fetch(`/specialist/info/${data.user_id}`, {
+                            method: "GET",
+                            headers: headers,
+                            credentials: 'include'
+                        }).then((response) => response.json())
+                            .then((data) => {
+                                console.log(data)
+
+                                const specialist: Specialist = {
+                                    Id: data.id,
+                                    Name: data.name,
+                                    SecondName: data.second_name,
+                                    Email: data.email,
+                                    Description: data.description,
+                                    PhoneNr: data.phone_nr,
+                                    SpecializationId: data.specialization_id,
+                                    CityId: data.city_id,
+                                    UserId: data.user_id
+                                }
+                                sessionStorage.setItem("specialist", JSON.stringify(specialist))
+                                setName(data.name)
+                            })
+
                         setSuccessLogin(true)
                         document.body.style.cursor = "wait"
 
