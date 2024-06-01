@@ -47,6 +47,14 @@ const CreateClient = `
 	RETURNING id;
 `
 
+const GetClientByUserId = `
+	SELECT *
+	FROM
+	    clients
+	WHERE
+	    user_id = $1;
+`
+
 // --- CLIENTS_ADDRESSES ---
 
 const CreateClientAddress = `

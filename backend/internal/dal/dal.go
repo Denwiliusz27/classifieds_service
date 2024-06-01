@@ -14,6 +14,7 @@ type DAL interface {
 	GetUserById(id int) (*models.User, error)
 
 	CreateClient(userId int) (int, error)
+	GetClientByUserId(userId int) (*models.Client, error)
 
 	CreateClientAddress(address models.ClientAddresses, clientId int) (int, error)
 

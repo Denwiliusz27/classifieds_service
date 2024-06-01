@@ -19,9 +19,8 @@ function SpecialistLogin() {
     const [successLogin, setSuccessLogin] = useState(false)
     const [showErrorMsg, setShowErrorMsg] = useState(false)
 
-    const {jwtToken, setJwtToken, userType, setUserType, toggleRefresh} = useOutletContext<AuthContextType>();
+    const { setJwtToken, setUserRole, toggleRefresh} = useOutletContext<AuthContextType>();
     const navigate = useNavigate()
-
 
     const handleEmailChange = (event: React.FormEvent<HTMLInputElement>) => {
         setUser({
@@ -88,7 +87,7 @@ function SpecialistLogin() {
 
                         setTimeout(() => {
                             setJwtToken(data.access_token)
-                            setUserType("specialist")
+                            setUserRole(data.user_role)
                             toggleRefresh(true)
                             document.body.style.cursor = "default"
 

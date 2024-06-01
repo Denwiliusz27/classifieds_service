@@ -20,6 +20,7 @@ func (app *Application) Routes() http.Handler {
 	})
 
 	mux.Post("/register_client", app.CreateClient)
+	mux.Get("/client_details", app.GetClientDetails)
 
 	mux.Route("/specialist", func(mux chi.Router) {
 		mux.Use(app.authRequired)

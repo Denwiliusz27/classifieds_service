@@ -18,7 +18,7 @@ function ClientLogin() {
     const [successLogin, setSuccessLogin] = useState(false)
     const [showErrorMsg, setShowErrorMsg] = useState(false)
 
-    const {jwtToken, setJwtToken, userType, setUserType, toggleRefresh} = useOutletContext<AuthContextType>();
+    const {setJwtToken, setUserRole, toggleRefresh} = useOutletContext<AuthContextType>();
     const navigate = useNavigate()
 
     const handleEmailChange = (event: React.FormEvent<HTMLInputElement>) => {
@@ -81,13 +81,23 @@ function ClientLogin() {
                         })
                     } else {
                         console.log("SUCCESSFULLY LOGGED IN")
+
+
+
+
+
                         setSuccessLogin(true)
                         document.body.style.cursor = "wait"
                         console.log(data)
 
+
+
+
                         setTimeout(() => {
                             setJwtToken(data.access_token)
-                            setUserType("client")
+                            setUserRole(data.user_role)
+
+
 
                             toggleRefresh(true)
                             document.body.style.cursor = "default"

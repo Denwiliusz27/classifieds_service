@@ -63,6 +63,34 @@ func (app *Application) Authenticate(w http.ResponseWriter, r *http.Request) {
 	refreshCookie := app.Auth.GetRefreshCookie(tokens.RefreshToken)
 	http.SetCookie(w, refreshCookie)
 
+	userRoleCookie := app.Auth.GetUserRoleCookie(user.Role)
+	http.SetCookie(w, userRoleCookie)
+
+	//if user.Role == "client" {
+	//	client, err := app.DB.GetClientByUserId(user.Id)
+	//	if err != nil {
+	//		_ = app.errorJSON(w, fmt.Errorf("klient nie istnieje: %v", err), http.StatusBadRequest)
+	//	}
+	//
+	//	clientResponse := models.ClientResponse{
+	//		Id:         client.Id,
+	//		Name:       user.Name,
+	//		SecondName: user.SecondName,
+	//		UserId:     user.Id,
+	//	}
+	//
+	//	resp := auth.ClientTokenPairs{
+	//		Token:        tokens.Token,
+	//		RefreshToken: tokens.RefreshToken,
+	//		UserRole:     "client",
+	//		Client:       clientResponse,
+	//	}
+	//
+	//	_ = app.writeJSON(w, http.StatusAccepted, resp)
+	//} else {
+	//
+	//}
+
 	app.writeJSON(w, http.StatusAccepted, tokens)
 }
 
@@ -120,6 +148,10 @@ func (app *Application) CreateClient(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = app.writeJSON(w, http.StatusOK, clientId)
+}
+
+func (app *Application) GetClientDetails(w http.ResponseWriter, r *http.Request) {
+
 }
 
 func (app *Application) GetClientReservations(w http.ResponseWriter, r *http.Request) {
@@ -202,9 +234,7 @@ func (app *Application) GetAllServices(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Application) RefreshToken(w http.ResponseWriter, r *http.Request) {
-	log.Println("Got refresh request")
-	log.Println(r.Cookies())
-
+	log.Println("Got cookies: ", r.Cookies())
 	for _, cookie := range r.Cookies() {
 		if cookie.Name == app.Auth.CookieName {
 			claims := &auth.Claims{}
@@ -244,11 +274,19 @@ func (app *Application) RefreshToken(w http.ResponseWriter, r *http.Request) {
 			http.SetCookie(w, app.Auth.GetRefreshCookie(tokenPairs.RefreshToken))
 
 			app.writeJSON(w, http.StatusOK, tokenPairs)
+		} else if cookie.Name == "user_role" {
+			http.SetCookie(w, app.Auth.GetUserRoleCookie(cookie.Value))
 		}
 	}
 }
 
 func (app *Application) Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, app.Auth.GetExpiredRefreshCookie())
+
+	for _, cookie := range r.Cookies() {
+		if cookie.Name != app.Auth.CookieName {
+			http.SetCookie(w, app.Auth.GetExpiredUserRoleCookie(cookie.Name))
+		}
+	}
 	w.WriteHeader(http.StatusAccepted)
 }

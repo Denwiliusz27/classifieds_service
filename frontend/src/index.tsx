@@ -14,6 +14,10 @@ import ClientRegister from "./pages/Client/ClientRegister";
 import SpecialistLogin from "./pages/Specialist/SpecialistLogin";
 import SpecialistRegister from "./pages/Specialist/SpecialistRegister";
 import SpecialistSearchOffers from "./pages/Specialist/SpecialistSearchOffers";
+import ClientOffers from "./pages/Client/ClientOffers";
+import ClientReservations from "./pages/Client/ClientReservations";
+import ClientChats from "./pages/Client/ClientChats";
+import ClientEditProfile from "./pages/Client/ClientEditProfile";
 
 const router = createBrowserRouter([
     {
@@ -30,18 +34,38 @@ const router = createBrowserRouter([
                 path: "/wyszukaj",
                 element: <SearchSpecialists />,
             },
-            {
-                path: "/klient/stworz_oferte",
-                element: <CreateOffer />,
-            },
+
+            /// ------------ CLIENT ------------
             {
                 path: "/klient/login",
                 element: <ClientLogin />,
             },
             {
+                path: "/klient/stworz_oferte",
+                element: <CreateOffer />,
+            },
+            {
                 path: "/klient/rejestracja",
                 element: <ClientRegister />,
             },
+            {
+                path: "/klient/moje_oferty",
+                element: <ClientOffers />,
+            },
+            {
+                path: "/klient/rezerwacje",
+                element: <ClientReservations/>,
+            },
+            {
+                path: "/klient/czaty",
+                element: <ClientChats/>,
+            },
+            {
+                path: "/klient/profil",
+                element: <ClientEditProfile/>,
+            },
+
+            /// ------------ SPECIALIST ------------
             {
                 path: "/specjalista/login",
                 element: <SpecialistLogin />,

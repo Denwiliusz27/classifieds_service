@@ -23,7 +23,22 @@ type Auth struct {
 type TokenPairs struct {
 	Token        string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
+	UserRole     string `json:"user_role"`
 }
+
+//type ClientTokenPairs struct {
+//	Token        string                `json:"access_token"`
+//	RefreshToken string                `json:"refresh_token"`
+//	UserRole     string                `json:"user_role"`
+//	Client       models.ClientResponse `json:"client"`
+//}
+//
+//type SpecialistTokenPairs struct {
+//	Token        string                `json:"access_token"`
+//	RefreshToken string                `json:"refresh_token"`
+//	UserRole     string                `json:"user_role"`
+//	Client       models.ClientResponse `json:"client"`
+//}
 
 type Claims struct {
 	jwt.RegisteredClaims
@@ -71,6 +86,7 @@ func (j *Auth) GenerateTokenPair(user *models.User) (TokenPairs, error) {
 	var tokenPairs = TokenPairs{
 		Token:        signedAccessToken,
 		RefreshToken: signedRefreshToken,
+		UserRole:     user.Role,
 	}
 
 	// Return TokenPairs
@@ -96,6 +112,34 @@ func (j *Auth) GetExpiredRefreshCookie() *http.Cookie {
 	return &http.Cookie{
 		Name:     j.CookieName,
 		Value:    "refreshToken",
+		Path:     j.CookiePath,
+		Domain:   j.CookieDomain,
+		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+	}
+}
+
+func (j *Auth) GetUserRoleCookie(userRole string) *http.Cookie {
+	return &http.Cookie{
+		Name:     "user_role",
+		Value:    userRole,
+		Path:     j.CookiePath,
+		Domain:   j.CookieDomain,
+		Expires:  time.Now().Add(j.RefreshExpiry),
+		MaxAge:   int(j.RefreshExpiry.Seconds()),
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+	}
+}
+
+func (j *Auth) GetExpiredUserRoleCookie(name string) *http.Cookie {
+	return &http.Cookie{
+		Name:     name,
+		Value:    "userRole",
 		Path:     j.CookiePath,
 		Domain:   j.CookieDomain,
 		Expires:  time.Unix(0, 0),
