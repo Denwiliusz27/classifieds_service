@@ -247,6 +247,58 @@ function App() {
                     </div>
                 }
 
+                {/* SPECIALIST MENU */}
+                {jwtToken !== "" && userRole === "specialist" &&
+                    <div className={`flex w-52 h-full justify-center items-center text-center ${isMenuOpen ? 'border-t-4 border-x-4 border-amber-950': ''}`}>
+                        <div id="menu"
+                             className="flex items-center justify-center w-32 top-0 right-2 text-white rounded cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 duration-300 ..."
+                             onClick={e => setIsMenuOpen(!isMenuOpen)}
+                             ref={menuRef}>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                            <p className="ml-2">open</p>
+                        </div>
+                        <div className={`absolute w-52 top-20 flex flex-col items-center bg-amber-900  border-x-4 border-amber-950 shadow-lg transition-max-height duration-300 ease-out overflow-hidden ${isMenuOpen ? 'border-b-4 max-h-[600px]' : 'max-h-0'}`}>
+                            <div className="bg-white rounded-md h-1 mb-6 w-2/3"></div>
+
+                            <div className="flex flex-col items-center justify-items-center">
+                                <Link to="/specjalista/rezerwacje"
+                                      className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
+                                    <p className="drop-shadow-lg mr-2 ">moje rezerwacje</p>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                                    </svg>
+                                </Link>
+
+                                <Link to="/specjalista/czaty"
+                                      className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
+                                    <p className="drop-shadow-lg mr-2 ">czaty</p>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                                    </svg>
+                                </Link>
+
+                                <Link to="/specjalista/profil"
+                                      className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
+                                    <p className="drop-shadow-lg mr-2 ">edytuj profil</p>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                    </svg>
+                                </Link>
+                            </div>
+
+                            <div className="bg-white rounded-md h-1 my-6 w-2/3"></div>
+
+                            <div onClick={logout} className="flex w-52 justify-center items-center pb-4">
+                                <div
+                                    className="flex items-center justify-center w-32 top-0 right-2 text-white rounded cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
+                                    <span>wyloguj</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
 
 
             </div>

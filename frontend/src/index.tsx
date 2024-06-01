@@ -18,6 +18,9 @@ import ClientOffers from "./pages/Client/ClientOffers";
 import ClientReservations from "./pages/Client/ClientReservations";
 import ClientChats from "./pages/Client/ClientChats";
 import ClientEditProfile from "./pages/Client/ClientEditProfile";
+import SpecialistReservations from "./pages/Specialist/SpecialistReservations";
+import SpecialistChats from "./pages/Specialist/SpecialistChats";
+import SpecialistEditProfile from "./pages/Specialist/SpecialistEditProfile";
 
 const router = createBrowserRouter([
     {
@@ -81,6 +84,18 @@ const router = createBrowserRouter([
             {
                 path: "/specjalista/oferty",
                 element: <SpecialistSearchOffers />,
+            },
+            {
+                path: "/specjalista/rezerwacje",
+                element: <SpecialistReservations />,
+            },
+            {
+                path: "/specjalista/czaty",
+                element: <SpecialistChats />,
+            },
+            {
+                path: "/specjalista/profil",
+                element: <SpecialistEditProfile />,
             },
         ]
     }
