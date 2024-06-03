@@ -6,7 +6,7 @@ import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Error from "./pages/Error";
 import ClientHome from "./pages/Client/ClientHome";
 import SearchSpecialists from "./pages/SearchSpecialists";
-import CreateOffer from "./pages/Client/CreateOffer";
+import ClientCreateOffer from "./pages/Client/ClientCreateOffer";
 import LoginRegister from "./pages/LoginRegister";
 import SpecialistHome from "./pages/Specialist/SpecialistHome";
 import ClientLogin from "./pages/Client/ClientLogin";
@@ -45,7 +45,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "/klient/stworz_oferte",
-                element: <CreateOffer />,
+                element: <ClientCreateOffer />,
             },
             {
                 path: "/klient/rejestracja",

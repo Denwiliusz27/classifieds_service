@@ -2,7 +2,7 @@ import {useNavigate, useOutletContext} from "react-router-dom";
 import {AuthContextType} from "../../App";
 import {useEffect} from "react";
 
-function ClientEditProfile() {
+function ClientCreateOffer() {
     const {jwtToken, userRole} = useOutletContext<AuthContextType>();
 
     const navigate = useNavigate()
@@ -16,9 +16,9 @@ function ClientEditProfile() {
 
     return(
         <>
-            <p>Client edit profile</p>
+            <p>Here you can create offers</p>
         </>
     )
 }
 
-export default ClientEditProfile
+export default ClientCreateOffer;

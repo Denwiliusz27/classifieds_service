@@ -1,9 +1,23 @@
-import {Link, Outlet, useOutletContext} from "react-router-dom";
-import React from "react";
+import {Link, Outlet, useNavigate, useOutletContext} from "react-router-dom";
+import React, {useEffect} from "react";
 import {AuthContextType} from "../App";
 
 function LoginRegister() {
-    const { jwtToken, setJwtToken } = useOutletContext<AuthContextType>();
+    const { jwtToken, userRole, setJwtToken } = useOutletContext<AuthContextType>();
+
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (jwtToken !== "") {
+            if (userRole === "specialist") {
+                navigate("/specjalista/strona_glowna")
+                return
+            } else if (userRole === "client") {
+                navigate("/")
+                return
+            }
+        }
+    }, [jwtToken, userRole, navigate])
 
     return (
         <div

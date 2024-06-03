@@ -1,11 +1,10 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Input from "../../components/form/Input";
 import {UserLogin} from "../../models/UserLogin";
 import Swal from "sweetalert2";
 import {useNavigate, useOutletContext} from "react-router-dom";
 import {AuthContextType} from "../../App";
 import {createPortal} from "react-dom";
-import {Client} from "../../models/Client";
 import {Specialist} from "../../models/Specialist";
 
 function SpecialistLogin() {
@@ -20,8 +19,20 @@ function SpecialistLogin() {
     const [successLogin, setSuccessLogin] = useState(false)
     const [showErrorMsg, setShowErrorMsg] = useState(false)
 
-    const {setJwtToken, setUserRole, toggleRefresh, setName} = useOutletContext<AuthContextType>();
+    const {jwtToken, setJwtToken, userRole, setUserRole, toggleRefresh, setName} = useOutletContext<AuthContextType>();
     const navigate = useNavigate()
+
+    useEffect(() => {
+        if (jwtToken !== "") {
+            if (userRole === "specialist") {
+                navigate("/specjalista/strona_glowna")
+                return
+            } else if (userRole === "client") {
+                navigate("/")
+                return
+            }
+        }
+    }, [jwtToken, userRole, navigate])
 
     const handleEmailChange = (event: React.FormEvent<HTMLInputElement>) => {
         setUser({

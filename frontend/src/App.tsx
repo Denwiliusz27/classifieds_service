@@ -1,7 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Link, Outlet, useNavigate} from "react-router-dom";
-import {Client} from "./models/Client";
-import {Specialist} from "./models/Specialist";
 
 export interface AuthContextType {
     jwtToken: string;
@@ -92,6 +90,12 @@ function App() {
                         console.log("role: ", data.user_role)
                         setJwtToken(data.access_token)
                         setUserRole(data.user_role)
+                        if (!name) {
+                            const user = sessionStorage.getItem(data.user_role)
+                            if (user) {
+                                setName(JSON.parse(user).Name)
+                            }
+                        }
                         toggleRefresh(true)
                     }
                 })
@@ -99,7 +103,7 @@ function App() {
                     console.log("user isn't logged", err)
                 })
         }
-    }, [jwtToken, userRole, toggleRefresh])
+    }, [jwtToken, userRole, toggleRefresh, name])
 
     const handleClickOutside = (event: MouseEvent) => {
         if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
