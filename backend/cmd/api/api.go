@@ -67,7 +67,7 @@ func (app *Application) Authenticate(w http.ResponseWriter, r *http.Request) {
 	userRoleCookie := app.Auth.GetUserRoleCookie(user.Role)
 	http.SetCookie(w, userRoleCookie)
 
-	app.writeJSON(w, http.StatusAccepted, tokens)
+	_ = app.writeJSON(w, http.StatusAccepted, tokens)
 }
 
 func (app *Application) GetAllCities(w http.ResponseWriter, r *http.Request) {
@@ -138,6 +138,7 @@ func (app *Application) GetClientInfoByUserId(w http.ResponseWriter, r *http.Req
 	if err != nil {
 		fmt.Println("error getting Client by user_id from db: ", err)
 		_ = app.errorJSON(w, err)
+		return
 	}
 
 	_ = app.writeJSON(w, http.StatusOK, client)
@@ -164,7 +165,6 @@ func (app *Application) CreateSpecialist(w http.ResponseWriter, r *http.Request)
 
 	client, err := app.DB.GetUserByEmailAndRole(newSpecialist.Email, "specialist")
 	if client != nil {
-		log.Println("error: ", err)
 		log.Println("User with email '", newSpecialist.Email, "' already exists")
 		_ = app.errorJSON(w, fmt.Errorf("specjalista o adresie email '%s' już istnieje", newSpecialist.Email), http.StatusFound)
 		return
@@ -208,6 +208,7 @@ func (app *Application) GetSpecialistInfoByUserId(w http.ResponseWriter, r *http
 	if err != nil {
 		fmt.Println("error getting Specialist by user_id from db: ", err)
 		_ = app.errorJSON(w, err)
+		return
 	}
 
 	_ = app.writeJSON(w, http.StatusOK, specialist)

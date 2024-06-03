@@ -5,6 +5,7 @@ import (
 	"backend/internal/models"
 	"context"
 	"fmt"
+	"log"
 )
 
 func (m *PG) GetSpecializations() ([]models.Specialization, error) {
@@ -35,6 +36,8 @@ func (m *PG) GetSpecializations() ([]models.Specialization, error) {
 
 		specializations = append(specializations, specialization)
 	}
+
+	log.Println("Successfully retrieved Specializations")
 
 	return specializations, nil
 }

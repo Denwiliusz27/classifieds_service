@@ -54,6 +54,8 @@ func (m *PG) GetUserByEmailAndRole(email string, role string) (*models.User, err
 		return nil, fmt.Errorf("error getting User: %w", err)
 	}
 
+	log.Println("Successfully retrieved User by email and role")
+
 	return &user, nil
 }
 
@@ -78,6 +80,8 @@ func (m *PG) GetUserById(id int) (*models.User, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error getting User: %w", err)
 	}
+
+	log.Println("Successfully retrieved User by id")
 
 	return &user, nil
 }

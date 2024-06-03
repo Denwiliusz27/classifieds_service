@@ -102,8 +102,6 @@ function ClientLogin() {
                             credentials: 'include'
                         }).then((response) => response.json())
                             .then((data) => {
-                                console.log(data)
-
                                 const client: Client = {
                                     Id: data.id,
                                     Name: data.name,
@@ -118,7 +116,6 @@ function ClientLogin() {
 
                         setSuccessLogin(true)
                         document.body.style.cursor = "wait"
-                        console.log(data)
 
                         setTimeout(() => {
                             setJwtToken(data.access_token)

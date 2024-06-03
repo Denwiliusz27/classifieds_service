@@ -22,7 +22,6 @@ function App() {
 
     const logout = () => {
         console.log("LOGOUT")
-
         fetch(`/logout`, {
             method: "GET",
             credentials: "include",
@@ -42,10 +41,7 @@ function App() {
     }
 
     const toggleRefresh = useCallback((status: boolean) => {
-        console.log("tick")
-
         if (status) {
-            console.log("turning ticking")
             let i = window.setInterval(() => {
                 fetch(`/refresh_token`, {
                     method: "GET",
@@ -54,7 +50,7 @@ function App() {
                     .then((response) => response.json())
                     .then((data) => {
                         if (data.access_token) {
-                            console.log("Successfully refreshed token")
+                            console.log("Refreshed Token")
                             setJwtToken(data.access_token)
                             setUserRole(data.user_role)
                         }
@@ -62,23 +58,17 @@ function App() {
                     .catch((err) => {
                         console.log("user isn't logged")
                     })
-
-                console.log("will run per sec")
             }, 600000)
             setTickInterval(i)
-            console.log("setting interval to", i)
         } else {
-            console.log("turning off ticking")
-            console.log("turning off tickInterval", tickInterval)
             setTickInterval(null)
             clearInterval(tickInterval)
         }
     }, [tickInterval])
 
     useEffect(() => {
+        console.log("Refreshing App")
         if (jwtToken === "") {
-            console.log("HI THERE")
-
             fetch(`/refresh_token`, {
                 method: "GET",
                 credentials: 'include',
@@ -87,7 +77,6 @@ function App() {
                 .then((data) => {
                     if (data.access_token) {
                         console.log("Successfully refreshed token: ", data.access_token)
-                        console.log("role: ", data.user_role)
                         setJwtToken(data.access_token)
                         setUserRole(data.user_role)
                         if (!name) {
@@ -309,7 +298,6 @@ function App() {
                         </div>
                     </div>
                 }
-
 
             </div>
 

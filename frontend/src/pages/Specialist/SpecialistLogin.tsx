@@ -102,8 +102,6 @@ function SpecialistLogin() {
                             credentials: 'include'
                         }).then((response) => response.json())
                             .then((data) => {
-                                console.log(data)
-
                                 const specialist: Specialist = {
                                     Id: data.id,
                                     Name: data.name,

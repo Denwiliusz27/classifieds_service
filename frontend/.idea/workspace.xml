@@ -7,23 +7,9 @@
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientChats.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientChats.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientEditProfile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientEditProfile.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientHome.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientHome.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientLogin.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientLogin.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientOffers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientOffers.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientReservations.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientReservations.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Client/CreateOffer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientCreateOffer.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/LoginRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/LoginRegister.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/SearchSpecialists.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/SearchSpecialists.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistChats.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistChats.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistEditProfile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistEditProfile.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistHome.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistHome.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistLogin.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistLogin.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistReservations.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistReservations.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistSearchOffers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistSearchOffers.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,7 +129,7 @@
       <workItem from="1717181557398" duration="7831000" />
       <workItem from="1717230783552" duration="18575000" />
       <workItem from="1717434448795" duration="1537000" />
-      <workItem from="1717436013754" duration="4013000" />
+      <workItem from="1717436013754" duration="6490000" />
     </task>
     <servers />
   </component>
