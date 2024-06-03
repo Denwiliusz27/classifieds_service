@@ -4,9 +4,10 @@ import Select from "../../components/form/Select";
 import {City} from "../../models/City";
 import Swal from "sweetalert2";
 import {createPortal} from "react-dom";
-import {Link} from "react-router-dom";
+import {Link, useNavigate, useOutletContext} from "react-router-dom";
 import {ClientRequest} from "../../models/ClientRequest";
 import {ClientAddress} from "../../models/ClientAddress";
+import {AuthContextType} from "../../App";
 
 
 function ClientRegister() {
@@ -35,6 +36,21 @@ function ClientRegister() {
     const [showSuccessMsg, setShowSuccessMsg] = useState(false)
     const [showErrorMsg, setShowErrorMsg] = useState(false)
     const [errorMsg, setErrorMsg] = useState("")
+
+    const {jwtToken, userRole} = useOutletContext<AuthContextType>();
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (jwtToken !== "") {
+            if (userRole === "specialist") {
+                navigate("/specjalista/strona_glowna")
+                return
+            } else if (userRole === "client") {
+                navigate("/")
+                return
+            }
+        }
+    }, [jwtToken, userRole, navigate])
 
     useEffect(() => {
         const headers = new Headers()
@@ -261,7 +277,7 @@ function ClientRegister() {
                 headers: headers,
             }
 
-            fetch(`/client/register`, requestOptions)
+            fetch(`/register_client`, requestOptions)
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.error) {

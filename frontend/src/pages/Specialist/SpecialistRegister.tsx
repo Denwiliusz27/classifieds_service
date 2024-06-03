@@ -6,8 +6,9 @@ import Swal from "sweetalert2";
 import 'react-international-phone/style.css';
 import {Service, Specialization} from "../../models/Specialization";
 import {createPortal} from "react-dom";
-import {Link} from "react-router-dom";
+import {Link, useNavigate, useOutletContext} from "react-router-dom";
 import {SpecialistRequest, SpecialistService} from "../../models/SpecialistRequest";
+import {AuthContextType} from "../../App";
 
 
 function SpecialistRegister() {
@@ -43,6 +44,20 @@ function SpecialistRegister() {
     const [errorMsg, setErrorMsg] = useState("")
     const [showSuccessMsg, setShowSuccessMsg] = useState(false)
 
+    const {jwtToken, userRole} = useOutletContext<AuthContextType>();
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (jwtToken !== "") {
+            if (userRole === "specialist") {
+                navigate("/specjalista/strona_glowna")
+                return
+            } else if (userRole === "client") {
+                navigate("/")
+                return
+            }
+        }
+    }, [jwtToken, userRole, navigate])
 
     useEffect(() => {
         const headers = new Headers()
@@ -290,7 +305,7 @@ function SpecialistRegister() {
                 headers: headers,
             }
 
-            fetch(`/specialist/register`, requestOptions)
+            fetch(`/register_specialist`, requestOptions)
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.error) {

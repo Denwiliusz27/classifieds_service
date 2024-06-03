@@ -2,9 +2,11 @@ package main
 
 import (
 	"backend/cmd/api"
+	"backend/cmd/auth"
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 const port = 8080
@@ -24,6 +26,17 @@ func main() {
 	defer func() {
 		_ = app.DB.Connection().Close()
 	}()
+
+	app.Auth = auth.Auth{
+		Issuer:        app.JWTIssuer,
+		Audience:      app.JWTAudience,
+		Secret:        app.JWTSecret,
+		TokenExpiry:   time.Minute * 15,
+		RefreshExpiry: time.Hour * 24,
+		CookieDomain:  app.CookieDomain,
+		CookiePath:    "/",
+		CookieName:    "refresh_token",
+	}
 
 	log.Println("Backend is starting on port", port)
 

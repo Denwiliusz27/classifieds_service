@@ -5,27 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/service.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/specialists.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/specialistsServices.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/specialization.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/internal/models/Service.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/internal/models/SpecialistRegister.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/internal/models/Specialization.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/models/SpecialistRequest.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/routes.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/dal.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/dal.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/postgres/cities.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/cities.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/postgres/clients.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/clients.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/postgres/users.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/users.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/sql/init_db.sql" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/sql/init_db.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../baza_danych.dia" beforeDir="false" afterPath="$PROJECT_DIR$/../baza_danych.dia" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/Specialization.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Specialization.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientHome.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientHome.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientLogin.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientLogin.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistLogin.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistLogin.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +27,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$/.." value="01_create_homepages" />
+        <entry key="$PROJECT_DIR$/.." value="04_register_users_logic" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -65,8 +49,8 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;04__register__users__logic&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/danwi/OneDrive/Pulpit/Things/STUDIA/React-Go_course/project-front-end&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;05__jwt__logging&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/danwi/OneDrive/Pulpit/Things/STUDIA/classifieds_service/frontend/src/models&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -79,6 +63,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\danwi\OneDrive\Pulpit\Things\STUDIA\classifieds_service\frontend\src\models" />
       <recent name="C:\Users\danwi\OneDrive\Pulpit\Things\STUDIA\classifieds_service\frontend\src\pages" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -131,7 +116,20 @@
       <workItem from="1716464140120" duration="3864000" />
       <workItem from="1716548177045" duration="4195000" />
       <workItem from="1716560162844" duration="3317000" />
-      <workItem from="1716581699656" duration="4027000" />
+      <workItem from="1716581699656" duration="4713000" />
+      <workItem from="1716626221489" duration="1721000" />
+      <workItem from="1716671213476" duration="2910000" />
+      <workItem from="1716714611486" duration="1645000" />
+      <workItem from="1716716286867" duration="7631000" />
+      <workItem from="1716841951305" duration="2596000" />
+      <workItem from="1717003223554" duration="168000" />
+      <workItem from="1717067845213" duration="4232000" />
+      <workItem from="1717095111344" duration="4842000" />
+      <workItem from="1717143473287" duration="13268000" />
+      <workItem from="1717181557398" duration="7831000" />
+      <workItem from="1717230783552" duration="18575000" />
+      <workItem from="1717434448795" duration="1537000" />
+      <workItem from="1717436013754" duration="6490000" />
     </task>
     <servers />
   </component>

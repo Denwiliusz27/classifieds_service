@@ -1,8 +1,23 @@
-import React from "react";
+import React, {useEffect} from "react";
 import Arrow from "../../components/Arrow";
 import HomepageOptionElement from "../../components/HomepageOptionElement";
+import {useNavigate, useOutletContext} from "react-router-dom";
+import {AuthContextType} from "../../App";
 
 function ClientHome() {
+    const {jwtToken, userRole} = useOutletContext<AuthContextType>();
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        console.log("token: ", jwtToken, ", user: ", userRole)
+        if (jwtToken !== "") {
+            if (userRole === "specialist") {
+                navigate("/specjalista/strona_glowna")
+                return
+            }
+        }
+    }, [jwtToken, userRole, navigate])
+
     return (
         <div className="flex flex-col items-center m-4">
             <div className="w-2/3">

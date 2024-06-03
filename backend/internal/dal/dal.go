@@ -11,8 +11,10 @@ type DAL interface {
 
 	CreateUser(name string, secondName string, email string, password string, role string) (int, error)
 	GetUserByEmailAndRole(email string, role string) (*models.User, error)
+	GetUserById(id int) (*models.User, error)
 
 	CreateClient(userId int) (int, error)
+	GetClientByUserId(userId int) (*models.Client, error)
 
 	CreateClientAddress(address models.ClientAddresses, clientId int) (int, error)
 
@@ -21,6 +23,7 @@ type DAL interface {
 	GetServices() ([]models.Service, error)
 
 	CreateSpecialist(phoneNr string, description string, cityId int, userId int, specializationId int) (int, error)
+	GetSpecialistByUserId(userId int) (*models.Specialist, error)
 
 	CreateSpecialistService(minPrice int, maxPrice int, specialistId int, serviceId int) (int, error)
 }

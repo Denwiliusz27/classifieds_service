@@ -5,6 +5,7 @@ import (
 	"backend/internal/models"
 	"context"
 	"fmt"
+	"log"
 )
 
 func (m *PG) GetCities() ([]models.City, error) {
@@ -32,6 +33,8 @@ func (m *PG) GetCities() ([]models.City, error) {
 
 		cities = append(cities, city)
 	}
+
+	log.Println("Successfully retrieved Cities")
 
 	return cities, nil
 }

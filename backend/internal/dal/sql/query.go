@@ -28,6 +28,14 @@ const GetUserByEmailAndRole = `
 	    role = $2;
 `
 
+const GetUserById = `
+	SELECT * 
+	FROM
+	    users
+	WHERE 
+	    id = $1;
+`
+
 // --- CLIENTS ---
 
 const CreateClient = `
@@ -37,6 +45,19 @@ const CreateClient = `
 	VALUES 
 	    ($1)
 	RETURNING id;
+`
+
+const GetClientByUserId = `
+	SELECT 
+	    clients.id, users.name, users.second_name, users.email, clients.user_id
+	FROM 
+	    clients
+	LEFT JOIN 
+	        users on clients.user_id = users.id
+	GROUP BY 
+	    clients.id, users.name, users.second_name, users.email, clients.user_id, users.role
+	HAVING 
+	    clients.user_id = ($1) AND users.role = 'client' ;
 `
 
 // --- CLIENTS_ADDRESSES ---
@@ -75,6 +96,20 @@ const CreateSpecialist = `
 	VALUES
 	    ($1, $2, $3, $4, $5)
 	RETURNING id;
+`
+
+const GetSpecialistByUserId = `
+	SELECT 
+	    specialists.id, users.name, users.second_name, users.email, specialists.description, specialists.phone_nr, specialists.specialization_id, specialists.city_id, specialists.user_id
+	FROM 
+	    specialists
+	LEFT JOIN 
+	        users on specialists.user_id = users.id
+	GROUP BY 
+	    specialists.id, users.name, users.second_name, users.email, specialists.description, specialists.phone_nr, specialists.specialization_id, specialists.city_id, specialists.user_id, users.role
+	HAVING 
+	    specialists.user_id = ($1) AND users.role = 'specialist';
+
 `
 
 // --- SPECIALIST_SERVICE ---

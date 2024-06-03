@@ -1,37 +1,139 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Input from "../../components/form/Input";
+import {UserLogin} from "../../models/UserLogin";
+import Swal from "sweetalert2";
+import {useNavigate, useOutletContext} from "react-router-dom";
+import {AuthContextType} from "../../App";
+import {createPortal} from "react-dom";
+import {Specialist} from "../../models/Specialist";
 
 function SpecialistLogin() {
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
+    const [user, setUser] = useState<UserLogin>({
+        email: "",
+        password: "",
+        role: "specialist",
+    })
     const [emailError, setEmailError] = useState("")
     const [passwordError, setPasswordError] = useState("")
+    const [errorMsg, setErrorMsg] = useState("")
+    const [successLogin, setSuccessLogin] = useState(false)
+    const [showErrorMsg, setShowErrorMsg] = useState(false)
+
+    const {jwtToken, setJwtToken, userRole, setUserRole, toggleRefresh, setName} = useOutletContext<AuthContextType>();
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (jwtToken !== "") {
+            if (userRole === "specialist") {
+                navigate("/specjalista/strona_glowna")
+                return
+            } else if (userRole === "client") {
+                navigate("/")
+                return
+            }
+        }
+    }, [jwtToken, userRole, navigate])
 
     const handleEmailChange = (event: React.FormEvent<HTMLInputElement>) => {
-        setEmail(event.currentTarget.value)
+        setUser({
+            ...user,
+            email: event.currentTarget.value
+        })
+
         setEmailError("")
     }
 
     const handlePasswordChange = (event: React.FormEvent<HTMLInputElement>) => {
-        setPassword(event.currentTarget.value)
+        setUser({
+            ...user,
+            password: event.currentTarget.value
+        })
+
         setPasswordError("")
+    }
+
+    function checkForm() {
+        if (user.email === "") {
+            setEmailError("Podaj adres email")
+        }
+        if (user.password === "") {
+            setPasswordError("Podaj hasło")
+        }
+
+        if (user.email === "" || user.password === "") {
+            return false
+        }
+
+        return true
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        if (email === "") {
-            setEmailError("Podaj adres email")
-        }
-        if (password === "") {
-            setPasswordError("Podaj hasło")
-        }
+        if (checkForm()) {
+            const headers = new Headers()
+            headers.append("Content-Type", "application/json")
+            const method = "POST"
 
-        if(email === "" || password === ""){
-            return
-        }
+            fetch(`/authenticate`, {
+                body: JSON.stringify(user),
+                method: method,
+                headers: headers,
+                credentials: 'include',
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        console.log("ERRORS")
+                        setErrorMsg(data.message)
 
-        console.log(`Hello ${email} ${password}`)
+                        Swal.fire({
+                            didOpen: () => setShowErrorMsg(true),
+                            didClose: () => setShowErrorMsg(false),
+                            showConfirmButton: false,
+                        })
+                    } else {
+                        console.log("SUCCESSFULLY LOGGED IN")
+                        headers.append("Authorization", "Bearer " + data.access_token)
+
+                        fetch(`/specialist/info/${data.user_id}`, {
+                            method: "GET",
+                            headers: headers,
+                            credentials: 'include'
+                        }).then((response) => response.json())
+                            .then((data) => {
+                                const specialist: Specialist = {
+                                    Id: data.id,
+                                    Name: data.name,
+                                    SecondName: data.second_name,
+                                    Email: data.email,
+                                    Description: data.description,
+                                    PhoneNr: data.phone_nr,
+                                    SpecializationId: data.specialization_id,
+                                    CityId: data.city_id,
+                                    UserId: data.user_id
+                                }
+                                sessionStorage.setItem("specialist", JSON.stringify(specialist))
+                                setName(data.name)
+                            })
+
+                        setSuccessLogin(true)
+                        document.body.style.cursor = "wait"
+
+                        setTimeout(() => {
+                            setJwtToken(data.access_token)
+                            setUserRole(data.user_role)
+                            toggleRefresh(true)
+                            document.body.style.cursor = "default"
+
+                            navigate("/specjalista/strona_glowna")
+                        }, 2000)
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
     }
 
     return (
@@ -61,7 +163,7 @@ function SpecialistLogin() {
                             onChange={handleEmailChange}
                             placeholder="Adres email"
                             type="email"
-                            value={email}
+                            value={user.email}
                             error={emailError}
                         />
 
@@ -71,7 +173,7 @@ function SpecialistLogin() {
                             onChange={handlePasswordChange}
                             placeholder="Hasło"
                             type="password"
-                            value={password}
+                            value={user.password}
                             error={passwordError}
                         />
 
@@ -80,9 +182,32 @@ function SpecialistLogin() {
                             value="Zaloguj"
                             className="flex flex-row justify-center cursor-pointer drop-shadow-xl mt-4 bg-amber-900 text-white rounded-2xl w-40 h-14 text-xl font-bold overflow-hidden shadow-2xl transition-transform hover:-translate-y-2 duration-300"
                         />
+
+                        {successLogin &&
+                            <div className="my-6 drop-shadow-xl text-xl font-bold text-green-500">
+                                <p>Pomyślnie zalogowano</p>
+                            </div>
+                        }
                     </form>
                 </div>
             </div>
+
+            {showErrorMsg &&
+                createPortal(
+                    <div className="flex flex-col items-center">
+                        <h1 className="text-3xl font-bold my-4">BŁĄD</h1>
+                        <p className="text-xl my-2">{errorMsg}</p>
+
+                        <div className="flex w-52 justify-center items-center mt-5">
+                            <div onClick={() => Swal.close()}
+                                 className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
+                                <span className="mx-3 my-2 text-xl">Ok</span>
+                            </div>
+                        </div>
+                    </div>,
+                    Swal.getHtmlContainer()!,
+                )
+            }
         </div>
     )
 }
