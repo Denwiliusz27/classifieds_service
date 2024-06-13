@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {useNavigate, useOutletContext} from "react-router-dom";
+import {Link, useNavigate, useOutletContext} from "react-router-dom";
 import {AuthContextType} from "../App";
 import {Service, Specialization} from "../models/Specialization";
 import {City} from "../models/City";
 import Select from "../components/form/Select";
+import ZoomingImageDiv from "../components/ZoomingImageDiv";
 
 function SearchSpecialists() {
     const [specializations, setSpecializations] = useState<Specialization[]>([])
@@ -126,9 +127,17 @@ function SearchSpecialists() {
                     <div className="grid grid-cols-3 gap-3 justify-items-center">
                         {specializations.map((s) => {
                             return (
-                                <div key={s.id} className="w-24 h-24  shadow-2xl rounded-2xl">
+                                <div key={s.id} className="w-24 h-24  shadow-2xl rounded-2xl flex flex-col items-center justify-center hover:scale-110">
                                     <p>{s.name}</p>
                                 </div>
+
+                                // <ZoomingImageDiv
+                                //     key={s.id}
+                                //     path={"/klient/login"}
+                                //     img={"https://i0.wp.com/gamjobs.com/wp-content/uploads/2023/06/139328-using-girl-laptop-png-file-hd.png?resize=259%2C300&ssl=1"}
+                                //     w={80}
+                                //     h={80}
+                                //     text={s.name} />
                             )
                         })}
                     </div>

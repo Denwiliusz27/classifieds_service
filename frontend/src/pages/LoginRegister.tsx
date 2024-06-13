@@ -1,6 +1,7 @@
 import {Link, Outlet, useNavigate, useOutletContext} from "react-router-dom";
 import React, {useEffect} from "react";
 import {AuthContextType} from "../App";
+import ZoomingImageDiv from "../components/ZoomingImageDiv";
 
 function LoginRegister() {
     const { jwtToken, userRole, setJwtToken } = useOutletContext<AuthContextType>();
@@ -36,15 +37,22 @@ function LoginRegister() {
 
                     <div className="flex flex-row my-10 space-x-10 ">
                         {/* Login for client*/}
-                        <Link to="/klient/login"
-                            className="flex items-center bg-white rounded-2xl w-80 h-80 text-xl font-bold overflow-hidden shadow-2xl">
-                            <div className="zooming_card">
-                                <div className="zooming_card_img"
-                                     style={{backgroundImage: `url(https://i0.wp.com/gamjobs.com/wp-content/uploads/2023/06/139328-using-girl-laptop-png-file-hd.png?resize=259%2C300&ssl=1)`}}>
-                                </div>
-                                <h1 className="zooming_card_txt">Klient</h1>
-                            </div>
-                        </Link>
+                        {/*<Link to="/klient/login"*/}
+                        {/*    className="flex items-center bg-white rounded-2xl w-80 h-80 text-xl font-bold overflow-hidden shadow-2xl">*/}
+                        {/*    <div className="zooming_card">*/}
+                        {/*        <div className="zooming_card_img"*/}
+                        {/*             style={{backgroundImage: `url(https://i0.wp.com/gamjobs.com/wp-content/uploads/2023/06/139328-using-girl-laptop-png-file-hd.png?resize=259%2C300&ssl=1)`}}>*/}
+                        {/*        </div>*/}
+                        {/*        <h1 className="zooming_card_txt">Klient</h1>*/}
+                        {/*    </div>*/}
+                        {/*</Link>*/}
+
+                        <ZoomingImageDiv
+                            path={"/klient/login"}
+                            img={"https://i0.wp.com/gamjobs.com/wp-content/uploads/2023/06/139328-using-girl-laptop-png-file-hd.png?resize=259%2C300&ssl=1"}
+                            w={80}
+                            h={80}
+                            text={"Klient"} />
 
                         {/* Login for specialist*/}
                         <Link to="/specjalista/login"
