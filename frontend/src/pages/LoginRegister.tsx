@@ -37,33 +37,24 @@ function LoginRegister() {
 
                     <div className="flex flex-row my-10 space-x-10 ">
                         {/* Login for client*/}
-                        {/*<Link to="/klient/login"*/}
-                        {/*    className="flex items-center bg-white rounded-2xl w-80 h-80 text-xl font-bold overflow-hidden shadow-2xl">*/}
-                        {/*    <div className="zooming_card">*/}
-                        {/*        <div className="zooming_card_img"*/}
-                        {/*             style={{backgroundImage: `url(https://i0.wp.com/gamjobs.com/wp-content/uploads/2023/06/139328-using-girl-laptop-png-file-hd.png?resize=259%2C300&ssl=1)`}}>*/}
-                        {/*        </div>*/}
-                        {/*        <h1 className="zooming_card_txt">Klient</h1>*/}
-                        {/*    </div>*/}
-                        {/*</Link>*/}
-
-                        <ZoomingImageDiv
-                            path={"/klient/login"}
-                            img={"https://i0.wp.com/gamjobs.com/wp-content/uploads/2023/06/139328-using-girl-laptop-png-file-hd.png?resize=259%2C300&ssl=1"}
-                            w={80}
-                            h={80}
-                            text={"Klient"} />
+                        <div className="w-80 h-80">
+                            <ZoomingImageDiv
+                                path={"/klient/login"}
+                                img={"https://i0.wp.com/gamjobs.com/wp-content/uploads/2023/06/139328-using-girl-laptop-png-file-hd.png?resize=259%2C300&ssl=1"}
+                                text={"Klient"}
+                                txt_size={"5xl"}
+                            />
+                        </div>
 
                         {/* Login for specialist*/}
-                        <Link to="/specjalista/login"
-                            className="flex items-center bg-white rounded-2xl w-80 h-80 text-xl font-bold overflow-hidden shadow-2xl">
-                            <div className="zooming_card">
-                                <div className="zooming_card_img"
-                                     style={{backgroundImage: `url(https://spower.com.sg/wp-content/uploads/2022/03/industrail-workers-and-engineers-transparent-33121-optimized.png)`}}>
-                                </div>
-                                <h1 className="zooming_card_txt">Specjalista</h1>
-                            </div>
-                        </Link>
+                        <div className="w-80 h-80">
+                            <ZoomingImageDiv
+                                path={"/specjalista/login"}
+                                img={"https://spower.com.sg/wp-content/uploads/2022/03/industrail-workers-and-engineers-transparent-33121-optimized.png"}
+                                text={"Specjalista"}
+                                txt_size={"5xl"}
+                            />
+                        </div>
                     </div>
                 </div>
 

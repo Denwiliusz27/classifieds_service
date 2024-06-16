@@ -3,24 +3,49 @@ import React from "react";
 
 
 function ZoomingImageDiv(
-    {path, img, w, h, text} : {
+    {path, img, text, txt_size, state}: {
         path: string
         img: string
-        w: number
-        h: number
         text: string
+        txt_size: string
+        state?: number
     }
 ) {
     return (
-        <Link to={path}
-              className={`flex items-center bg-white rounded-2xl w-${w} h-${h} text-xl font-bold overflow-hidden shadow-2xl`}>
-            <div className="zooming_card">
-                <div className="zooming_card_img"
-                     style={{backgroundImage: `url(${img})`}}>
-                </div>
-                <h1 className="zooming_card_txt">{text}</h1>
-            </div>
-        </Link>
+        <>
+            {state ?
+                <Link
+                    to={path} state={{specializationId: state}}
+                    className={`flex items-center bg-white rounded-2xl w-full h-full text-xl font-bold overflow-hidden shadow-2xl`}
+                >
+                    <div className="flex relative items-center w-full h-full overflow-hidden justify-center group">
+                        <div
+                            className="w-full h-full opacity-60 absolute bg-cover bg-center transition-all duration-500 ease-in-out transform group-hover:scale-150"
+                            style={{ backgroundImage: `url(${img})` }}
+                        ></div>
+                        <h1 className={`text-${txt_size} font-extrabold absolute transition-all drop-shadow-[2px_2px_var(--tw-shadow-color)] shadow-black  duration-500 ease-in-out transform text-amber-900 scale-110 group-hover:scale-90`}>
+                            {text}
+                        </h1>
+                    </div>
+                </Link>
+                :
+                <Link
+                    to={path}
+                    className={`flex items-center bg-white rounded-2xl w-full h-full text-xl font-bold overflow-hidden shadow-2xl`}
+                >
+                    <div className="flex relative items-center w-full h-full overflow-hidden justify-center group">
+                        <div
+                            className="w-full h-full opacity-60 absolute bg-cover bg-center transition-all duration-500 ease-in-out transform group-hover:scale-150"
+                            style={{ backgroundImage: `url(${img})` }}
+                        ></div>
+                        <h1 className={`text-${txt_size} font-extrabold absolute transition-all drop-shadow-lg shadow-white duration-500 ease-in-out transform text-amber-900 scale-110 group-hover:scale-90`}>
+                            {text}
+                        </h1>
+                    </div>
+                </Link>
+
+            }
+        </>
     )
 }
 

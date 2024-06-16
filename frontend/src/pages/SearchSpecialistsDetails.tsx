@@ -1,21 +1,22 @@
 import React, {useEffect, useState} from "react";
-import {Link, useNavigate, useOutletContext} from "react-router-dom";
+import {Link, useLocation, useNavigate, useOutletContext} from "react-router-dom";
 import {AuthContextType} from "../App";
 import {Service, Specialization} from "../models/Specialization";
 import {City} from "../models/City";
 import Select from "../components/form/Select";
 import ZoomingImageDiv from "../components/ZoomingImageDiv";
+import {Specialist} from "../models/Specialist";
 
-function SearchSpecialists() {
+function SearchSpecialistsDetails() {
     const [specializations, setSpecializations] = useState<Specialization[]>([])
     const [services, setSetvices] = useState<Service[]>([])
     const [cities, setCities] = useState<City[]>([])
     const [city, setCity] = useState(0)
     const [specilization, setSpecialization] = useState(0)
+    const [specialists, setSpecialists] = useState<Specialist[]>([])
 
-
+    const location = useLocation()
     const {jwtToken, userRole} = useOutletContext<AuthContextType>();
-
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -25,7 +26,11 @@ function SearchSpecialists() {
                 return
             }
         }
-    }, [jwtToken, userRole, navigate])
+
+        setSpecialization(location.state.specializationId)
+
+
+    }, [jwtToken, userRole, navigate, location.state.specializationId])
 
     useEffect(() => {
         const headers = new Headers()
@@ -85,7 +90,7 @@ function SearchSpecialists() {
                         <h1> Wybierz <span className="text-amber-800 italic">specjalizację</span>,
                             <span className="text-amber-800 italic"> miasto</span> oraz <span className="text-amber-800 italic"> usługę</span>.</h1>
                     </div>
-                    <p className="text-xl text-gray-500">Kliknij interesującą cię specjalizację, lub skorzystaj z filtrów.</p>
+                    <p className="text-xl text-gray-500">Skorzystaj z filtrów i wyszukaj specjalistów zgodnie z podanymi kryteriami.</p>
                 </div>
 
                 <div className="bg-amber-900 rounded-md h-1 my-6"></div>
@@ -120,34 +125,11 @@ function SearchSpecialists() {
                             value="Szukaj"
                             className="flex flex-row justify-center cursor-pointer drop-shadow-xl bg-amber-900 text-white rounded-2xl w-40 h-14 text-xl font-bold  shadow-2xl transition-transform hover:-translate-y-2 duration-300"
                         />
-
-
                     </form>
-
-                    <div className="grid grid-cols-3 gap-3 justify-items-center">
-                        {specializations.map((s) => {
-                            return (
-                                <div key={s.id} className="w-24 h-24  shadow-2xl rounded-2xl flex flex-col items-center justify-center hover:scale-110">
-                                    <p>{s.name}</p>
-                                </div>
-
-                                // <ZoomingImageDiv
-                                //     key={s.id}
-                                //     path={"/klient/login"}
-                                //     img={"https://i0.wp.com/gamjobs.com/wp-content/uploads/2023/06/139328-using-girl-laptop-png-file-hd.png?resize=259%2C300&ssl=1"}
-                                //     w={80}
-                                //     h={80}
-                                //     text={s.name} />
-                            )
-                        })}
-                    </div>
-
                 </div>
-
-
             </div>
         </div>
     )
 }
 
-export default SearchSpecialists;
+export default SearchSpecialistsDetails;

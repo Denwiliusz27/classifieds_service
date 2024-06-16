@@ -92,7 +92,8 @@ CREATE TABLE public.clients_addresses
 CREATE TABLE public.specializations
 (
     id   integer PRIMARY KEY    NOT NULL,
-    name character varying(255) NOT NULL
+    name character varying(255) NOT NULL,
+    img character varying(500) NOT NULL
 );
 
 --
@@ -405,15 +406,15 @@ VALUES ('Bieszczadzka', 10, 27, 1, 1);
 --
 -- Data for Name: specializations; Type: TABLE DATA; Schema: public; Owner: -
 --
-INSERT INTO public.specializations (name)
-VALUES ('Elektryk'),
-       ('Hydraulik'),
-       ('Ogrodnik'),
-       ('Malarz'),
-       ('Tapicer'),
-       ('Sprzątacz'),
-       ('Złota rączka'),
-       ('Informatyk');
+INSERT INTO public.specializations (name, img)
+VALUES ('Elektryk', 'https://img.freepik.com/free-photo/man-electrical-technician-working-switchboard-with-fuses-uses-tablet_169016-23790.jpg?t=st=1718547655~exp=1718551255~hmac=d8ddb8e4c4512f6737aa353f27bdff791575a7a8c0f2aa8c4ae7c9ff28d55442&w=1380'),
+       ('Hydraulik', 'https://img.freepik.com/free-photo/man-fixing-kitchen-sink_53876-13430.jpg?t=st=1718547755~exp=1718551355~hmac=49baf7b49ca2644f935a7769c286fc979e09ebf3f21d47d6647405284b91ddc2&w=1060'),
+       ('Ogrodnik', 'https://img.freepik.com/free-photo/smiling-young-female-gardener-uniform-wearing-gardening-hat-gloves-holds-flowerpot-spade-shoulder-isolated-olive-green-wall-with-copy-space_141793-93584.jpg?t=st=1718547822~exp=1718551422~hmac=a274fd686440f665c040a2bed2fb25c47e8e8b2a862e8b90e4a40dfac0b30bf5&w=996'),
+       ('Malarz', 'https://img.freepik.com/free-photo/portrait-repairer-woman-with-painting-roller-isolated_1303-14259.jpg?t=st=1718547605~exp=1718551205~hmac=1e0b4ff0f2d9f0be3ce62db446e044773dc128c2facf8154126a5b3dbb62d7cf&w=1380'),
+       ('Tapicer', 'https://img.freepik.com/free-photo/man-doing-professional-home-cleaning-service_23-2150359024.jpg?t=st=1718547943~exp=1718551543~hmac=be5c0f0242cb4dffe499b1419a128da733d9a0c0e67991ea6fbd4e13e1d8209d&w=1380'),
+       ('Sprzątacz', 'https://img.freepik.com/free-photo/cheerful-young-female-cleaner-wearing-uniform-bandana-rubber-gloves-holding-brush-cleanser-crossed-looking-camera-laughing-isolated-blue-background_141793-140482.jpg?t=st=1718548068~exp=1718551668~hmac=805acaf638a14c8fb0091f836a0c0ca73f3219cd1b7263685f1d0c320a499dd8&w=1380'),
+       ('Złota rączka', 'https://img.freepik.com/free-photo/part-male-construction-worker_329181-3734.jpg?t=st=1718548006~exp=1718551606~hmac=bdb6b6aa6aa843e6bb30b7dd0396a3ac851894a5c67f8c1139e88896eb620e4c&w=1380'),
+       ('Informatyk', 'https://img.freepik.com/free-photo/business-young-successful-male-entrepreneur-showing-thumb-up-while-working-laptop-standing_1258-26461.jpg?t=st=1718548211~exp=1718551811~hmac=12e89cc6af824a1811cdf633b95f2127a2fad072cf4ab930137db4f6373f5d82&w=1380');
 
 --
 -- Data for Name: services; Type: TABLE DATA; Schema: public; Owner: -

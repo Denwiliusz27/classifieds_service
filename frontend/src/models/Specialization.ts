@@ -1,6 +1,7 @@
 export interface Specialization {
     id: number
     name: string
+    img:  string
 }
 
 export interface Service {
