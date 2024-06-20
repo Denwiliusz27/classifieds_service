@@ -112,6 +112,30 @@ const GetSpecialistByUserId = `
 
 `
 
+const GetSpecialistsBySpecializationIdCityIdServiceId = `
+	SELECT 
+		specialists.id, users.name, users.second_name, specializations.name as specialization, cities.name as city, COALESCE(ROUND(AVG(reviews.rating), 2), 0.00) as rating, count(reviews.id) as reviews 
+	FROM 
+		specialists
+	LEFT JOIN 
+		    users ON specialists.user_id = users.id
+	LEFT JOIN
+		    cities on specialists.city_id = cities.id
+	LEFT JOIN
+		    specializations on specialists.specialization_id = specializations.id
+	LEFT JOIN
+		    reviews on specialists.id = reviews.specialist_id
+	LEFT JOIN
+		    specialists_services on specialists.id = specialists_services.specialist_id
+	WHERE
+	    (specialists.specialization_id = ($1) OR ($1) IS NULL) AND
+	    (specialists.city_id = ($2) OR ($2) IS NULL) AND
+	    (specialists_services.service_id = ($3) OR ($3) IS NULL)
+	GROUP BY 
+	    specialists.id, users.name, users.second_name, specializations.name, cities.name
+	;
+`
+
 // --- SPECIALIST_SERVICE ---
 
 const CreateSpecialistService = `

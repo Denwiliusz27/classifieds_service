@@ -12,7 +12,7 @@ function SearchSpecialistsDetails() {
     const [services, setSetvices] = useState<Service[]>([])
     const [cities, setCities] = useState<City[]>([])
     const [city, setCity] = useState(0)
-    const [specilization, setSpecialization] = useState(0)
+    const [specialization, setSpecialization] = useState(0)
     const [specialists, setSpecialists] = useState<Specialist[]>([])
 
     const location = useLocation()
@@ -87,7 +87,7 @@ function SearchSpecialistsDetails() {
             <div className="w-2/3">
                 <div className="flex flex-col text-center pt-8">
                     <div className="flex flex-row text-3xl font-bold mb-6 justify-center">
-                        <h1> Wybierz <span className="text-amber-800 italic">specjalizację</span>,
+                        <h1>Wybierz <span className="text-amber-800 italic">specjalizację</span>,
                             <span className="text-amber-800 italic"> miasto</span> oraz <span className="text-amber-800 italic"> usługę</span>.</h1>
                     </div>
                     <p className="text-xl text-gray-500">Skorzystaj z filtrów i wyszukaj specjalistów zgodnie z podanymi kryteriami.</p>
@@ -115,7 +115,7 @@ function SearchSpecialistsDetails() {
                                 name="specialization"
                                 placeholder="Nazwa specjalizacji"
                                 onChange={handleSpecializationChange}
-                                value={specilization}
+                                value={specialization}
                                 options={specializations}
                             />
                         </div>

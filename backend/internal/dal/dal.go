@@ -24,6 +24,7 @@ type DAL interface {
 
 	CreateSpecialist(phoneNr string, description string, cityId int, userId int, specializationId int) (int, error)
 	GetSpecialistByUserId(userId int) (*models.Specialist, error)
+	GetSpecialistsBySpecializationIdCityIdServiceId(specializationId *int, cityId *int, serviceId *int) ([]models.SpecialistGeneralInfo, error)
 
 	CreateSpecialistService(minPrice int, maxPrice int, specialistId int, serviceId int) (int, error)
 }
