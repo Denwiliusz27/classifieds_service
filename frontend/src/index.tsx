@@ -22,6 +22,7 @@ import SpecialistReservations from "./pages/Specialist/SpecialistReservations";
 import SpecialistChats from "./pages/Specialist/SpecialistChats";
 import SpecialistEditProfile from "./pages/Specialist/SpecialistEditProfile";
 import SearchSpecialistsDetails from "./pages/SearchSpecialistsDetails";
+import SpecialistProfile from "./pages/Specialist/SpecialistProfile";
 
 const router = createBrowserRouter([
     {
@@ -101,6 +102,10 @@ const router = createBrowserRouter([
             {
                 path: "/specjalista/profil",
                 element: <SpecialistEditProfile />,
+            },
+            {
+                path: "/specjalista/szczegóły",
+                element: <SpecialistProfile />,
             },
         ]
     }

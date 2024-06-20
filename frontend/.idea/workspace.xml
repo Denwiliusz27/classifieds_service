@@ -5,16 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/routes.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/dal.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/dal.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/postgres/specialists.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/specialists.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistProfile.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/models/Specialist.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/models/Specialist.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/sql/init_db.sql" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/sql/init_db.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../baza_danych.dia" beforeDir="false" afterPath="$PROJECT_DIR$/../baza_danych.dia" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/Specialist.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Specialist.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/SearchSpecialistsDetails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/SearchSpecialistsDetails.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistLogin.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistLogin.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,7 +137,7 @@
       <workItem from="1718536694155" duration="9535000" />
       <workItem from="1718647509566" duration="3943000" />
       <workItem from="1718874604746" duration="594000" />
-      <workItem from="1718884074385" duration="1317000" />
+      <workItem from="1718884074385" duration="9719000" />
     </task>
     <servers />
   </component>
