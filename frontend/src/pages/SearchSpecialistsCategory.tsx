@@ -39,7 +39,7 @@ function SearchSpecialistsCategory() {
     }, []);
 
     return (
-        <div className="flex flex-col items-center m-4">
+        <div className="flex flex-col items-center overflow-auto h-full bg-fixed fixed w-full pb-20">
             <div className="w-2/3">
                 <div className="flex flex-col text-center pt-8">
                     <div className="flex flex-row text-3xl font-bold mb-6 justify-center">
@@ -54,7 +54,7 @@ function SearchSpecialistsCategory() {
                     <div className="grid grid-cols-3 gap-3 justify-items-center">
                         {specializations.map((s) => {
                             return (
-                                <div className="w-56 h-56">
+                                <div className="w-3/4 h-56">
                                     <ZoomingImageDiv
                                         key={s.id}
                                         path={"/wyszukaj/szczegóły"}

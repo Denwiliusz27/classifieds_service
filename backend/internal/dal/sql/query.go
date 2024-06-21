@@ -131,7 +131,7 @@ const GetSpecialistsBySpecializationIdCityIdServiceId = `
 	    (specialists.id IN (
 			SELECT specialist_id 
 			FROM specialists_services 
-			WHERE (specialists_services.id = $3 OR $3 IS NULL)
+			WHERE (specialists_services.service_id = $3 OR $3 IS NULL)
 		) OR $3 IS NULL)
 	GROUP BY 
 	    specialists.id, users.name, users.second_name, specializations.name, cities.name

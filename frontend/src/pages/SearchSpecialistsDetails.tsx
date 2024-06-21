@@ -10,9 +10,9 @@ function SearchSpecialistsDetails() {
     const [specializations, setSpecializations] = useState<Specialization[]>([])
     const [services, setSetvices] = useState<Service[]>([])
     const [cities, setCities] = useState<City[]>([])
-    const [city, setCity] = useState(0)
-    const [specialization, setSpecialization] = useState(0)
-    const [service, setService] = useState(0)
+    const [cityId, setCityId] = useState(0)
+    const [specializationId, setSpecializationId] = useState(0)
+    const [serviceId, setServiceId] = useState(0)
     const [specialists, setSpecialists] = useState<SpecialistGeneralInfo[]>([])
 
     const location = useLocation()
@@ -27,7 +27,7 @@ function SearchSpecialistsDetails() {
             }
         }
 
-        setSpecialization(location.state.specializationId)
+        setSpecializationId(location.state.specializationId)
 
         const headers = new Headers()
         headers.append("Content-Type", "application/json")
@@ -36,7 +36,7 @@ function SearchSpecialistsDetails() {
             headers: headers,
         }
 
-        fetch(`http://localhost:8080/specialists/${location.state.specializationId}/${city}/${service}`, requestOptions)
+        fetch(`http://localhost:8080/specialists/${location.state.specializationId}/${cityId}/${serviceId}`, requestOptions)
             .then((response) => response.json())
             .then((data) => {
                 setSpecialists(data)
@@ -48,8 +48,6 @@ function SearchSpecialistsDetails() {
     }, [jwtToken, userRole, navigate, location.state.specializationId])
 
     useEffect(() => {
-        console.log("HERE")
-
         const headers = new Headers()
         headers.append("Content-Type", "application/json")
 
@@ -87,15 +85,27 @@ function SearchSpecialistsDetails() {
     }, []);
 
     const handleCityChange = (event: React.FormEvent<HTMLSelectElement>) => {
-        setCity(parseInt(event.currentTarget.value))
+        if (event.currentTarget.value === "") {
+            setCityId(0)
+        } else {
+            setCityId(parseInt(event.currentTarget.value))
+        }
     }
 
     const handleSpecializationChange = (event: React.FormEvent<HTMLSelectElement>) => {
-        setSpecialization(parseInt(event.currentTarget.value))
+        if (event.currentTarget.value === "") {
+            setSpecializationId(0)
+        } else {
+            setSpecializationId(parseInt(event.currentTarget.value))
+        }
     }
 
     const handleServiceChange = (event: React.FormEvent<HTMLSelectElement>) => {
-        setService(parseInt(event.currentTarget.value))
+        if (event.currentTarget.value === "") {
+            setServiceId(0)
+        } else {
+            setServiceId(parseInt(event.currentTarget.value))
+        }
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -109,7 +119,7 @@ function SearchSpecialistsDetails() {
             headers: headers,
         }
 
-        fetch(`http://localhost:8080/specialists/${specialization}/${city}/${service}`, requestOptions)
+        fetch(`http://localhost:8080/specialists/${specializationId}/${cityId}/${serviceId}`, requestOptions)
             .then((response) => response.json())
             .then((data) => {
                 setSpecialists(data)
@@ -117,8 +127,6 @@ function SearchSpecialistsDetails() {
             .catch(err => {
                 console.log("Error retrieving Cities: ", err)
             })
-
-        console.log(specialists)
     }
 
     return (
@@ -141,9 +149,9 @@ function SearchSpecialistsDetails() {
                             <Select<City>
                                 labelName="Miasto"
                                 name="city"
-                                placeholder="Nazwa miasta"
+                                placeholder="Wszystkie"
                                 onChange={handleCityChange}
-                                value={city}
+                                value={cityId}
                                 options={cities}
                             />
                         </div>
@@ -152,10 +160,11 @@ function SearchSpecialistsDetails() {
                             <Select<Specialization>
                                 labelName="Specjalizacja"
                                 name="specialization"
-                                placeholder="Nazwa specjalizacji"
+                                placeholder="Wszystkie"
                                 onChange={handleSpecializationChange}
-                                value={specialization}
+                                value={specializationId}
                                 options={specializations}
+                                disable={false}
                             />
                         </div>
 
@@ -163,10 +172,10 @@ function SearchSpecialistsDetails() {
                             <Select<Service>
                                 labelName="Usługa"
                                 name="service"
-                                placeholder="Nazwa usługi"
+                                placeholder="Wszystkie"
                                 onChange={handleServiceChange}
-                                value={service}
-                                options={services.filter(service => service.specialization_id === parseInt(String(specialization)))}
+                                value={serviceId}
+                                options={specializationId !== 0 ? services.filter(service => service.specialization_id === parseInt(String(specializationId))) : services}
                             />
                         </div>
 
@@ -210,7 +219,7 @@ function SearchSpecialistsDetails() {
                                     </div>
 
                                     <div className="flex flex-col justify-center w-1/3">
-                                        <Link to="/specjalista/szczegóły" state={{specialistId: s.id}} className="flex h-20 justify-items-center justify-center items-center border-2 border-white text-center text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 hover:border-amber-900 duration-300 ...">
+                                        <Link to="/specjalista/szczegóły" state={{specialistId: s.id}} className="flex h-20 text-lg font-bold justify-items-center justify-center items-center border-2 border-white text-center text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 hover:border-amber-900 duration-300 ...">
                                             <span>odwiedź profil</span>
                                         </Link>
                                     </div>
