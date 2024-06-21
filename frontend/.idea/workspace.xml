@@ -7,9 +7,11 @@
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientHome.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientHome.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientLogin.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientLogin.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistLogin.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistLogin.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/form/Select.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/form/Select.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/SearchSpecialistsCategory.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/SearchSpecialistsCategory.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/SearchSpecialistsDetails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/SearchSpecialistsDetails.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,8 +21,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="TypeScript JSX File" />
         <option value="TypeScript File" />
+        <option value="TypeScript JSX File" />
       </list>
     </option>
   </component>
@@ -49,8 +51,8 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;05__jwt__logging&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/danwi/OneDrive/Pulpit/Things/STUDIA/classifieds_service/frontend/src/models&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;06__search__specialists__pages&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/danwi/OneDrive/Pulpit/Things/STUDIA/classifieds_service/frontend/src/pages&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -63,8 +65,8 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\danwi\OneDrive\Pulpit\Things\STUDIA\classifieds_service\frontend\src\models" />
       <recent name="C:\Users\danwi\OneDrive\Pulpit\Things\STUDIA\classifieds_service\frontend\src\pages" />
+      <recent name="C:\Users\danwi\OneDrive\Pulpit\Things\STUDIA\classifieds_service\frontend\src\models" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\danwi\OneDrive\Pulpit\Things\STUDIA\classifieds_service\frontend\src\pages\Specialist" />
@@ -130,6 +132,13 @@
       <workItem from="1717230783552" duration="18575000" />
       <workItem from="1717434448795" duration="1537000" />
       <workItem from="1717436013754" duration="6490000" />
+      <workItem from="1717446754734" duration="5260000" />
+      <workItem from="1717512357596" duration="3003000" />
+      <workItem from="1718536694155" duration="9535000" />
+      <workItem from="1718647509566" duration="3943000" />
+      <workItem from="1718874604746" duration="594000" />
+      <workItem from="1718884074385" duration="10323000" />
+      <workItem from="1718962162759" duration="4393000" />
     </task>
     <servers />
   </component>

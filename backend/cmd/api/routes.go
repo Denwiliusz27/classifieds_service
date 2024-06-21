@@ -28,6 +28,8 @@ func (app *Application) Routes() http.Handler {
 		mux.Get("/info/{user_id}", app.GetSpecialistInfoByUserId)
 	})
 
+	mux.Get("/specialists/{specialization_id}/{city_id}/{service_id}", app.GetSpecialistsByCSpecializationIdCityIdServiceId)
+
 	mux.Post("/register_specialist", app.CreateSpecialist)
 
 	mux.Post("/authenticate", app.Authenticate)

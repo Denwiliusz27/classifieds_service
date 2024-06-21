@@ -29,6 +29,7 @@ func (m *PG) GetSpecializations() ([]models.Specialization, error) {
 		err := rows.Scan(
 			&specialization.Id,
 			&specialization.Name,
+			&specialization.Img,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %w", err)

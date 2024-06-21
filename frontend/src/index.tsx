@@ -5,7 +5,7 @@ import App from './App';
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Error from "./pages/Error";
 import ClientHome from "./pages/Client/ClientHome";
-import SearchSpecialists from "./pages/SearchSpecialists";
+import SearchSpecialistsCategory from "./pages/SearchSpecialistsCategory";
 import ClientCreateOffer from "./pages/Client/ClientCreateOffer";
 import LoginRegister from "./pages/LoginRegister";
 import SpecialistHome from "./pages/Specialist/SpecialistHome";
@@ -21,6 +21,8 @@ import ClientEditProfile from "./pages/Client/ClientEditProfile";
 import SpecialistReservations from "./pages/Specialist/SpecialistReservations";
 import SpecialistChats from "./pages/Specialist/SpecialistChats";
 import SpecialistEditProfile from "./pages/Specialist/SpecialistEditProfile";
+import SearchSpecialistsDetails from "./pages/SearchSpecialistsDetails";
+import SpecialistProfile from "./pages/Specialist/SpecialistProfile";
 
 const router = createBrowserRouter([
     {
@@ -35,7 +37,11 @@ const router = createBrowserRouter([
             },
             {
                 path: "/wyszukaj",
-                element: <SearchSpecialists />,
+                element: <SearchSpecialistsCategory />,
+            },
+            {
+                path: "/wyszukaj/szczegóły",
+                element: <SearchSpecialistsDetails />,
             },
 
             /// ------------ CLIENT ------------
@@ -96,6 +102,10 @@ const router = createBrowserRouter([
             {
                 path: "/specjalista/profil",
                 element: <SpecialistEditProfile />,
+            },
+            {
+                path: "/specjalista/szczegóły",
+                element: <SpecialistProfile />,
             },
         ]
     }

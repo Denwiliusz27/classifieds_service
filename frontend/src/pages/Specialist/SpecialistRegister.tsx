@@ -406,6 +406,7 @@ function SpecialistRegister() {
                                 value={specialist.city_id}
                                 options={cities}
                                 error={errors["city_id"]}
+                                disable={true}
                             />
 
                             <Input
@@ -427,6 +428,7 @@ function SpecialistRegister() {
                             value={specialist.specialization_id}
                             options={specializations}
                             error={errors["specialization_id"]}
+                            disable={true}
                         />
 
                         {specialist.specialization_id !== 0 &&

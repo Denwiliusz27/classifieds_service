@@ -384,6 +384,7 @@ function ClientRegister() {
                                                             onChange={(e) => handleCityChange(e, i)}
                                                             value={a.city_id}
                                                             options={cities}
+                                                            disable={true}
                                                         />
 
                                                         <Input

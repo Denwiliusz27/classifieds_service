@@ -1,12 +1,22 @@
 
 export interface Specialist {
-    Id: number
-    Name: string
-    SecondName: string
-    Email: string
-    Description: string
-    PhoneNr: string
-    SpecializationId: number
-    CityId: number
-    UserId: number
+    id: number
+    name: string
+    second_name: string
+    email: string
+    description: string
+    phone_nr: string
+    specialization_id: number
+    city_id: number
+    user_id: number
+}
+
+export interface SpecialistGeneralInfo {
+    id: number
+    name: string
+    second_name: string
+    specialization: string
+    city: string
+    rating: number
+    reviews: number
 }

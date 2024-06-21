@@ -59,3 +59,42 @@ func (m *PG) GetSpecialistByUserId(userId int) (*models.Specialist, error) {
 
 	return &specialist, nil
 }
+
+func (m *PG) GetSpecialistsBySpecializationIdCityIdServiceId(specializationId *int, cityId *int, serviceId *int) ([]models.SpecialistGeneralInfo, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	q := sql.GetSpecialistsBySpecializationIdCityIdServiceId
+	var specialists []models.SpecialistGeneralInfo
+
+	rows, err := m.DB.QueryContext(ctx, q, specializationId, cityId, serviceId)
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving data: %w", err)
+	}
+	defer func() {
+		_ = rows.Close()
+	}()
+
+	for rows.Next() {
+		var s models.SpecialistGeneralInfo
+
+		err := rows.Scan(
+			&s.Id,
+			&s.Name,
+			&s.SecondName,
+			&s.Specialization,
+			&s.City,
+			&s.Rating,
+			&s.Reviews)
+
+		if err != nil {
+			return nil, fmt.Errorf("error scanning row: %w", err)
+		}
+
+		specialists = append(specialists, s)
+	}
+
+	log.Println("Successfully retrieved SpecialistsGeneralInfo")
+
+	return specialists, nil
+}

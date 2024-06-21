@@ -11,3 +11,13 @@ type Specialist struct {
 	CityId           int    `json:"city_id"`
 	UserId           int    `json:"user_id"`
 }
+
+type SpecialistGeneralInfo struct {
+	Id             int     `json:"id"`
+	Name           string  `json:"name"`
+	SecondName     string  `json:"second_name"`
+	Specialization string  `json:"specialization"`
+	City           string  `json:"city"`
+	Rating         float32 `json:"rating"`
+	Reviews        int     `json:"reviews"`
+}

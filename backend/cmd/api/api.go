@@ -214,6 +214,57 @@ func (app *Application) GetSpecialistInfoByUserId(w http.ResponseWriter, r *http
 	_ = app.writeJSON(w, http.StatusOK, specialist)
 }
 
+func (app *Application) GetSpecialistsByCSpecializationIdCityIdServiceId(w http.ResponseWriter, r *http.Request) {
+	var specId *int
+	var cId *int
+	var servId *int
+
+	specializationId, err := strconv.Atoi(chi.URLParam(r, "specialization_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter specialization_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+	if specializationId == 0 {
+		specId = nil
+	} else {
+		specId = &specializationId
+	}
+
+	cityId, err := strconv.Atoi(chi.URLParam(r, "city_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter city_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+	if cityId == 0 {
+		cId = nil
+	} else {
+		cId = &cityId
+	}
+
+	serviceId, err := strconv.Atoi(chi.URLParam(r, "service_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter service_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+	if serviceId == 0 {
+		servId = nil
+	} else {
+		servId = &serviceId
+	}
+
+	specialists, err := app.DB.GetSpecialistsBySpecializationIdCityIdServiceId(specId, cId, servId)
+	if err != nil {
+		fmt.Println("error getting Specialist by specialization_id from db: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, specialists)
+}
+
 func (app *Application) GetAllSpecializations(w http.ResponseWriter, r *http.Request) {
 	specializations, err := app.DB.GetSpecializations()
 	if err != nil {
