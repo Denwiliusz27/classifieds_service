@@ -5,13 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../backend/internal/models/Review.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/internal/models/SpecialistService.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/api.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/routes.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/dal.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/dal.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/postgres/specialists.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/specialists.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/postgres/specialistsServices.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/specialistsServices.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/models/Specialist.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/models/Specialist.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/form/Select.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/form/Select.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/SearchSpecialistsCategory.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/SearchSpecialistsCategory.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/SearchSpecialistsDetails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/SearchSpecialistsDetails.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistProfile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistProfile.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,23 +51,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;06__search__specialists__pages&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/danwi/OneDrive/Pulpit/Things/STUDIA/classifieds_service/frontend/src/pages&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\danwi\\OneDrive\\Pulpit\\Things\\STUDIA\\classifieds_service\\frontend\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "07__specialist__detail__info__page",
+    "last_opened_file_path": "C:/Users/danwi/OneDrive/Pulpit/Things/STUDIA/classifieds_service/frontend/src/pages",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "ts.external.directory.path": "C:\\Users\\danwi\\OneDrive\\Pulpit\\Things\\STUDIA\\classifieds_service\\frontend\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\danwi\OneDrive\Pulpit\Things\STUDIA\classifieds_service\frontend\src\pages" />
@@ -138,7 +143,8 @@
       <workItem from="1718647509566" duration="3943000" />
       <workItem from="1718874604746" duration="594000" />
       <workItem from="1718884074385" duration="10323000" />
-      <workItem from="1718962162759" duration="4393000" />
+      <workItem from="1718962162759" duration="4677000" />
+      <workItem from="1718967305722" duration="1715000" />
     </task>
     <servers />
   </component>

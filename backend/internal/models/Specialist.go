@@ -21,3 +21,14 @@ type SpecialistGeneralInfo struct {
 	Rating         float32 `json:"rating"`
 	Reviews        int     `json:"reviews"`
 }
+
+type SpecialistProfileInfo struct {
+	Id             int    `json:"id"`
+	Name           string `json:"name"`
+	SecondName     string `json:"second_name"`
+	Email          string `json:"email"`
+	Specialization string `json:"specialization"`
+	City           string `json:"city"`
+	PhoneNr        string `json:"phone_nr"`
+	Description    string `json:"description"`
+}

@@ -138,6 +138,21 @@ const GetSpecialistsBySpecializationIdCityIdServiceId = `
 	;
 `
 
+const GetSpecialistProfileInfoBySpecialistId = `
+	SELECT
+		specialists.id, users.name, users.second_name, users.email, specializations.name, cities.name, specialists.phone_nr, specialists.description
+	FROM
+	    specialists
+	LEFT JOIN
+		users ON specialists.user_id = users.id
+	LEFT JOIN
+		specializations ON specialists.specialization_id = specializations.id
+	LEFT JOIN
+		cities ON specialists.city_id = cities.id
+	WHERE
+	    specialists.id = ($1);
+`
+
 // --- SPECIALIST_SERVICE ---
 
 const CreateSpecialistService = `
@@ -147,4 +162,31 @@ const CreateSpecialistService = `
 	VALUES
 	    ($1, $2, $3, $4)
 	RETURNING id;
+`
+
+const GetSpecialistServicesBySpecialistId = `
+	SELECT
+		specialists_services.id, services.name, services.price_per, specialists_services.price_min, specialists_services.price_max
+	FROM
+	    specialists_services
+	LEFT JOIN
+		services on specialists_services.service_id = services.id
+	WHERE
+	    specialists_services.specialist_id = ($1);
+`
+
+// --- REVIEWS ---
+
+const GetSpecialistReviews = `
+	SELECT
+		reviews.id, reviews.rating, clients.id, users.name, users.second_name, users.email, users.id, 
+		specialists_services.id, services.name, services.price_per, specialists_services.price_min, specialists_services.price_max,
+		reviews.description
+	FROM
+	    reviews
+	LEFT JOIN
+		clients ON reviews.client_id = clients.id
+	LEFT JOIN
+		users ON
+
 `

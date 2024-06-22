@@ -265,6 +265,36 @@ func (app *Application) GetSpecialistsByCSpecializationIdCityIdServiceId(w http.
 	_ = app.writeJSON(w, http.StatusOK, specialists)
 }
 
+func (app *Application) GetSpecialistDetailedInfo(w http.ResponseWriter, r *http.Request) {
+	specialistId, err := strconv.Atoi(chi.URLParam(r, "specialist_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter specialist_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	specialisServices, err := app.DB.GetSpecialistServicesBySpecialistId(specialistId)
+	if err != nil {
+		fmt.Println("error getting Specialist services by specialist_id from db: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	specialistProfileInfo, err := app.DB.GetSpecialistProfileInfoBySpecialistId(specialistId)
+	if err != nil {
+		fmt.Println("error getting Specialist profile info by specialist_id from db: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	specialistReviews, err := app.DB.GetSpecialistReviewsBySpecialistId(specialistId)
+	if err != nil {
+		fmt.Println("error getting Specialist reviews by specialist_id from db: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+}
+
 func (app *Application) GetAllSpecializations(w http.ResponseWriter, r *http.Request) {
 	specializations, err := app.DB.GetSpecializations()
 	if err != nil {
