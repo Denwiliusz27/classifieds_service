@@ -5,21 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/reviews.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/models/Review.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/models/SpecialistService.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/routes.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/dal.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/dal.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/models/Review.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/models/Review.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/models/Specialist.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/models/Specialist.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/models/SpecialistService.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/models/SpecialistService.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/Specialist.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Specialist.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/SpecialistRequest.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/SpecialistRequest.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistProfile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistProfile.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
