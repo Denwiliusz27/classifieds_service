@@ -28,7 +28,7 @@ func (app *Application) Routes() http.Handler {
 		mux.Get("/info/{user_id}", app.GetSpecialistInfoByUserId)
 	})
 
-	mux.Get("/specialists/{specialization_id}/{city_id}/{service_id}", app.GetSpecialistsByCSpecializationIdCityIdServiceId)
+	mux.Get("/specialists/{specialization_id}/{city_id}/{service_id}", app.GetSpecialistsBySpecializationIdCityIdServiceId)
 	mux.Get("/specialist/detailed_info/{specialist_id}", app.GetSpecialistDetailedInfo)
 
 	mux.Post("/register_specialist", app.CreateSpecialist)

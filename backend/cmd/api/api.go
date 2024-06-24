@@ -214,7 +214,7 @@ func (app *Application) GetSpecialistInfoByUserId(w http.ResponseWriter, r *http
 	_ = app.writeJSON(w, http.StatusOK, specialist)
 }
 
-func (app *Application) GetSpecialistsByCSpecializationIdCityIdServiceId(w http.ResponseWriter, r *http.Request) {
+func (app *Application) GetSpecialistsBySpecializationIdCityIdServiceId(w http.ResponseWriter, r *http.Request) {
 	var specId *int
 	var cId *int
 	var servId *int
@@ -273,7 +273,7 @@ func (app *Application) GetSpecialistDetailedInfo(w http.ResponseWriter, r *http
 		return
 	}
 
-	specialisServices, err := app.DB.GetSpecialistServicesBySpecialistId(specialistId)
+	specialistServices, err := app.DB.GetSpecialistServicesBySpecialistId(specialistId)
 	if err != nil {
 		fmt.Println("error getting Specialist services by specialist_id from db: ", err)
 		_ = app.errorJSON(w, err)
@@ -287,12 +287,20 @@ func (app *Application) GetSpecialistDetailedInfo(w http.ResponseWriter, r *http
 		return
 	}
 
-	specialistReviews, err := app.DB.GetSpecialistReviewsBySpecialistId(specialistId)
+	specialistReviews, err := app.DB.GetReviewsBySpecialistId(specialistId)
 	if err != nil {
 		fmt.Println("error getting Specialist reviews by specialist_id from db: ", err)
 		_ = app.errorJSON(w, err)
 		return
 	}
+
+	specialist := models.SpecialistExtendedInfo{
+		Info:     *specialistProfileInfo,
+		Services: specialistServices,
+		Reviews:  specialistReviews,
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, specialist)
 }
 
 func (app *Application) GetAllSpecializations(w http.ResponseWriter, r *http.Request) {

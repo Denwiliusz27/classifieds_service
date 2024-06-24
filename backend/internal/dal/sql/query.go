@@ -177,7 +177,7 @@ const GetSpecialistServicesBySpecialistId = `
 
 // --- REVIEWS ---
 
-const GetSpecialistReviews = `
+const GetReviewsBySpecialistId = `
 	SELECT
 		reviews.id, reviews.rating, clients.id, users.name, users.second_name, users.email, users.id, 
 		specialists_services.id, services.name, services.price_per, specialists_services.price_min, specialists_services.price_max,
@@ -187,6 +187,11 @@ const GetSpecialistReviews = `
 	LEFT JOIN
 		clients ON reviews.client_id = clients.id
 	LEFT JOIN
-		users ON
-
+		users ON clients.user_id = users.id
+	LEFT JOIN
+		specialists_services ON reviews.service_id = specialists_services.id
+	LEFT JOIN
+		services ON specialists_services.service_id = services.id
+	WHERE
+	    reviews.specialist_id = ($1);
 `

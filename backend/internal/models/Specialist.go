@@ -32,3 +32,9 @@ type SpecialistProfileInfo struct {
 	PhoneNr        string `json:"phone_nr"`
 	Description    string `json:"description"`
 }
+
+type SpecialistExtendedInfo struct {
+	Info     SpecialistProfileInfo `json:"specialist"`
+	Services []SpecialistService   `json:"services"`
+	Reviews  []Review              `json:"reviews"`
+}

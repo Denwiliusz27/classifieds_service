@@ -1,3 +1,6 @@
+import {Service} from "./Specialization";
+import {SpecialistService} from "./SpecialistService";
+import {Review} from "./Review";
 
 export interface Specialist {
     id: number
@@ -19,4 +22,21 @@ export interface SpecialistGeneralInfo {
     city: string
     rating: number
     reviews: number
+}
+
+export interface SpecialistProfileInfo {
+    id: number
+    name: string
+    second_name: string
+    email: string
+    specialization: string
+    city: string
+    phone_nr: string
+    description: string
+}
+
+export interface SpecialistExtendedInfo {
+    specialist: SpecialistProfileInfo
+    services: SpecialistService[]
+    reviews: Review[]
 }

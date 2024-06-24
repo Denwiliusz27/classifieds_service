@@ -1,7 +1,7 @@
 package models
 
 type Review struct {
-	Id                string            `json:"id"`
+	Id                int               `json:"id"`
 	Rating            int               `json:"rating"`
 	Client            Client            `json:"client"`
 	SpecialistService SpecialistService `json:"specialist_service"`
