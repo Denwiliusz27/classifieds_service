@@ -1,4 +1,3 @@
-import {Service} from "./Specialization";
 import {SpecialistService} from "./SpecialistService";
 import {Review} from "./Review";
 

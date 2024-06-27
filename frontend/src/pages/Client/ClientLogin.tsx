@@ -103,11 +103,11 @@ function ClientLogin() {
                         }).then((response) => response.json())
                             .then((data) => {
                                 const client: Client = {
-                                    Id: data.id,
-                                    Name: data.name,
-                                    SecondName: data.second_name,
-                                    Email: data.email,
-                                    UserId: data.user_id
+                                    id: data.id,
+                                    name: data.name,
+                                    second_name: data.second_name,
+                                    email: data.email,
+                                    user_id: data.user_id
                                 }
 
                                 sessionStorage.setItem("client", JSON.stringify(client))
