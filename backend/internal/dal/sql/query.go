@@ -135,7 +135,8 @@ const GetSpecialistsBySpecializationIdCityIdServiceId = `
 		) OR $3 IS NULL)
 	GROUP BY 
 	    specialists.id, users.name, users.second_name, specializations.name, cities.name, users.created_at
-	;
+	ORDER BY
+	    reviews ASC;
 `
 
 const GetSpecialistProfileInfoBySpecialistId = `
@@ -193,5 +194,8 @@ const GetReviewsBySpecialistId = `
  	LEFT JOIN
 		specialists_services ON (reviews.service_id = specialists_services.service_id AND reviews.specialist_id = specialists_services.specialist_id) 
 	WHERE
-	    reviews.specialist_id = ($1);
+	    reviews.specialist_id = ($1)
+	ORDER BY 
+		reviews.created_at DESC ;
+	;
 `
