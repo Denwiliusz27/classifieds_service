@@ -48,6 +48,7 @@ CREATE TABLE public.users
     second_name character varying(255) NOT NULL,
     email       character varying(255) NOT NULL,
     password    character varying(255) NOT NULL,
+    created_at  date                   NOT NULL,
     role        character varying(255) NOT NULL
 );
 
@@ -190,12 +191,13 @@ CREATE TABLE public.messages
 --
 CREATE TABLE public.reviews
 (
-    id            integer PRIMARY KEY NOT NULL,
-    rating        integer             NOT NULL,
-    description   text                NOT NULL,
-    specialist_id integer             NOT NULL,
-    client_id     integer             NOT NULL,
-    service_id    integer             NOT NULL
+    id            integer PRIMARY KEY      NOT NULL,
+    rating        integer                  NOT NULL,
+    description   text                     NOT NULL,
+    specialist_id integer                  NOT NULL,
+    client_id     integer                  NOT NULL,
+    created_at    timestamp with time zone NOT NULL,
+    service_id    integer                  NOT NULL
 );
 
 --
@@ -379,9 +381,11 @@ VALUES ('Gdańsk'),
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
-INSERT INTO public.users (name, second_name, email, password, role)
-VALUES ('Marek', 'Nowak', 'marek@gmail.com', 'marek1', 'client'),
-       ('Stanisław', 'Cięciwka', 'stas@gmail.com', 'stas1', 'specialist');
+INSERT INTO public.users (name, second_name, email, password, role, created_at)
+VALUES ('Marek', 'Nowak', 'marek@gmail.com', 'marek1', 'client', '2021-03-23'),
+       ('Stanisław', 'Cięciwka', 'stas@gmail.com', 'stas1', 'specialist', '2018-07-05'),
+       ('Janusz', 'Kręcek', 'januszkrecek@gmail.com', 'janusz1', 'specialist', '2022-01-15'),
+       ('Janina', 'Lipska', 'janinalipska@gmail.com', 'janina1', 'specialist', '2016-11-29');
 
 --
 -- Data for Name: clients; Type: TABLE DATA; Schema: public; Owner: -
@@ -393,10 +397,9 @@ VALUES (1);
 -- Data for Name: specialists; Type: TABLE DATA; Schema: public; Owner: -
 --
 INSERT INTO public.specialists (phone_nr, description, city_id, user_id, specialization_id)
-VALUES ('990427111',
-        'Kocham swoją pracę, od dziecka marzyłem o byciu elektrykiem, dlatego uczyłem się fachu w najleszych szkołach w kraju, a dzisiaj starannie pomagam innym',
-        1,
-        2, 1);
+VALUES ('990427111','Kocham swoją pracę, od dziecka marzyłem o byciu elektrykiem, dlatego uczyłem się fachu w najleszych szkołach w kraju, a dzisiaj starannie pomagam innym', 1, 2, 1),
+     ('812774912','Mam wieloletnie doświadczenie w pracy. Swoje doświadczenie czerpałem o najlepszych specjalistów. Wszyscy klienci zawsze chętnie do mnie wracają', 2, 3, 1),
+     ('699132992','Jestem spokojną osobą, która nie boi się żadnej pracy. Sprzątnę nawet największy kurz. Działam od wielu lat i w tym czasie zaufało mi już setki osób', 1, 4, 6);
 
 --
 -- Data for Name: clients_addresses; Type: TABLE DATA; Schema: public; Owner: -
@@ -506,8 +509,26 @@ VALUES ('Wymiana instalacji elektrycznej', 'meter', 1),
 --
 INSERT INTO public.specialists_services (price_min, price_max, specialist_id, service_id)
 VALUES (300, 600, 1, 1),
-       (500, 100, 1, 2),
-       (30, 100, 1, 5);
+       (50, 100, 1, 2),
+       (30, 100, 1, 5),
+       (50, 70, 2, 2),
+       (80, 120, 2, 4),
+       (40, 110, 2, 5),
+       (40, 80, 3, 32),
+       (30, 70, 3, 33),
+       (35, 90, 3, 34);
+
+--
+-- Data for Name: services; Type: TABLE DATA; Schema: public; Owner: -
+--
+INSERT INTO public.reviews (rating, description, specialist_id, client_id, created_at, service_id)
+VALUES (4, 'Bardzo dobry specjalista, zna się na fachu', 1, 1, '2023-12-13 12:23:22', 2),
+       (5, 'Pan poradził sobie z zadaniem jak mało kto', 1, 1, '2024-03-23 20:49:00', 5),
+       (4, 'Ok', 1, 1, '2024-02-05 18:05:12', 1),
+       (3, 'Mogło być lepiej', 1, 1, '2024-01-16 07:49:50', 1),
+       (4, 'Pan bardzo rzetelny', 2, 1, '2021-05-13 18:55:12', 4),
+       (5, 'Lepiej nie mogłem trafić, najlepszy specjalista w okolicy!', 2, 1, '2023-08-02 22:02:42', 5),
+       (5, 'Bardzo porządna Pani, prace wykonuje od deski do deski', 3, 1, '2024-02-12 08:22:02', 33);
 
 --
 -- Name: cities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
@@ -517,7 +538,7 @@ SELECT pg_catalog.setval('public.cities_id_seq', 5, true);
 --
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
-SELECT pg_catalog.setval('public.users_id_seq', 2, true);
+SELECT pg_catalog.setval('public.users_id_seq', 4, true);
 
 --
 -- Name: clients_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
@@ -527,7 +548,7 @@ SELECT pg_catalog.setval('public.clients_id_seq', 1, true);
 --
 -- Name: specialists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
-SELECT pg_catalog.setval('public.specialists_id_seq', 1, true);
+SELECT pg_catalog.setval('public.specialists_id_seq', 3, true);
 
 --
 -- Name: clients_addresses_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
@@ -547,7 +568,7 @@ SELECT pg_catalog.setval('public.services_id_seq', 64, true);
 --
 -- Name: specialists_services_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
-SELECT pg_catalog.setval('public.specialists_services_id_seq', 3, true);
+SELECT pg_catalog.setval('public.specialists_services_id_seq', 9, true);
 
 --
 -- Name: availabilities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
@@ -577,7 +598,7 @@ SELECT pg_catalog.setval('public.messages_id_seq', 1, true);
 --
 -- Name: reviews_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
-SELECT pg_catalog.setval('public.reviews_id_seq', 1, true);
+SELECT pg_catalog.setval('public.reviews_id_seq', 7, true);
 
 --
 -- Name: users users_role; Type: CONSTRAINT; Schema: public; Owner: -

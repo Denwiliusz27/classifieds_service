@@ -107,7 +107,8 @@ function ClientLogin() {
                                     name: data.name,
                                     second_name: data.second_name,
                                     email: data.email,
-                                    user_id: data.user_id
+                                    user_id: data.user_id,
+                                    created_at: data.created_at
                                 }
 
                                 sessionStorage.setItem("client", JSON.stringify(client))

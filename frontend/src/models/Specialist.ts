@@ -11,6 +11,7 @@ export interface Specialist {
     specialization_id: number
     city_id: number
     user_id: number
+    created_at: Date
 }
 
 export interface SpecialistGeneralInfo {
@@ -19,6 +20,7 @@ export interface SpecialistGeneralInfo {
     second_name: string
     specialization: string
     city: string
+    created_at: string
     rating: number
     reviews: number
 }
@@ -32,6 +34,7 @@ export interface SpecialistProfileInfo {
     city: string
     phone_nr: string
     description: string
+    created_at: string
 }
 
 export interface SpecialistExtendedInfo {

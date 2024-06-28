@@ -5,10 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/postgres/clients.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/clients.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/postgres/reviews.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/reviews.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/postgres/specialists.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/specialists.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/postgres/users.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/users.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/models/Client.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/models/Client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/models/Review.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/models/Review.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/models/Specialist.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/models/Specialist.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/models/User.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/models/User.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/sql/init_db.sql" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/sql/init_db.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../baza_danych.dia" beforeDir="false" afterPath="$PROJECT_DIR$/../baza_danych.dia" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/models/Client.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Client.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/Review.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Review.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/models/Specialist.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Specialist.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientLogin.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientLogin.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/SearchSpecialistsDetails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/SearchSpecialistsDetails.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistLogin.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistLogin.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistProfile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistProfile.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -139,7 +154,10 @@
       <workItem from="1718962162759" duration="4677000" />
       <workItem from="1718967305722" duration="1715000" />
       <workItem from="1719329865147" duration="2106000" />
-      <workItem from="1719484663595" duration="13832000" />
+      <workItem from="1719484663595" duration="14387000" />
+      <workItem from="1719514216763" duration="761000" />
+      <workItem from="1719566375812" duration="10365000" />
+      <workItem from="1719593006030" duration="4036000" />
     </task>
     <servers />
   </component>

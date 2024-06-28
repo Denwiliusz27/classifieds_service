@@ -5,4 +5,5 @@ export interface Client {
     second_name: string
     email: string
     user_id: number
+    created_at: Date
 }

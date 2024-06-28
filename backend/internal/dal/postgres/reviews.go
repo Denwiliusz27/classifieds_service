@@ -39,7 +39,8 @@ func (m *PG) GetReviewsBySpecialistId(specialistId int) ([]models.Review, error)
 			&r.SpecialistService.PricePer,
 			&r.SpecialistService.PriceMin,
 			&r.SpecialistService.PriceMax,
-			&r.Description)
+			&r.Description,
+			&r.CreatedAt)
 
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %w", err)

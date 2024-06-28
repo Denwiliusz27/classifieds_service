@@ -4,7 +4,7 @@ import {AuthContextType} from "../App";
 import {Service, Specialization} from "../models/Specialization";
 import {City} from "../models/City";
 import Select from "../components/form/Select";
-import {SpecialistGeneralInfo} from "../models/Specialist";
+import {Specialist, SpecialistGeneralInfo} from "../models/Specialist";
 
 function SearchSpecialistsDetails() {
     const [specializations, setSpecializations] = useState<Specialization[]>([])
@@ -42,7 +42,7 @@ function SearchSpecialistsDetails() {
                 setSpecialists(data)
             })
             .catch(err => {
-                console.log("Error retrieving Cities: ", err)
+                console.log("Error retrieving Specialists: ", err)
             })
 
     }, [jwtToken, userRole, navigate, location.state.specializationId])
@@ -110,7 +110,6 @@ function SearchSpecialistsDetails() {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        console.log("SEARCH")
 
         const headers = new Headers()
         headers.append("Content-Type", "application/json")
@@ -125,7 +124,7 @@ function SearchSpecialistsDetails() {
                 setSpecialists(data)
             })
             .catch(err => {
-                console.log("Error retrieving Cities: ", err)
+                console.log("Error retrieving Specialists: ", err)
             })
     }
 

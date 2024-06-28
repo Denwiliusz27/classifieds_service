@@ -7,4 +7,5 @@ export interface Review {
     client: Client
     specialist_service: SpecialistService
     description: string
+    created_at: string
 }

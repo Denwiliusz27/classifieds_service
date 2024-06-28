@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {useLocation, useNavigate, useOutletContext} from "react-router-dom";
 import {AuthContextType} from "../../App";
 import {SpecialistExtendedInfo} from "../../models/Specialist";
+import {Review} from "../../models/Review";
 
 function SpecialistProfile() {
     const [specialistId, setSpecialistId] = useState(0)
@@ -10,7 +11,6 @@ function SpecialistProfile() {
         count: 0,
         average: ''
     })
-
 
     const location = useLocation()
     const {jwtToken, userRole} = useOutletContext<AuthContextType>();
@@ -36,6 +36,19 @@ function SpecialistProfile() {
         fetch(`http://localhost:8080/specialist/detailed_info/${location.state.specialistId}`, requestOptions)
             .then((response) => response.json())
             .then((data) => {
+                data.specialist.created_at = new Date(data.specialist.created_at).toLocaleDateString()
+
+                data.reviews.forEach((r: Review) => {
+                    const d =  new Date(r.created_at)
+                    const year = d.getUTCFullYear();
+                    const month = String(d.getUTCMonth() + 1).padStart(2, '0'); // Miesiące są 0-indeksowane
+                    const day = String(d.getUTCDate()).padStart(2, '0');
+                    const hours = String(d.getUTCHours()).padStart(2, '0');
+                    const minutes = String(d.getUTCMinutes()).padStart(2, '0');
+
+                    r.created_at = String(hours + ":" + minutes + " " + day + "." + month + "." + year )
+                })
+
                 setSpecialist(data)
             })
             .catch(err => {
@@ -44,15 +57,11 @@ function SpecialistProfile() {
 
         console.log(specialist)
 
-
-
     }, [jwtToken, location.state.specialistId, navigate, userRole])
 
     useEffect(() => {
         if (specialist) {
-            console.log(specialist)
             if (specialist.reviews && specialist!.reviews.length > 0) {
-                console.log("HERE")
                 let avg = 0
                 for (let i=0; i<specialist!.reviews.length; i++) {
                     avg = avg + specialist.reviews[i].rating
@@ -69,7 +78,6 @@ function SpecialistProfile() {
         }
 
     }, [specialist]);
-
 
     return (
         <div className="flex flex-col items-center overflow-auto h-full bg-fixed fixed w-full pb-32">
@@ -133,6 +141,9 @@ function SpecialistProfile() {
                                             </div>
                                         </div>
                                     </div>
+
+                                    <p className="mt-3 text-lg scale-110">(W serwisie od {specialist?.specialist.created_at})</p>
+
 
                                     <div className="bg-amber-900 rounded-md h-1 my-4 w-4/5 "></div>
 
@@ -254,8 +265,12 @@ function SpecialistProfile() {
                                                                     </svg>
                                                                 </div>
 
-                                                                <p className="text-left text-xl">({r.specialist_service.name})</p>
+                                                                <div className="grow">
+                                                                    <p className="text-xl text-left">({r.created_at})</p>
+                                                                </div>
                                                             </div>
+
+                                                            <p className="text-left text-xl mt-1 font-medium">({r.specialist_service.name})</p>
 
                                                             <div className="bg-amber-900 rounded-md h-1 my-3"></div>
 
@@ -270,8 +285,6 @@ function SpecialistProfile() {
                                             <p>Brak opinii</p>
                                         </div>
                                     }
-
-
                                 </div>
                             </div>
                         </div>
