@@ -136,7 +136,7 @@ const GetSpecialistsBySpecializationIdCityIdServiceId = `
 	GROUP BY 
 	    specialists.id, users.name, users.second_name, specializations.name, cities.name, users.created_at
 	ORDER BY
-	    reviews ASC;
+	    rating DESC, reviews DESC;
 `
 
 const GetSpecialistProfileInfoBySpecialistId = `

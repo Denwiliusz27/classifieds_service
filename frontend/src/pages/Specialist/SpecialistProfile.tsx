@@ -1,8 +1,23 @@
 import React, {useEffect, useState} from "react";
 import {useLocation, useNavigate, useOutletContext} from "react-router-dom";
 import {AuthContextType} from "../../App";
-import {SpecialistExtendedInfo} from "../../models/Specialist";
+import {SpecialistExtendedInfo, SpecialistGeneralInfo} from "../../models/Specialist";
 import {Review} from "../../models/Review";
+import {Calendar, dateFnsLocalizer, momentLocalizer, Views, Event} from "react-big-calendar";
+import {pl} from "date-fns/locale";
+import {format} from "date-fns/format";
+import parse from "date-fns/parse";
+import startOfWeek from "date-fns/startOfWeek";
+import getDay from "date-fns/getDay";
+import {Visit, VisitRequest} from "../../models/Visit";
+import {Client} from "../../models/Client";
+import {SpecialistService} from "../../models/SpecialistService";
+import moment from 'moment';
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import "../../index.css"
+import {start} from "repl";
+import Swal from "sweetalert2";
+import {createPortal} from "react-dom";
 
 function SpecialistProfile() {
     const [specialistId, setSpecialistId] = useState(0)
@@ -11,6 +26,90 @@ function SpecialistProfile() {
         count: 0,
         average: ''
     })
+    const [windowVisible, setWindowVisible] = useState(false)
+    const [showRegisterWindow, setShowRegisterWindow] = useState(false)
+    const [newVisit, setNewVisit] = useState<VisitRequest>({
+        start_date: new Date(),
+        end_date: new Date(),
+        description: "",
+        client_id: 0,
+        specialist_id: 0,
+        specialist_service_id: 0,
+    })
+
+    const[events, setEvents] = useState<Visit[]>([
+        {
+            id: 1,
+            start_date: new Date(2024, 6, 5, 20, 10, 0),
+            end_date: new Date(2024, 6, 5, 23, 0, 0),
+            price: 20,
+            description: "spotkanie",
+            status: "done",
+            specialist: {
+                id: 1,
+                name: "Marek",
+                second_name: "Jawonik",
+                specialization: "Elektryk",
+                city: "Kraków",
+                created_at: "20-01-2022",
+                rating: 3,
+                reviews: 4,
+            },
+            client: {
+                id: 1,
+                name: "Jarosław",
+                second_name: "Buchalik",
+                email: "jaro@op.pl",
+                user_id: 2,
+                created_at: new Date(),
+            },
+            specialist_service: {
+                id: 1,
+                name: "Umycie kranu",
+                price_per: "meter",
+                price_min: 20,
+                price_max: 50,
+            },
+        },
+        {
+            id: 1,
+            start_date: new Date(2024, 6, 6, 10, 0, 0),
+            end_date: new Date(2024, 6, 6, 13, 0, 0),
+            price: 20,
+            description: "spotkanie",
+            status: "progress",
+            specialist: {
+                id: 1,
+                name: "Marek",
+                second_name: "Jawonik",
+                specialization: "Elektryk",
+                city: "Kraków",
+                created_at: "20-01-2022",
+                rating: 3,
+                reviews: 4,
+            },
+            client: {
+                id: 1,
+                name: "Stanisław",
+                second_name: "Krylski",
+                email: "jaro@op.pl",
+                user_id: 2,
+                created_at: new Date(),
+            },
+            specialist_service: {
+                id: 1,
+                name: "Instalacja elektryczna",
+                price_per: "meter",
+                price_min: 20,
+                price_max: 50,
+            },
+        },
+    ])
+
+    const unavailableDates: string[] = [
+        '2024-07-04',
+        '2024-07-03',
+    ];
 
     const location = useLocation()
     const {jwtToken, userRole} = useOutletContext<AuthContextType>();
@@ -79,16 +178,53 @@ function SpecialistProfile() {
 
     }, [specialist]);
 
+    const eventPropGetter = (event: Visit) => {
+        const backgroundColor = event.status === 'progress' ? 'red' : 'brown';
+        return { style: { backgroundColor } };
+    };
+
+    const isDateAvailable = (date: Date, unavailableDates: string[]): boolean => {
+        const formattedDate = format(date, 'yyyy-MM-dd');
+        return !unavailableDates.includes(formattedDate);
+    };
+
+    const handleSelectSlot = ({ start, end }: { start: Date; end: Date }) => {
+        if (!isDateAvailable(start, unavailableDates)) {
+            return;
+        }
+
+        setNewVisit({
+            ...newVisit,
+            start_date: start,
+        });
+
+        Swal.fire({
+            didOpen: () => setShowRegisterWindow(true),
+            didClose: () => setShowRegisterWindow(false),
+            showConfirmButton: false,
+        })
+
+        console.log(start)
+        console.log(end)
+    };
+
+    const dayPropGetter = (date: Date) => {
+        if (!isDateAvailable(date, unavailableDates)) {
+            return { style: { backgroundColor: 'lightgray'} };
+        }
+        return {};
+    };
+
     return (
         <div className="flex flex-col items-center overflow-auto h-full bg-fixed fixed w-full pb-32">
-            <div className="w-3/4">
+            <div className="w-11/12">
                 <div className="flex flex-col text-center pt-8">
                     <div className="flex flex-row text-3xl font-bold mb-6 justify-center">
                         <h1>Szczegóły profilu</h1>
                     </div>
 
                     <div className="flex flex-row">
-                        <div className="flex flex-col w-1/2">
+                        <div className="flex flex-col w-1/3">
                             {/* profile info*/}
                             <div className="flex flex-col w-full bg-white drop-shadow-lg p-6 my-4 rounded-2xl text-2xl">
                                 <div className="flex flex-col items-center">
@@ -137,13 +273,12 @@ function SpecialistProfile() {
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                           d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/>
                                                 </svg>
-                                                <p className="pl-3 font-bold">{specialist?.specialist.email}</p>
+                                                <p className="pl-3 font-bold break-all w-full">{specialist?.specialist.email}</p>
                                             </div>
                                         </div>
                                     </div>
 
                                     <p className="mt-3 text-lg scale-110">(W serwisie od {specialist?.specialist.created_at})</p>
-
 
                                     <div className="bg-amber-900 rounded-md h-1 my-4 w-4/5 "></div>
 
@@ -290,9 +425,63 @@ function SpecialistProfile() {
                         </div>
 
                         {/* calendar */}
-                        <div className="w-1/2 ml-8 flex flex-col bg-white drop-shadow-lg p-6 my-4 rounded-2xl text-2xl">
-                            <p>Kalendarz</p>
+                        <div className="w-2/3 ml-8 flex flex-col bg-white drop-shadow-lg p-6 my-4 rounded-2xl text-2xl">
+                            <div className="flex flex-col items-center">
+                                <div className="flex flex-col justify-center">
+                                    <p className="font-bold text-3xl pb-1">Kalendarz</p>
+                                    <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
+                                </div>
+
+                                <div className="w-full">
+                                    <Calendar
+                                        culture={"pl"}
+                                        localizer={localizer}
+                                        events={events}
+                                        defaultView={Views.WEEK}
+                                        step={15}
+                                        views={[Views.WEEK]}
+                                        min={new Date(0, 0, 0, 6, 0, 0)}
+                                        max={new Date(0, 0, 0, 22, 0, 0)}
+                                        dayPropGetter={dayPropGetter}
+                                        onSelectSlot={handleSelectSlot}
+                                        startAccessor={(event: Visit) => event.start_date}
+                                        endAccessor={(event: Visit) => event.end_date}
+                                        style={{ height: 700, fontSize:"x-large" }}
+                                        messages={{
+                                            previous: "Poprzedni",
+                                            next: "Następny",
+                                            today: "Dziś",
+                                        }}
+                                        eventPropGetter={eventPropGetter}
+                                        selectable={true}
+                                        components={{
+                                            event: EventComponent
+                                        }}
+                                        onSelectEvent={(event) => alert(event.specialist_service.name)}
+                                    />
+                                </div>
+                            </div>
                         </div>
+
+                        {showRegisterWindow &&
+                            createPortal(
+                                <div className="flex flex-col items-center">
+                                    <div className="flex flex-col justify-center">
+                                        <p className="font-bold text-3xl pb-1">Zarezerwuj usługę</p>
+                                        <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
+                                    </div>
+
+                                    <div className="flex flex-col">
+                                        <div>
+                                            <p>{newVisit.start_date.getUTCFullYear()}</p>
+                                        </div>
+
+
+                                    </div>
+                                </div>,
+                                Swal.getHtmlContainer()!,
+                            )
+                        }
                     </div>
                 </div>
             </div>
@@ -300,4 +489,23 @@ function SpecialistProfile() {
     )
 }
 
+
+const locales = {
+    pl: pl,
+};
+
+const localizer = dateFnsLocalizer({
+    format,
+    parse,
+    startOfWeek,
+    getDay,
+    locales,
+});
+
+const EventComponent = ({ event }: { event: Visit }) => (
+    <div className="flex flex-col items-center justify-items-center justify-center text-center my-4">
+        <strong>{event.specialist.name} {event.specialist.second_name}</strong>
+        <p>{event.specialist_service.name}</p>
+    </div>
+);
 export default SpecialistProfile

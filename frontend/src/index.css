@@ -21,3 +21,15 @@
 .zooming_card:hover .zooming_card_img {
     @apply scale-150;
 }
+
+.rbc-header {
+    height: 50px; /* Zwiększenie wysokości nagłówków dni */
+    line-height: 50px;
+    white-space: nowrap;
+    overflow: visible; /* Ukrywanie nadmiarowego tekstu */
+}
+
+
+.rbc-allday-cell {
+    display: none;
+}
