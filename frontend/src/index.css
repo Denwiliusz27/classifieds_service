@@ -29,7 +29,14 @@
     overflow: visible; /* Ukrywanie nadmiarowego tekstu */
 }
 
-
 .rbc-allday-cell {
     display: none;
+}
+
+.custom-datepicker .MuiOutlinedInput-root {
+    border-width: 1px;
+}
+
+.custom-datepicker .MuiOutlinedInput-notchedOutline {
+    border-width: 1px;
 }

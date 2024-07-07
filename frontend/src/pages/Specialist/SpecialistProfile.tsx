@@ -18,6 +18,19 @@ import "../../index.css"
 import {start} from "repl";
 import Swal from "sweetalert2";
 import {createPortal} from "react-dom";
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
+import plLocale from 'date-fns/locale/pl';
+import {TextField} from '@mui/material';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import {DemoContainer, DemoItem} from '@mui/x-date-pickers/internals/demo';
+import dayjs, {Dayjs} from 'dayjs';
+import {TimePicker} from '@mui/x-date-pickers/TimePicker';
+import {DatePicker} from '@mui/x-date-pickers/DatePicker';
+import 'dayjs/locale/pl';
+import Input from "../../components/form/Input";
+import Select from "../../components/form/Select";
+import {Specialization} from "../../models/Specialization";
 
 function SpecialistProfile() {
     const [specialistId, setSpecialistId] = useState(0)
@@ -37,7 +50,7 @@ function SpecialistProfile() {
         specialist_service_id: 0,
     })
 
-    const[events, setEvents] = useState<Visit[]>([
+    const [events, setEvents] = useState<Visit[]>([
         {
             id: 1,
             start_date: new Date(2024, 6, 5, 20, 10, 0),
@@ -138,14 +151,14 @@ function SpecialistProfile() {
                 data.specialist.created_at = new Date(data.specialist.created_at).toLocaleDateString()
 
                 data.reviews.forEach((r: Review) => {
-                    const d =  new Date(r.created_at)
+                    const d = new Date(r.created_at)
                     const year = d.getUTCFullYear();
                     const month = String(d.getUTCMonth() + 1).padStart(2, '0'); // Miesiące są 0-indeksowane
                     const day = String(d.getUTCDate()).padStart(2, '0');
                     const hours = String(d.getUTCHours()).padStart(2, '0');
                     const minutes = String(d.getUTCMinutes()).padStart(2, '0');
 
-                    r.created_at = String(hours + ":" + minutes + " " + day + "." + month + "." + year )
+                    r.created_at = String(hours + ":" + minutes + " " + day + "." + month + "." + year)
                 })
 
                 setSpecialist(data)
@@ -162,7 +175,7 @@ function SpecialistProfile() {
         if (specialist) {
             if (specialist.reviews && specialist!.reviews.length > 0) {
                 let avg = 0
-                for (let i=0; i<specialist!.reviews.length; i++) {
+                for (let i = 0; i < specialist!.reviews.length; i++) {
                     avg = avg + specialist.reviews[i].rating
                 }
 
@@ -180,7 +193,7 @@ function SpecialistProfile() {
 
     const eventPropGetter = (event: Visit) => {
         const backgroundColor = event.status === 'progress' ? 'red' : 'brown';
-        return { style: { backgroundColor } };
+        return {style: {backgroundColor}};
     };
 
     const isDateAvailable = (date: Date, unavailableDates: string[]): boolean => {
@@ -188,7 +201,7 @@ function SpecialistProfile() {
         return !unavailableDates.includes(formattedDate);
     };
 
-    const handleSelectSlot = ({ start, end }: { start: Date; end: Date }) => {
+    const handleSelectSlot = ({start, end}: { start: Date; end: Date }) => {
         if (!isDateAvailable(start, unavailableDates)) {
             return;
         }
@@ -204,13 +217,12 @@ function SpecialistProfile() {
             showConfirmButton: false,
         })
 
-        console.log(start)
-        console.log(end)
+        console.log(newVisit.start_date)
     };
 
     const dayPropGetter = (date: Date) => {
         if (!isDateAvailable(date, unavailableDates)) {
-            return { style: { backgroundColor: 'lightgray'} };
+            return {style: {backgroundColor: 'lightgray'}};
         }
         return {};
     };
@@ -278,7 +290,8 @@ function SpecialistProfile() {
                                         </div>
                                     </div>
 
-                                    <p className="mt-3 text-lg scale-110">(W serwisie od {specialist?.specialist.created_at})</p>
+                                    <p className="mt-3 text-lg scale-110">(W serwisie
+                                        od {specialist?.specialist.created_at})</p>
 
                                     <div className="bg-amber-900 rounded-md h-1 my-4 w-4/5 "></div>
 
@@ -446,7 +459,7 @@ function SpecialistProfile() {
                                         onSelectSlot={handleSelectSlot}
                                         startAccessor={(event: Visit) => event.start_date}
                                         endAccessor={(event: Visit) => event.end_date}
-                                        style={{ height: 700, fontSize:"x-large" }}
+                                        style={{height: 700, fontSize: "x-large"}}
                                         messages={{
                                             previous: "Poprzedni",
                                             next: "Następny",
@@ -471,11 +484,102 @@ function SpecialistProfile() {
                                         <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
                                     </div>
 
-                                    <div className="flex flex-col">
-                                        <div>
-                                            <p>{newVisit.start_date.getUTCFullYear()}</p>
+                                    <div className="w-2/3 text-2xl">
+                                        <div className="w-full py-2">
+                                            <p className="font-bold pb-2 text-left">Godzina</p>
+
+                                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
+                                                <DemoItem>
+                                                    <TimePicker
+                                                        className="custom-datepicker"
+                                                        defaultValue={dayjs(newVisit.start_date)}
+                                                        onChange={(value) => setNewVisit({
+                                                            ...newVisit,
+                                                            start_date: new Date(
+                                                                newVisit.start_date.getUTCFullYear(),
+                                                                newVisit.start_date.getMonth(),
+                                                                newVisit.start_date.getDate(),
+                                                                value!.toDate().getHours(),
+                                                                value!.toDate().getMinutes(),
+                                                                0,
+                                                            )
+                                                        })}
+                                                        ampm={false}
+                                                    />
+                                                </DemoItem>
+                                            </LocalizationProvider>
                                         </div>
 
+                                        <div className="w-full py-2">
+                                            <p className="font-bold text-left">Data</p>
+
+                                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
+                                                <DemoContainer components={['DatePicker']}>
+                                                    <DatePicker
+                                                        className="custom-datepicker w-full p-0 m-0"
+                                                        defaultValue={dayjs(newVisit.start_date)}
+                                                        onChange={(value) => setNewVisit({
+                                                            ...newVisit,
+                                                            start_date: new Date(
+                                                                value!.toDate().getFullYear(),
+                                                                value!.toDate().getUTCMonth(),
+                                                                value!.toDate().getDate(),
+                                                                newVisit.start_date.getHours(),
+                                                                newVisit.start_date.getMinutes(),
+                                                                0,
+                                                            )
+                                                        })}
+                                                    />
+                                                </DemoContainer>
+                                            </LocalizationProvider>
+                                        </div>
+
+                                        <div className="w-full py-2">
+                                            <p className="font-bold text-left pb-2">Usługa</p>
+
+                                            <select
+                                                id="service_id"
+                                                name="usługa"
+                                                value={newVisit.specialist_service_id}
+                                                onChange={(value) => setNewVisit({
+                                                    ...newVisit,
+                                                    specialist_service_id: parseInt(value.currentTarget.value)
+                                                })}
+                                                className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
+                                            >
+                                                <option value="" disabled={newVisit.specialist_service_id !== 0}>Nazwa
+                                                    usługi
+                                                </option>
+                                                {specialist?.services!.map((option) => {
+                                                    return (
+                                                        <option
+                                                            key={option.id}
+                                                            value={option.id}
+                                                        >
+                                                            {option.name}
+                                                        </option>
+                                                    )
+                                                })}
+                                            </select>
+                                        </div>
+
+                                        <div className="w-full py-2">
+                                            <p className="font-bold text-left pb-2">Opis usługi</p>
+
+                                            <textarea
+                                                id="description"
+                                                name="description"
+                                                placeholder="Opis usługi"
+                                                value={newVisit.description}
+                                                onChange={(value) => setNewVisit({
+                                                    ...newVisit,
+                                                    description: value.currentTarget.value
+                                                })}
+                                                rows={6}
+                                                cols={40}
+                                                className={`w-full border-2 text-lg border-gray-300 rounded-md p-3`}
+                                            />
+                                        </div>
 
                                     </div>
                                 </div>,
@@ -502,7 +606,7 @@ const localizer = dateFnsLocalizer({
     locales,
 });
 
-const EventComponent = ({ event }: { event: Visit }) => (
+const EventComponent = ({event}: { event: Visit }) => (
     <div className="flex flex-col items-center justify-items-center justify-center text-center my-4">
         <strong>{event.specialist.name} {event.specialist.second_name}</strong>
         <p>{event.specialist_service.name}</p>
