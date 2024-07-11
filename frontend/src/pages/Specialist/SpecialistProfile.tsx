@@ -31,6 +31,7 @@ import 'dayjs/locale/pl';
 import Input from "../../components/form/Input";
 import Select from "../../components/form/Select";
 import {Specialization} from "../../models/Specialization";
+import {DateTimePicker} from "@mui/x-date-pickers";
 
 function SpecialistProfile() {
     const [specialistId, setSpecialistId] = useState(0)
@@ -43,6 +44,8 @@ function SpecialistProfile() {
     const [showRegisterWindow, setShowRegisterWindow] = useState(false)
     const [showErrorDateWindow, setShowErrorDateWindow] = useState(false)
     const [dateError, setDateError] = useState("")
+    const [serviceError, setServiceError] = useState("")
+    const [descriptionError, setDescriptionError] = useState("")
     const [newVisit, setNewVisit] = useState<VisitRequest>({
         start_date: new Date(),
         end_date: new Date(),
@@ -275,6 +278,34 @@ function SpecialistProfile() {
         }
         return {};
     };
+
+    const createVisit = () => {
+        if (!isDateFromFuture(newVisit.start_date)) {
+            setDateError("Wybrana data jest datą przeszłą, wybierz termin z przyszłości")
+        }
+
+        if (dateError === "" && !isDateAvailable(newVisit.start_date, unavailableDates)) {
+            setDateError("Wybrana data jest niedostępna, wybierz inny termin")
+        }
+
+        if (dateError === "" && isDateOverlapping(newVisit.start_date)) {
+            setDateError("W wybranym terminie istnieje już rezerwacja, wybierz inny termin")
+        }
+
+        if (newVisit.specialist_service_id === 0) {
+            setServiceError("Wybierz usługę z listy")
+        }
+
+        if (newVisit.description === "") {
+            setDescriptionError("Dodaj szczegółowe informacje na temat usługi")
+        }
+
+        if (dateError !== "" || serviceError !== "" || descriptionError !== "") {
+            return
+        }
+
+        console.log("created")
+    }
 
     return (
         <div className="flex flex-col items-center overflow-auto h-full bg-fixed fixed w-full pb-32">
@@ -535,65 +566,49 @@ function SpecialistProfile() {
 
                                     <div className="w-2/3 text-2xl">
                                         <div className="w-full py-2">
-                                            <p className="font-bold pb-2 text-left">Godzina</p>
+                                            <p className="font-bold pb-2 text-left">Data<sup>*</sup></p>
 
                                             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
                                                 <DemoItem>
-                                                    <TimePicker
-                                                        className="custom-datepicker"
+                                                    <DateTimePicker
                                                         defaultValue={dayjs(newVisit.start_date)}
-                                                        onChange={(value) => setNewVisit({
-                                                            ...newVisit,
-                                                            start_date: new Date(
-                                                                newVisit.start_date.getUTCFullYear(),
-                                                                newVisit.start_date.getMonth(),
-                                                                newVisit.start_date.getDate(),
-                                                                value!.toDate().getHours(),
-                                                                value!.toDate().getMinutes(),
-                                                                0,
-                                                            )
-                                                        })}
                                                         ampm={false}
+                                                        minutesStep={15}
+                                                        minTime={dayjs().set('hour', 6).set('minute', 0)} // Ograniczenie godzin od 6:00
+                                                        maxTime={dayjs().set('hour', 21).set('minute', 0)} // Ograniczenie godzin do 21:00
+                                                        onChange={(value) => {
+                                                            setNewVisit({
+                                                                ...newVisit,
+                                                                start_date: value!.toDate()
+                                                            })
+                                                            setDateError("")
+                                                        }}
                                                     />
                                                 </DemoItem>
                                             </LocalizationProvider>
+
+                                            {dateError &&
+                                                <div
+                                                    className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full h-7 mt-1 leading-none">
+                                                    <p>{dateError}</p>
+                                                </div>
+                                            }
                                         </div>
 
                                         <div className="w-full py-2">
-                                            <p className="font-bold text-left">Data</p>
-
-                                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
-                                                <DemoContainer components={['DatePicker']}>
-                                                    <DatePicker
-                                                        className="custom-datepicker w-full p-0 m-0"
-                                                        defaultValue={dayjs(newVisit.start_date)}
-                                                        onChange={(value) => setNewVisit({
-                                                            ...newVisit,
-                                                            start_date: new Date(
-                                                                value!.toDate().getFullYear(),
-                                                                value!.toDate().getUTCMonth(),
-                                                                value!.toDate().getDate(),
-                                                                newVisit.start_date.getHours(),
-                                                                newVisit.start_date.getMinutes(),
-                                                                0,
-                                                            )
-                                                        })}
-                                                    />
-                                                </DemoContainer>
-                                            </LocalizationProvider>
-                                        </div>
-
-                                        <div className="w-full py-2">
-                                            <p className="font-bold text-left pb-2">Usługa</p>
+                                            <p className="font-bold text-left pb-2">Usługa<sup>*</sup></p>
 
                                             <select
                                                 id="service_id"
                                                 name="usługa"
                                                 value={newVisit.specialist_service_id}
-                                                onChange={(value) => setNewVisit({
-                                                    ...newVisit,
-                                                    specialist_service_id: parseInt(value.currentTarget.value)
-                                                })}
+                                                onChange={(value) => {
+                                                    setNewVisit({
+                                                        ...newVisit,
+                                                        specialist_service_id: parseInt(value.currentTarget.value)
+                                                    })
+                                                    setServiceError("")
+                                                }}
                                                 className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
                                             >
                                                 <option value="" disabled={newVisit.specialist_service_id !== 0}>Nazwa
@@ -610,24 +625,53 @@ function SpecialistProfile() {
                                                     )
                                                 })}
                                             </select>
+
+                                            {serviceError &&
+                                                <div
+                                                    className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full h-7 mt-1 leading-none">
+                                                    <p>{serviceError}</p>
+                                                </div>
+                                            }
                                         </div>
 
-                                        <div className="w-full py-2">
-                                            <p className="font-bold text-left pb-2">Opis usługi</p>
+                                        <div className="w-full pt-2">
+                                            <p className="font-bold text-left pb-2">Opis usługi<sup>*</sup></p>
 
                                             <textarea
                                                 id="description"
                                                 name="description"
                                                 placeholder="Opis usługi"
                                                 value={newVisit.description}
-                                                onChange={(value) => setNewVisit({
-                                                    ...newVisit,
-                                                    description: value.currentTarget.value
-                                                })}
+                                                onChange={(value) => {
+                                                    setNewVisit({
+                                                        ...newVisit,
+                                                        description: value.currentTarget.value
+                                                    })
+                                                    setDescriptionError("")
+                                                }}
                                                 rows={6}
                                                 cols={40}
                                                 className={`w-full border-2 text-lg border-gray-300 rounded-md p-3`}
                                             />
+
+                                            {descriptionError &&
+                                                <div
+                                                    className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full h-7 mt-1 leading-none">
+                                                    <p>{descriptionError}</p>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        <div className="flex flex-row justify-evenly mt-5">
+                                            <div onClick={() => Swal.close()}
+                                                 className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
+                                                <span className="mx-3 my-2 text-xl">Anuluj</span>
+                                            </div>
+
+                                            <div onClick={createVisit}
+                                                 className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
+                                                <span className="mx-3 my-2 text-xl">Zarezerwuj</span>
+                                            </div>
                                         </div>
 
                                     </div>
