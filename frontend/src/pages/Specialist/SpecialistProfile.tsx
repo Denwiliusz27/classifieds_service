@@ -41,6 +41,8 @@ function SpecialistProfile() {
     })
     const [windowVisible, setWindowVisible] = useState(false)
     const [showRegisterWindow, setShowRegisterWindow] = useState(false)
+    const [showErrorDateWindow, setShowErrorDateWindow] = useState(false)
+    const [dateError, setDateError] = useState("")
     const [newVisit, setNewVisit] = useState<VisitRequest>({
         start_date: new Date(),
         end_date: new Date(),
@@ -53,8 +55,8 @@ function SpecialistProfile() {
     const [events, setEvents] = useState<Visit[]>([
         {
             id: 1,
-            start_date: new Date(2024, 6, 5, 20, 10, 0),
-            end_date: new Date(2024, 6, 5, 23, 0, 0),
+            start_date: new Date(2024, 6, 13, 18, 10, 0),
+            end_date: new Date(2024, 6, 13, 22, 0, 0),
             price: 20,
             description: "spotkanie",
             status: "done",
@@ -78,7 +80,7 @@ function SpecialistProfile() {
             },
             specialist_service: {
                 id: 1,
-                name: "Umycie kranu",
+                name: "Wymiana instalacji elektrycznej",
                 price_per: "meter",
                 price_min: 20,
                 price_max: 50,
@@ -86,8 +88,8 @@ function SpecialistProfile() {
         },
         {
             id: 1,
-            start_date: new Date(2024, 6, 6, 10, 0, 0),
-            end_date: new Date(2024, 6, 6, 13, 0, 0),
+            start_date: new Date(2024, 6, 10, 10, 0, 0),
+            end_date: new Date(2024, 6, 10, 13, 0, 0),
             price: 20,
             description: "spotkanie",
             status: "progress",
@@ -111,7 +113,7 @@ function SpecialistProfile() {
             },
             specialist_service: {
                 id: 1,
-                name: "Instalacja elektryczna",
+                name: "Instalacja gniazdek",
                 price_per: "meter",
                 price_min: 20,
                 price_max: 50,
@@ -120,7 +122,7 @@ function SpecialistProfile() {
     ])
 
     const unavailableDates: string[] = [
-        '2024-07-04',
+        '2024-07-12',
         '2024-07-03',
     ];
 
@@ -192,7 +194,7 @@ function SpecialistProfile() {
     }, [specialist]);
 
     const eventPropGetter = (event: Visit) => {
-        const backgroundColor = event.status === 'progress' ? 'red' : 'brown';
+        const backgroundColor = 'brown';
         return {style: {backgroundColor}};
     };
 
@@ -201,8 +203,55 @@ function SpecialistProfile() {
         return !unavailableDates.includes(formattedDate);
     };
 
+    const isDateOverlapping = (date: Date): boolean => {
+        for (let i = 0; i < events.length; i++) {
+            if (date > events[i].start_date && date < events[i].end_date) {
+                return true
+            }
+        }
+        return false;
+    }
+
+    const isDateFromFuture = (date: Date): boolean => {
+        const currentDate = new Date();
+
+        if (date < currentDate) {
+            return false
+        }
+        return true
+    }
+
     const handleSelectSlot = ({start, end}: { start: Date; end: Date }) => {
+        if (!isDateFromFuture(start)) {
+            setDateError("Wybrana data jest datą przeszłą, wybierz termin z przyszłości.")
+
+            Swal.fire({
+                didOpen: () => setShowErrorDateWindow(true),
+                didClose: () => setShowErrorDateWindow(false),
+                showConfirmButton: false,
+            })
+            return;
+        }
+
         if (!isDateAvailable(start, unavailableDates)) {
+            setDateError("Wybrana data jest niedostępna, wybierz inny termin.")
+
+            Swal.fire({
+                didOpen: () => setShowErrorDateWindow(true),
+                didClose: () => setShowErrorDateWindow(false),
+                showConfirmButton: false,
+            })
+            return;
+        }
+
+        if (isDateOverlapping(start)) {
+            setDateError("W wybranym terminie istnieje już rezerwacja, wybierz inny termin.")
+
+            Swal.fire({
+                didOpen: () => setShowErrorDateWindow(true),
+                didClose: () => setShowErrorDateWindow(false),
+                showConfirmButton: false,
+            })
             return;
         }
 
@@ -586,6 +635,27 @@ function SpecialistProfile() {
                                 Swal.getHtmlContainer()!,
                             )
                         }
+
+                        {showErrorDateWindow &&
+                            createPortal(
+                                <div className="flex flex-col items-center">
+                                    <div className="flex flex-col justify-center">
+                                        <p className="font-bold text-3xl pb-1">Błąd</p>
+                                        <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
+                                    </div>
+
+                                    <div className="flex flex-col items-end w-4/5 mt-3 mb-5">
+                                        <p className="text-xl">{dateError}</p>
+                                    </div>
+
+                                    <div onClick={() => Swal.close()}
+                                         className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
+                                        <span className="mx-3 my-2 text-xl">Ok</span>
+                                    </div>
+                                </div>,
+                                Swal.getHtmlContainer()!,
+                            )
+                        }
                     </div>
                 </div>
             </div>
@@ -608,8 +678,7 @@ const localizer = dateFnsLocalizer({
 
 const EventComponent = ({event}: { event: Visit }) => (
     <div className="flex flex-col items-center justify-items-center justify-center text-center my-4">
-        <strong>{event.specialist.name} {event.specialist.second_name}</strong>
-        <p>{event.specialist_service.name}</p>
+        <p className="break-all">{event.specialist_service.name}</p>
     </div>
 );
 export default SpecialistProfile

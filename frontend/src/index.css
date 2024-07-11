@@ -33,6 +33,10 @@
     display: none;
 }
 
+.rbc-event-label {
+
+}
+
 .custom-datepicker .MuiOutlinedInput-root {
     border-width: 1px;
 }
