@@ -23,10 +23,10 @@
 }
 
 .rbc-header {
-    height: 50px; /* Zwiększenie wysokości nagłówków dni */
+    height: 50px;
     line-height: 50px;
     white-space: nowrap;
-    overflow: visible; /* Ukrywanie nadmiarowego tekstu */
+    overflow: visible;
 }
 
 .rbc-allday-cell {
@@ -34,7 +34,8 @@
 }
 
 .rbc-event-label {
-
+    word-wrap: break-word;
+    text-wrap: wrap;
 }
 
 .custom-datepicker .MuiOutlinedInput-root {

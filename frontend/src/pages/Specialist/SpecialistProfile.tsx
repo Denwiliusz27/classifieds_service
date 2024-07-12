@@ -125,7 +125,7 @@ function SpecialistProfile() {
     ])
 
     const unavailableDates: string[] = [
-        '2024-07-12',
+        '2024-07-14',
         '2024-07-03',
     ];
 
@@ -217,11 +217,7 @@ function SpecialistProfile() {
 
     const isDateFromFuture = (date: Date): boolean => {
         const currentDate = new Date();
-
-        if (date < currentDate) {
-            return false
-        }
-        return true
+        return date >= currentDate;
     }
 
     const handleSelectSlot = ({start, end}: { start: Date; end: Date }) => {
@@ -230,7 +226,10 @@ function SpecialistProfile() {
 
             Swal.fire({
                 didOpen: () => setShowErrorDateWindow(true),
-                didClose: () => setShowErrorDateWindow(false),
+                didClose: () => {
+                    setShowErrorDateWindow(false)
+                    setDateError("")
+                },
                 showConfirmButton: false,
             })
             return;
@@ -241,7 +240,10 @@ function SpecialistProfile() {
 
             Swal.fire({
                 didOpen: () => setShowErrorDateWindow(true),
-                didClose: () => setShowErrorDateWindow(false),
+                didClose: () => {
+                    setShowErrorDateWindow(false)
+                    setDateError("")
+                },
                 showConfirmButton: false,
             })
             return;
@@ -252,7 +254,10 @@ function SpecialistProfile() {
 
             Swal.fire({
                 didOpen: () => setShowErrorDateWindow(true),
-                didClose: () => setShowErrorDateWindow(false),
+                didClose: () => {
+                    setShowErrorDateWindow(false)
+                    setDateError("")
+                },
                 showConfirmButton: false,
             })
             return;
@@ -521,8 +526,13 @@ function SpecialistProfile() {
                         <div className="w-2/3 ml-8 flex flex-col bg-white drop-shadow-lg p-6 my-4 rounded-2xl text-2xl">
                             <div className="flex flex-col items-center">
                                 <div className="flex flex-col justify-center">
-                                    <p className="font-bold text-3xl pb-1">Kalendarz</p>
+                                    <p className="font-bold text-3xl pb-1">Zarezerwuj usługę</p>
                                     <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
+
+                                    <p className="mb-5">
+                                        Aby zarezerwować usługę, kliknij w interesującą cię datę, a następnie wybierz usługę
+                                        i podaj szczegółowy jej opis w wyświetlonym na ekranie formularz.
+                                    </p>
                                 </div>
 
                                 <div className="w-full">
@@ -539,7 +549,7 @@ function SpecialistProfile() {
                                         onSelectSlot={handleSelectSlot}
                                         startAccessor={(event: Visit) => event.start_date}
                                         endAccessor={(event: Visit) => event.end_date}
-                                        style={{height: 700, fontSize: "x-large"}}
+                                        style={{ height: (specialist?.reviews.length! <= 2 ) ? 900 : 1300, fontSize: "x-large"}}
                                         messages={{
                                             previous: "Poprzedni",
                                             next: "Następny",
@@ -552,6 +562,18 @@ function SpecialistProfile() {
                                         }}
                                         onSelectEvent={(event) => alert(event.specialist_service.name)}
                                     />
+                                </div>
+
+                                <div className="flex flex-row mt-8 justify-between">
+                                    <div className="flex flex-row items-center mr-6">
+                                        <div className="bg-gray-300 rounded-lg h-8 w-8 min-h-8 min-w-8"></div>
+                                        <p className="ml-2">- termin niedostępny</p>
+                                    </div>
+
+                                    <div className="flex flex-row items-center">
+                                        <div className="bg-red-700 rounded-lg h-8 w-8 min-h-8 min-w-8"></div>
+                                        <p className="ml-2">- usługa zarezerwowana przez innego użytkownika</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
