@@ -199,3 +199,15 @@ const GetReviewsBySpecialistId = `
 		reviews.created_at DESC ;
 	;
 `
+
+// --- TIME_OFF ---
+
+const GetTimeOffBySpecialistId = `
+	SELECT *
+	FROM
+	    time_off
+	WHERE
+	    specialist_id = ($1) AND start_date >= current_date
+	ORDER BY 
+	    start_date ASC;
+`

@@ -32,6 +32,7 @@ import Input from "../../components/form/Input";
 import Select from "../../components/form/Select";
 import {Specialization} from "../../models/Specialization";
 import {DateTimePicker} from "@mui/x-date-pickers";
+import {TimeOff} from "../../models/TimeOff";
 
 function SpecialistProfile() {
     const [specialistId, setSpecialistId] = useState(0)
@@ -46,6 +47,7 @@ function SpecialistProfile() {
     const [dateError, setDateError] = useState("")
     const [serviceError, setServiceError] = useState("")
     const [descriptionError, setDescriptionError] = useState("")
+    const [timeOff, setTimeOff] = useState<TimeOff[]>([])
     const [newVisit, setNewVisit] = useState<VisitRequest>({
         start_date: new Date(),
         end_date: new Date(),
@@ -58,8 +60,8 @@ function SpecialistProfile() {
     const [events, setEvents] = useState<Visit[]>([
         {
             id: 1,
-            start_date: new Date(2024, 6, 13, 18, 10, 0),
-            end_date: new Date(2024, 6, 13, 22, 0, 0),
+            start_date: new Date(2024, 6, 17, 18, 10, 0),
+            end_date: new Date(2024, 6, 17, 22, 0, 0),
             price: 20,
             description: "spotkanie",
             status: "done",
@@ -91,8 +93,8 @@ function SpecialistProfile() {
         },
         {
             id: 1,
-            start_date: new Date(2024, 6, 10, 10, 0, 0),
-            end_date: new Date(2024, 6, 10, 13, 0, 0),
+            start_date: new Date(2024, 6, 19, 10, 0, 0),
+            end_date: new Date(2024, 6, 19, 13, 0, 0),
             price: 20,
             description: "spotkanie",
             status: "progress",
@@ -123,11 +125,6 @@ function SpecialistProfile() {
             },
         },
     ])
-
-    const unavailableDates: string[] = [
-        '2024-07-14',
-        '2024-07-03',
-    ];
 
     const location = useLocation()
     const {jwtToken, userRole} = useOutletContext<AuthContextType>();
@@ -172,6 +169,15 @@ function SpecialistProfile() {
                 console.log("Error retrieving Specialist: ", err)
             })
 
+        fetch(`http://localhost:8080/time_off/${location.state.specialistId}`, requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+                setTimeOff(data)
+            })
+            .catch(err => {
+                console.log("Error retrieving TimeOff: ", err)
+            })
+
         console.log(specialist)
 
     }, [jwtToken, location.state.specialistId, navigate, userRole])
@@ -196,14 +202,17 @@ function SpecialistProfile() {
 
     }, [specialist]);
 
-    const eventPropGetter = (event: Visit) => {
+    const eventBackgroundAdjustment = (event: Visit) => {
         const backgroundColor = 'brown';
         return {style: {backgroundColor}};
     };
 
-    const isDateAvailable = (date: Date, unavailableDates: string[]): boolean => {
-        const formattedDate = format(date, 'yyyy-MM-dd');
-        return !unavailableDates.includes(formattedDate);
+    const isDateAvailable = (date: Date): boolean => {
+        return !timeOff.some(off => {
+            const start = new Date(off.start_date);
+            const end = new Date(off.end_date);
+            return date >= start && date < end;
+        });
     };
 
     const isDateOverlapping = (date: Date): boolean => {
@@ -235,7 +244,7 @@ function SpecialistProfile() {
             return;
         }
 
-        if (!isDateAvailable(start, unavailableDates)) {
+        if (!isDateAvailable(start)) {
             setDateError("Wybrana data jest niedostępna, wybierz inny termin.")
 
             Swal.fire({
@@ -277,19 +286,19 @@ function SpecialistProfile() {
         console.log(newVisit.start_date)
     };
 
-    const dayPropGetter = (date: Date) => {
-        if (!isDateAvailable(date, unavailableDates)) {
-            return {style: {backgroundColor: 'lightgray'}};
+    const timeOffSlotAdjustment = (date: Date) => {
+        if (!isDateAvailable(date)) {
+            return { style: { backgroundColor: 'lightgray', border: 'none' } };
         }
         return {};
-    };
+    }
 
     const createVisit = () => {
         if (!isDateFromFuture(newVisit.start_date)) {
             setDateError("Wybrana data jest datą przeszłą, wybierz termin z przyszłości")
         }
 
-        if (dateError === "" && !isDateAvailable(newVisit.start_date, unavailableDates)) {
+        if (dateError === "" && !isDateAvailable(newVisit.start_date)) {
             setDateError("Wybrana data jest niedostępna, wybierz inny termin")
         }
 
@@ -545,7 +554,7 @@ function SpecialistProfile() {
                                         views={[Views.WEEK]}
                                         min={new Date(0, 0, 0, 6, 0, 0)}
                                         max={new Date(0, 0, 0, 22, 0, 0)}
-                                        dayPropGetter={dayPropGetter}
+                                        // dayPropGetter={dayPropGetter}
                                         onSelectSlot={handleSelectSlot}
                                         startAccessor={(event: Visit) => event.start_date}
                                         endAccessor={(event: Visit) => event.end_date}
@@ -555,12 +564,13 @@ function SpecialistProfile() {
                                             next: "Następny",
                                             today: "Dziś",
                                         }}
-                                        eventPropGetter={eventPropGetter}
+                                        eventPropGetter={eventBackgroundAdjustment}
                                         selectable={true}
                                         components={{
                                             event: EventComponent
                                         }}
                                         onSelectEvent={(event) => alert(event.specialist_service.name)}
+                                        slotPropGetter={timeOffSlotAdjustment}
                                     />
                                 </div>
 

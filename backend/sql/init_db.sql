@@ -121,9 +121,9 @@ CREATE TABLE public.specialists_services
 );
 
 --
--- Name: availabilities; Type: TABLE; Schema: public; Owner: -
+-- Name: time_off; Type: TABLE; Schema: public; Owner: -
 --
-CREATE TABLE public.availabilities
+CREATE TABLE public.time_off
 (
     id            integer PRIMARY KEY NOT NULL,
     start_date    timestamp without time zone NOT NULL,
@@ -142,7 +142,6 @@ CREATE TABLE public.visits
     price                 integer                not NULL,
     description           text                   not NULL,
     status                character varying(255) not NULL,
-    availability_id       integer                not NULL,
     client_id             integer                NOT NULL,
     specialist_id         integer                NOT NULL,
     specialist_service_id integer                NOT NULL
@@ -299,9 +298,9 @@ ALTER TABLE public.specialists_services ALTER COLUMN id ADD GENERATED ALWAYS AS 
 --
 -- Name: specialist_services_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
-ALTER TABLE public.availabilities ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.availabilities_id_seq
-    START WITH 1
+ALTER TABLE public.time_off ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.time_off_id_seq
+    START WITH 2
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
@@ -519,6 +518,22 @@ VALUES (300, 600, 1, 1),
        (35, 90, 3, 34);
 
 --
+-- Data for Name: time_off; Type: TABLE DATA; Schema: public; Owner: -
+--
+INSERT INTO public.time_off (start_date, end_date, specialist_id)
+VALUES ('2024-07-17 08:00:00', '2024-07-17 16:00:00', 1),
+       ('2024-07-20 06:00:00', '2024-07-20 22:00:00', 1);
+
+--
+-- Data for Name: visits; Type: TABLE DATA; Schema: public; Owner: -
+--
+INSERT INTO public.visits (start_date, end_date, price, description, status, client_id, specialist_id, specialist_service_id)
+VALUES
+    ('2024-07-16 12:00:00', '2024-07-16 15:00:00', 300, 'Potrzebuje zrobić to w kilku pomieszczeniach, w tym w kuchni i łazience', 'accepted', 1, 1, 2),
+    ('2024-07-18 08:00:00', '2024-07-18 10:00:00', 500, 'Gniazdka w kuchni i łazience', 'accepted', 1, 1, 5),
+    ('2024-07-19 15:00:00', '2024-07-19 20:00:00', 200, 'Gniazdka w garażu i piwnicy', 'specialist_action_required', 1, 1, 5);
+
+--
 -- Data for Name: services; Type: TABLE DATA; Schema: public; Owner: -
 --
 INSERT INTO public.reviews (rating, description, specialist_id, client_id, created_at, service_id)
@@ -571,9 +586,9 @@ SELECT pg_catalog.setval('public.services_id_seq', 64, true);
 SELECT pg_catalog.setval('public.specialists_services_id_seq', 9, true);
 
 --
--- Name: availabilities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: time_offvi_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
-SELECT pg_catalog.setval('public.availabilities_id_seq', 1, true);
+SELECT pg_catalog.setval('public.time_off_id_seq', 1, true);
 
 --
 -- Name: visits_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
@@ -710,24 +725,15 @@ DELETE
 CASCADE;
 
 --
--- Name: availabilities availability_specialist_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: time_off time_off_specialist_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
-ALTER TABLE ONLY public.availabilities
-    ADD CONSTRAINT availability_specialist_id_fk FOREIGN KEY (specialist_id) REFERENCES public.specialists(id) ON
+ALTER TABLE ONLY public.time_off
+    ADD CONSTRAINT time_off_specialist_id_fk FOREIGN KEY (specialist_id) REFERENCES public.specialists(id) ON
 UPDATE CASCADE
 ON
 DELETE
 CASCADE;
 
---
--- Name: visits visits_availability_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-ALTER TABLE ONLY public.visits
-    ADD CONSTRAINT visits_availability_id_fk FOREIGN KEY (availability_id) REFERENCES public.availabilities(id) ON
-UPDATE CASCADE
-ON
-DELETE
-CASCADE;
 
 --
 -- Name: visits visits_client_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -

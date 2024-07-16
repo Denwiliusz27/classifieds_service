@@ -41,6 +41,8 @@ func (app *Application) Routes() http.Handler {
 
 	mux.Get("/services", app.GetAllServices)
 
+	mux.Get("/time_off/{specialist_id}", app.GetTimeOffBySpecialistId)
+
 	return mux
 }
 

@@ -5,6 +5,7 @@ import {Service, Specialization} from "../models/Specialization";
 import {City} from "../models/City";
 import Select from "../components/form/Select";
 import {Specialist, SpecialistGeneralInfo} from "../models/Specialist";
+import {TimeOff} from "../models/TimeOff";
 
 function SearchSpecialistsDetails() {
     const [specializations, setSpecializations] = useState<Specialization[]>([])

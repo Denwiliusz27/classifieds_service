@@ -386,3 +386,21 @@ func (app *Application) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusAccepted)
 }
+
+func (app *Application) GetTimeOffBySpecialistId(w http.ResponseWriter, r *http.Request) {
+	specialistId, err := strconv.Atoi(chi.URLParam(r, "specialist_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter specialist_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	timeOffs, err := app.DB.GetTimeOffBySpecialistId(specialistId)
+	if err != nil {
+		fmt.Println("error getting TimeOff from db for SpecialistId=", specialistId, " : ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, timeOffs)
+}
