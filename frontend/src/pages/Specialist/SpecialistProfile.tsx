@@ -1,36 +1,24 @@
 import React, {useEffect, useState} from "react";
 import {useLocation, useNavigate, useOutletContext} from "react-router-dom";
 import {AuthContextType} from "../../App";
-import {SpecialistExtendedInfo, SpecialistGeneralInfo} from "../../models/Specialist";
+import {SpecialistExtendedInfo} from "../../models/Specialist";
 import {Review} from "../../models/Review";
-import {Calendar, dateFnsLocalizer, momentLocalizer, Views, Event} from "react-big-calendar";
+import {Calendar, dateFnsLocalizer, Views} from "react-big-calendar";
 import {pl} from "date-fns/locale";
 import {format} from "date-fns/format";
 import parse from "date-fns/parse";
 import startOfWeek from "date-fns/startOfWeek";
 import getDay from "date-fns/getDay";
-import {Visit, VisitRequest} from "../../models/Visit";
-import {Client} from "../../models/Client";
-import {SpecialistService} from "../../models/SpecialistService";
-import moment from 'moment';
+import {VisitCalendar, VisitRequest} from "../../models/Visit";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "../../index.css"
-import {start} from "repl";
 import Swal from "sweetalert2";
 import {createPortal} from "react-dom";
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
-import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
-import plLocale from 'date-fns/locale/pl';
-import {TextField} from '@mui/material';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
-import {DemoContainer, DemoItem} from '@mui/x-date-pickers/internals/demo';
-import dayjs, {Dayjs} from 'dayjs';
-import {TimePicker} from '@mui/x-date-pickers/TimePicker';
-import {DatePicker} from '@mui/x-date-pickers/DatePicker';
+import {DemoItem} from '@mui/x-date-pickers/internals/demo';
+import dayjs from 'dayjs';
 import 'dayjs/locale/pl';
-import Input from "../../components/form/Input";
-import Select from "../../components/form/Select";
-import {Specialization} from "../../models/Specialization";
 import {DateTimePicker} from "@mui/x-date-pickers";
 import {TimeOff} from "../../models/TimeOff";
 
@@ -48,6 +36,7 @@ function SpecialistProfile() {
     const [serviceError, setServiceError] = useState("")
     const [descriptionError, setDescriptionError] = useState("")
     const [timeOff, setTimeOff] = useState<TimeOff[]>([])
+    const [visits, setVisits] = useState<VisitCalendar[]>([])
     const [newVisit, setNewVisit] = useState<VisitRequest>({
         start_date: new Date(),
         end_date: new Date(),
@@ -56,75 +45,6 @@ function SpecialistProfile() {
         specialist_id: 0,
         specialist_service_id: 0,
     })
-
-    const [events, setEvents] = useState<Visit[]>([
-        {
-            id: 1,
-            start_date: new Date(2024, 6, 17, 18, 10, 0),
-            end_date: new Date(2024, 6, 17, 22, 0, 0),
-            price: 20,
-            description: "spotkanie",
-            status: "done",
-            specialist: {
-                id: 1,
-                name: "Marek",
-                second_name: "Jawonik",
-                specialization: "Elektryk",
-                city: "Kraków",
-                created_at: "20-01-2022",
-                rating: 3,
-                reviews: 4,
-            },
-            client: {
-                id: 1,
-                name: "Jarosław",
-                second_name: "Buchalik",
-                email: "jaro@op.pl",
-                user_id: 2,
-                created_at: new Date(),
-            },
-            specialist_service: {
-                id: 1,
-                name: "Wymiana instalacji elektrycznej",
-                price_per: "meter",
-                price_min: 20,
-                price_max: 50,
-            },
-        },
-        {
-            id: 1,
-            start_date: new Date(2024, 6, 19, 10, 0, 0),
-            end_date: new Date(2024, 6, 19, 13, 0, 0),
-            price: 20,
-            description: "spotkanie",
-            status: "progress",
-            specialist: {
-                id: 1,
-                name: "Marek",
-                second_name: "Jawonik",
-                specialization: "Elektryk",
-                city: "Kraków",
-                created_at: "20-01-2022",
-                rating: 3,
-                reviews: 4,
-            },
-            client: {
-                id: 1,
-                name: "Stanisław",
-                second_name: "Krylski",
-                email: "jaro@op.pl",
-                user_id: 2,
-                created_at: new Date(),
-            },
-            specialist_service: {
-                id: 1,
-                name: "Instalacja gniazdek",
-                price_per: "meter",
-                price_min: 20,
-                price_max: 50,
-            },
-        },
-    ])
 
     const location = useLocation()
     const {jwtToken, userRole} = useOutletContext<AuthContextType>();
@@ -178,6 +98,22 @@ function SpecialistProfile() {
                 console.log("Error retrieving TimeOff: ", err)
             })
 
+        fetch(`http://localhost:8080/visits/${location.state.specialistId}/0`, requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+
+                data.forEach((v: VisitCalendar) => {
+                    v.info.start_date = new Date(v.info.start_date)
+                    v.info.end_date = new Date(v.info.end_date)
+                })
+
+                setVisits(data)
+            })
+            .catch(err => {
+                console.log("Error retrieving Visits: ", err)
+            })
+
+        console.log(specialist)
         console.log(specialist)
 
     }, [jwtToken, location.state.specialistId, navigate, userRole])
@@ -202,12 +138,20 @@ function SpecialistProfile() {
 
     }, [specialist]);
 
-    const eventBackgroundAdjustment = (event: Visit) => {
-        const backgroundColor = 'brown';
+    const eventBackgroundAdjustment = (visit: VisitCalendar) => {
+        let backgroundColor = 'Maroon';
+
+        if (visit.info.status === 'specialist_action_required' || visit.info.status === 'client_action_required') {
+            backgroundColor = 'SandyBrown';
+        }
+
         return {style: {backgroundColor}};
     };
 
     const isDateAvailable = (date: Date): boolean => {
+        if (!timeOff){
+            return true
+        }
         return !timeOff.some(off => {
             const start = new Date(off.start_date);
             const end = new Date(off.end_date);
@@ -216,8 +160,8 @@ function SpecialistProfile() {
     };
 
     const isDateOverlapping = (date: Date): boolean => {
-        for (let i = 0; i < events.length; i++) {
-            if (date > events[i].start_date && date < events[i].end_date) {
+        for (let i = 0; i < visits.length; i++) {
+            if (date >= visits[i].info.start_date && date < visits[i].info.end_date) {
                 return true
             }
         }
@@ -548,7 +492,7 @@ function SpecialistProfile() {
                                     <Calendar
                                         culture={"pl"}
                                         localizer={localizer}
-                                        events={events}
+                                        events={visits}
                                         defaultView={Views.WEEK}
                                         step={15}
                                         views={[Views.WEEK]}
@@ -556,8 +500,8 @@ function SpecialistProfile() {
                                         max={new Date(0, 0, 0, 22, 0, 0)}
                                         // dayPropGetter={dayPropGetter}
                                         onSelectSlot={handleSelectSlot}
-                                        startAccessor={(event: Visit) => event.start_date}
-                                        endAccessor={(event: Visit) => event.end_date}
+                                        startAccessor={(event: VisitCalendar) => event.info.start_date}
+                                        endAccessor={(event: VisitCalendar) => event.info.end_date}
                                         style={{ height: (specialist?.reviews.length! <= 2 ) ? 900 : 1300, fontSize: "x-large"}}
                                         messages={{
                                             previous: "Poprzedni",
@@ -569,7 +513,7 @@ function SpecialistProfile() {
                                         components={{
                                             event: EventComponent
                                         }}
-                                        onSelectEvent={(event) => alert(event.specialist_service.name)}
+                                        onSelectEvent={(event) => alert(event.service.name)}
                                         slotPropGetter={timeOffSlotAdjustment}
                                     />
                                 </div>
@@ -582,7 +526,12 @@ function SpecialistProfile() {
 
                                     <div className="flex flex-row items-center">
                                         <div className="bg-red-700 rounded-lg h-8 w-8 min-h-8 min-w-8"></div>
-                                        <p className="ml-2">- usługa zarezerwowana przez innego użytkownika</p>
+                                        <p className="ml-2">- usługa zarezerwowana</p>
+                                    </div>
+
+                                    <div className="flex flex-row items-center">
+                                        <div className="bg-amber-600 rounded-lg h-8 w-8 min-h-8 min-w-8"></div>
+                                        <p className="ml-2">- usługa niepotwierdzona</p>
                                     </div>
                                 </div>
                             </div>
@@ -752,9 +701,9 @@ const localizer = dateFnsLocalizer({
     locales,
 });
 
-const EventComponent = ({event}: { event: Visit }) => (
+const EventComponent = ({event}: { event: VisitCalendar }) => (
     <div className="flex flex-col items-center justify-items-center justify-center text-center my-4">
-        <p className="break-all">{event.specialist_service.name}</p>
+        <p className="break-all drop-shadow-lg">{event.service.name}</p>
     </div>
 );
 export default SpecialistProfile

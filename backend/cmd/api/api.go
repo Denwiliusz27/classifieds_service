@@ -404,3 +404,41 @@ func (app *Application) GetTimeOffBySpecialistId(w http.ResponseWriter, r *http.
 
 	app.writeJSON(w, http.StatusOK, timeOffs)
 }
+
+func (app *Application) GetCalendarVisitsBySpecialistIdOrClientId(w http.ResponseWriter, r *http.Request) {
+	var specId *int
+	var clId *int
+
+	specialistId, err := strconv.Atoi(chi.URLParam(r, "specialist_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter specialist_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+	if specialistId == 0 {
+		specId = nil
+	} else {
+		specId = &specialistId
+	}
+
+	clientId, err := strconv.Atoi(chi.URLParam(r, "client_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter client_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+	if clientId == 0 {
+		clId = nil
+	} else {
+		clId = &clientId
+	}
+
+	visits, err := app.DB.GetCalendarVisitsBySpecialistIdOrClientId(specId, clId)
+	if err != nil {
+		fmt.Println("error getting Calendar Visits from db: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, visits)
+}

@@ -142,6 +142,7 @@ CREATE TABLE public.visits
     price                 integer                not NULL,
     description           text                   not NULL,
     status                character varying(255) not NULL,
+    client_address_id     integer                not NULL,
     client_id             integer                NOT NULL,
     specialist_id         integer                NOT NULL,
     specialist_service_id integer                NOT NULL
@@ -396,15 +397,22 @@ VALUES (1);
 -- Data for Name: specialists; Type: TABLE DATA; Schema: public; Owner: -
 --
 INSERT INTO public.specialists (phone_nr, description, city_id, user_id, specialization_id)
-VALUES ('990427111','Kocham swoją pracę, od dziecka marzyłem o byciu elektrykiem, dlatego uczyłem się fachu w najleszych szkołach w kraju, a dzisiaj starannie pomagam innym', 1, 2, 1),
-     ('812774912','Mam wieloletnie doświadczenie w pracy. Swoje doświadczenie czerpałem o najlepszych specjalistów. Wszyscy klienci zawsze chętnie do mnie wracają', 2, 3, 1),
-     ('699132992','Jestem spokojną osobą, która nie boi się żadnej pracy. Sprzątnę nawet największy kurz. Działam od wielu lat i w tym czasie zaufało mi już setki osób', 1, 4, 6);
+VALUES ('990427111',
+        'Kocham swoją pracę, od dziecka marzyłem o byciu elektrykiem, dlatego uczyłem się fachu w najleszych szkołach w kraju, a dzisiaj starannie pomagam innym',
+        1, 2, 1),
+       ('812774912',
+        'Mam wieloletnie doświadczenie w pracy. Swoje doświadczenie czerpałem o najlepszych specjalistów. Wszyscy klienci zawsze chętnie do mnie wracają',
+        2, 3, 1),
+       ('699132992',
+        'Jestem spokojną osobą, która nie boi się żadnej pracy. Sprzątnę nawet największy kurz. Działam od wielu lat i w tym czasie zaufało mi już setki osób',
+        1, 4, 6);
 
 --
 -- Data for Name: clients_addresses; Type: TABLE DATA; Schema: public; Owner: -
 --
 INSERT INTO public.clients_addresses (street, building_nr, flat_nr, city_id, client_id)
-VALUES ('Bieszczadzka', 10, 27, 1, 1);
+VALUES ('Bieszczadzka', 10, 27, 1, 1),
+       ('Słoneczna', 2, 0, 1, 1);
 
 --
 -- Data for Name: specializations; Type: TABLE DATA; Schema: public; Owner: -
@@ -527,11 +535,11 @@ VALUES ('2024-07-17 08:00:00', '2024-07-17 16:00:00', 1),
 --
 -- Data for Name: visits; Type: TABLE DATA; Schema: public; Owner: -
 --
-INSERT INTO public.visits (start_date, end_date, price, description, status, client_id, specialist_id, specialist_service_id)
-VALUES
-    ('2024-07-16 12:00:00', '2024-07-16 15:00:00', 300, 'Potrzebuje zrobić to w kilku pomieszczeniach, w tym w kuchni i łazience', 'accepted', 1, 1, 2),
-    ('2024-07-18 08:00:00', '2024-07-18 10:00:00', 500, 'Gniazdka w kuchni i łazience', 'accepted', 1, 1, 5),
-    ('2024-07-19 15:00:00', '2024-07-19 20:00:00', 200, 'Gniazdka w garażu i piwnicy', 'specialist_action_required', 1, 1, 5);
+INSERT INTO public.visits (start_date, end_date, price, description, status, client_address_id, client_id, specialist_id,
+                           specialist_service_id)
+VALUES ('2024-07-18 12:00:00', '2024-07-18 15:00:00', 300, 'Potrzebuje zrobić to w kilku pomieszczeniach, w tym w kuchni i łazience', 'accepted', 1, 1, 1, 2),
+       ('2024-07-19 08:00:00', '2024-07-19 10:00:00', 500, 'Gniazdka w kuchni i łazience', 'accepted', 2, 1, 1, 5),
+       ('2024-07-21 15:00:00', '2024-07-21 20:00:00', 200, 'Gniazdka w garażu i piwnicy', 'specialist_action_required', 1, 1, 1, 5);
 
 --
 -- Data for Name: services; Type: TABLE DATA; Schema: public; Owner: -
@@ -760,6 +768,16 @@ CASCADE;
 --
 ALTER TABLE ONLY public.visits
     ADD CONSTRAINT visits_specialist_service_id_fk FOREIGN KEY (specialist_service_id) REFERENCES public.specialists_services(id) ON
+UPDATE CASCADE
+ON
+DELETE
+CASCADE;
+
+--
+-- Name: visits visits_client_address_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+ALTER TABLE ONLY public.visits
+    ADD CONSTRAINT visits_client_address_id_fk FOREIGN KEY (client_address_id) REFERENCES public.clients_addresses(id) ON
 UPDATE CASCADE
 ON
 DELETE

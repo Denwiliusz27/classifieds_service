@@ -211,3 +211,45 @@ const GetTimeOffBySpecialistId = `
 	ORDER BY 
 	    start_date ASC;
 `
+
+// --- VISITS ---
+
+const GetCalendarVisitsBySpecialistIdOrClientId = `
+	SELECT
+		visits.id, visits.start_date, visits.end_date, visits.price, visits.description, visits.status, 
+		visits.client_address_id, clients_addresses.street, clients_addresses.building_nr, clients_addresses.flat_nr, clients_addresses.city_id, cities2.name, 
+		specialists.id, u1.name, u1.second_name, u1.email, specializations.name, cities.name, specialists.phone_nr, specialists.description, u1.created_at, 
+		clients.id, u2.name, u2.second_name, u2.email, u2.id, u2.created_at, 
+		specialists_services.service_id,
+		services.name, services.price_per, 
+		specialists_services.price_min, 
+		specialists_services.price_max
+	FROM
+	    visits
+	LEFT JOIN
+		specialists  ON visits.specialist_id = specialists.id
+  	LEFT JOIN
+		users as u1 ON specialists.user_id = u1.id
+	LEFT JOIN
+		specializations ON specialists.specialization_id = specializations.id
+  	LEFT JOIN 
+  		cities ON cities.id = specialists.city_id 	
+	LEFT JOIN
+	    clients_addresses ON clients_addresses.id = visits.client_address_id
+	LEFT JOIN 
+  		cities as cities2 ON cities2.id = clients_addresses.city_id
+   	LEFT JOIN
+		clients ON clients.id = visits.client_id
+   	LEFT JOIN
+		users as u2 ON clients.user_id = u2.id 
+  	LEFT JOIN
+  		specialists_services ON (specialists_services.service_id = visits.specialist_service_id AND visits.specialist_id = specialists_services.specialist_id)
+  	LEFT JOIN
+  		services on specialists_services.service_id = services.id
+  	WHERE
+  		(visits.specialist_id = ($1) OR ($1) IS NULL) AND
+		(visits.client_id = ($2) OR ($2) IS NULL) AND
+  		visits.start_date >= current_date
+	ORDER BY
+   		visits.start_date ASC;   
+`

@@ -33,4 +33,6 @@ type DAL interface {
 	GetReviewsBySpecialistId(specialistId int) ([]models.Review, error)
 
 	GetTimeOffBySpecialistId(specialistId int) ([]models.TimeOff, error)
+
+	GetCalendarVisitsBySpecialistIdOrClientId(specialistId *int, clientId *int) ([]models.VisitCalendar, error)
 }
