@@ -71,6 +71,17 @@ const CreateClientAddress = `
 	RETURNING id;
 `
 
+const GetClientAddressesByClientId = `
+	SELECT 
+		clients_addresses.id, clients_addresses.street, clients_addresses.building_nr, clients_addresses.flat_nr, clients_addresses.city_id, cities.name
+	FROM
+	    clients_addresses
+	LEFT JOIN
+		cities on cities.id = clients_addresses.city_id
+	WHERE
+	    clients_addresses.client_id = ($1);
+`
+
 // --- SPECIALIZATIONS ---
 
 const GetSpecializations = `

@@ -5,17 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/visits.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/internal/models/ClientAddress.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/internal/models/Visit.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/routes.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/dal.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/dal.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/sql/init_db.sql" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/sql/init_db.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../baza_danych.dia" beforeDir="false" afterPath="$PROJECT_DIR$/../baza_danych.dia" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/ClientAddress.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/ClientAddress.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/models/Visit.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Visit.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistProfile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistProfile.tsx" afterDir="false" />
     </list>
@@ -165,7 +156,8 @@
       <workItem from="1721060824347" duration="2079000" />
       <workItem from="1721076691012" duration="3209000" />
       <workItem from="1721148830304" duration="5552000" />
-      <workItem from="1721233444388" duration="5985000" />
+      <workItem from="1721233444388" duration="9636000" />
+      <workItem from="1721293792156" duration="5697000" />
     </task>
     <servers />
   </component>

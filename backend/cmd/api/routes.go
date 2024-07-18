@@ -18,6 +18,7 @@ func (app *Application) Routes() http.Handler {
 		mux.Use(app.authRequired)
 		mux.Get("/reservations", app.GetClientReservations)
 		mux.Get("/info/{user_id}", app.GetClientInfoByUserId)
+		mux.Get("/addresses/{client_id}", app.GetClientAddressesByClientId)
 	})
 
 	mux.Post("/register_client", app.CreateClient)

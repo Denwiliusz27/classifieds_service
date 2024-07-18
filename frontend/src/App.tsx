@@ -82,7 +82,7 @@ function App() {
                         if (!name) {
                             const user = sessionStorage.getItem(data.user_role)
                             if (user) {
-                                setName(JSON.parse(user).Name)
+                                setName(JSON.parse(user).name)
                             }
                         }
                         toggleRefresh(true)
@@ -92,7 +92,7 @@ function App() {
                     console.log("user isn't logged", err)
                 })
         }
-    }, [jwtToken, userRole, toggleRefresh, name])
+    }, [jwtToken, userRole, toggleRefresh])
 
     const handleClickOutside = (event: MouseEvent) => {
         if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -110,7 +110,7 @@ function App() {
     return (
         <>
             <div
-                className="flex flex-row sticky top-0 h-20 justify-center items-center bg-amber-900 text-white text-2xl font-medium">
+                className="flex flex-row sticky top-0 h-20 justify-center items-center bg-amber-900 text-white text-2xl font-medium z-40">
 
                 {/* Logo */}
                 <Link to="/" className="flex w-24 ml-10 justify-center items-center hover:cursor-pointer transition-all hover:tracking-widest duration-300">
@@ -302,7 +302,8 @@ function App() {
             </div>
 
             <div>
-                <Outlet context={{
+                <Outlet
+                    context={{
                     jwtToken,
                     setJwtToken,
                     userRole,

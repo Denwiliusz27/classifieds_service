@@ -385,13 +385,15 @@ INSERT INTO public.users (name, second_name, email, password, role, created_at)
 VALUES ('Marek', 'Nowak', 'marek@gmail.com', 'marek1', 'client', '2021-03-23'),
        ('Stanisław', 'Cięciwka', 'stas@gmail.com', 'stas1', 'specialist', '2018-07-05'),
        ('Janusz', 'Kręcek', 'januszkrecek@gmail.com', 'janusz1', 'specialist', '2022-01-15'),
-       ('Janina', 'Lipska', 'janinalipska@gmail.com', 'janina1', 'specialist', '2016-11-29');
+       ('Janina', 'Lipska', 'janinalipska@gmail.com', 'janina1', 'specialist', '2016-11-29'),
+       ('Anna', 'Płońska', 'aplonska@gmail.com', 'ania1', 'client', '2023-08-13');
 
 --
 -- Data for Name: clients; Type: TABLE DATA; Schema: public; Owner: -
 --
 INSERT INTO public.clients (user_id)
-VALUES (1);
+VALUES (1),
+       (5);
 
 --
 -- Data for Name: specialists; Type: TABLE DATA; Schema: public; Owner: -
@@ -412,7 +414,8 @@ VALUES ('990427111',
 --
 INSERT INTO public.clients_addresses (street, building_nr, flat_nr, city_id, client_id)
 VALUES ('Bieszczadzka', 10, 27, 1, 1),
-       ('Słoneczna', 2, 0, 1, 1);
+       ('Słoneczna', 2, 0, 1, 1),
+       ('Miodowa', 12, 3, 2, 2);
 
 --
 -- Data for Name: specializations; Type: TABLE DATA; Schema: public; Owner: -

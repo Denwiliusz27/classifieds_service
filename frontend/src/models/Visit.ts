@@ -25,6 +25,7 @@ export interface VisitRequest {
     end_date: Date
     description: string
     client_id: number
+    client_address_id: number
     specialist_id: number
     specialist_service_id: number
 }

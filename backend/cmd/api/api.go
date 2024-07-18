@@ -442,3 +442,21 @@ func (app *Application) GetCalendarVisitsBySpecialistIdOrClientId(w http.Respons
 
 	_ = app.writeJSON(w, http.StatusOK, visits)
 }
+
+func (app *Application) GetClientAddressesByClientId(w http.ResponseWriter, r *http.Request) {
+	clientId, err := strconv.Atoi(chi.URLParam(r, "client_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter client_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	clientAddresses, err := app.DB.GetClientAddressesByClientId(clientId)
+	if err != nil {
+		fmt.Println("error getting ClientAddresses from db: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, clientAddresses)
+}

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {useLocation, useNavigate, useOutletContext} from "react-router-dom";
+import {Link, useLocation, useNavigate, useOutletContext} from "react-router-dom";
 import {AuthContextType} from "../../App";
 import {SpecialistExtendedInfo} from "../../models/Specialist";
 import {Review} from "../../models/Review";
@@ -21,19 +21,24 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/pl';
 import {DateTimePicker} from "@mui/x-date-pickers";
 import {TimeOff} from "../../models/TimeOff";
+import {Client} from "../../models/Client";
+import {ClientAddress, ClientAddressExtended} from "../../models/ClientAddress";
 
 function SpecialistProfile() {
     const [specialistId, setSpecialistId] = useState(0)
     const [specialist, setSpecialist] = useState<SpecialistExtendedInfo>()
+    const [client, setClient] = useState<Client>()
+    const [clientAddresses, setClientAddresses] = useState<ClientAddressExtended[]>()
     const [reviews, setReviews] = useState({
         count: 0,
         average: ''
     })
-    const [windowVisible, setWindowVisible] = useState(false)
     const [showRegisterWindow, setShowRegisterWindow] = useState(false)
-    const [showErrorDateWindow, setShowErrorDateWindow] = useState(false)
+    const [showErrorWindow, setShowErrorWindow] = useState(false)
     const [dateError, setDateError] = useState("")
+    const [loginError, setLoginError] = useState("")
     const [serviceError, setServiceError] = useState("")
+    const [clientAddressError, setClientAddressError] = useState("")
     const [descriptionError, setDescriptionError] = useState("")
     const [timeOff, setTimeOff] = useState<TimeOff[]>([])
     const [visits, setVisits] = useState<VisitCalendar[]>([])
@@ -42,6 +47,7 @@ function SpecialistProfile() {
         end_date: new Date(),
         description: "",
         client_id: 0,
+        client_address_id: 0,
         specialist_id: 0,
         specialist_service_id: 0,
     })
@@ -113,9 +119,21 @@ function SpecialistProfile() {
                 console.log("Error retrieving Visits: ", err)
             })
 
-        console.log(specialist)
-        console.log(specialist)
+        const tmp = sessionStorage.getItem(userRole)
+        if (tmp) {
+            var c = JSON.parse(tmp)
+            setClient(c)
 
+            headers.append("Authorization", "Bearer " + jwtToken)
+            fetch(`/client/addresses/${c.id}`, {
+                method: "GET",
+                headers: headers,
+                credentials: 'include'
+            }).then((response) => response.json())
+                .then((data) => {
+                    setClientAddresses(data)
+                })
+        }
     }, [jwtToken, location.state.specialistId, navigate, userRole])
 
     useEffect(() => {
@@ -174,13 +192,28 @@ function SpecialistProfile() {
     }
 
     const handleSelectSlot = ({start, end}: { start: Date; end: Date }) => {
+        if (jwtToken === "") {
+            console.log("user isn't logged")
+            setLoginError("Aby zarezerwować usługę zaloguj się lub zarejestruj konto.")
+
+            Swal.fire({
+                didOpen: () => setShowErrorWindow(true),
+                didClose: () => {
+                    setShowErrorWindow(false)
+                    setLoginError("")
+                },
+                showConfirmButton: false,
+            })
+            return;
+        }
+
         if (!isDateFromFuture(start)) {
             setDateError("Wybrana data jest datą przeszłą, wybierz termin z przyszłości.")
 
             Swal.fire({
-                didOpen: () => setShowErrorDateWindow(true),
+                didOpen: () => setShowErrorWindow(true),
                 didClose: () => {
-                    setShowErrorDateWindow(false)
+                    setShowErrorWindow(false)
                     setDateError("")
                 },
                 showConfirmButton: false,
@@ -192,9 +225,9 @@ function SpecialistProfile() {
             setDateError("Wybrana data jest niedostępna, wybierz inny termin.")
 
             Swal.fire({
-                didOpen: () => setShowErrorDateWindow(true),
+                didOpen: () => setShowErrorWindow(true),
                 didClose: () => {
-                    setShowErrorDateWindow(false)
+                    setShowErrorWindow(false)
                     setDateError("")
                 },
                 showConfirmButton: false,
@@ -206,9 +239,9 @@ function SpecialistProfile() {
             setDateError("W wybranym terminie istnieje już rezerwacja, wybierz inny termin.")
 
             Swal.fire({
-                didOpen: () => setShowErrorDateWindow(true),
+                didOpen: () => setShowErrorWindow(true),
                 didClose: () => {
-                    setShowErrorDateWindow(false)
+                    setShowErrorWindow(false)
                     setDateError("")
                 },
                 showConfirmButton: false,
@@ -223,11 +256,22 @@ function SpecialistProfile() {
 
         Swal.fire({
             didOpen: () => setShowRegisterWindow(true),
-            didClose: () => setShowRegisterWindow(false),
+            didClose: () => {
+                setShowRegisterWindow(false)
+                setDateError("")
+                setServiceError("")
+                setClientAddressError("")
+                setDescriptionError("")
+
+                setNewVisit({
+                    ...newVisit,
+                    specialist_service_id: 0,
+                    client_address_id: 0,
+                    description: ""
+                })
+            },
             showConfirmButton: false,
         })
-
-        console.log(newVisit.start_date)
     };
 
     const timeOffSlotAdjustment = (date: Date) => {
@@ -237,32 +281,55 @@ function SpecialistProfile() {
         return {};
     }
 
-    const createVisit = () => {
+    function checkNewVisitErrors() {
+        let dateError = ""
+        let serviceError = ""
+        let clientAddressError = ""
+        let descriptionError = ""
+
         if (!isDateFromFuture(newVisit.start_date)) {
-            setDateError("Wybrana data jest datą przeszłą, wybierz termin z przyszłości")
+            dateError = "Wybrana data jest datą przeszłą, wybierz termin z przyszłości"
         }
 
         if (dateError === "" && !isDateAvailable(newVisit.start_date)) {
-            setDateError("Wybrana data jest niedostępna, wybierz inny termin")
+            dateError ="Wybrana data jest niedostępna, wybierz inny termin"
         }
 
         if (dateError === "" && isDateOverlapping(newVisit.start_date)) {
-            setDateError("W wybranym terminie istnieje już rezerwacja, wybierz inny termin")
+            dateError = "W wybranym terminie istnieje już rezerwacja, wybierz inny termin"
         }
 
         if (newVisit.specialist_service_id === 0) {
-            setServiceError("Wybierz usługę z listy")
+            serviceError = "Wybierz usługę z listy"
+        }
+
+        if (newVisit.client_address_id === 0) {
+            clientAddressError = "Wybierz adres realizacji z listy"
         }
 
         if (newVisit.description === "") {
-            setDescriptionError("Dodaj szczegółowe informacje na temat usługi")
+            descriptionError = "Dodaj szczegółowe informacje na temat usługi"
         }
 
-        if (dateError !== "" || serviceError !== "" || descriptionError !== "") {
+        if (dateError === "" && serviceError === "" && clientAddressError === "" && descriptionError === "") {
+            return true
+        } else {
+            setDateError(dateError)
+            setServiceError(serviceError)
+            setClientAddressError(clientAddressError)
+            setDescriptionError(descriptionError)
+            return false
+        }
+
+    }
+
+    const createVisit = () => {
+        if (!checkNewVisitErrors()) {
             return
         }
 
         console.log("created")
+        console.log(newVisit)
     }
 
     return (
@@ -524,7 +591,7 @@ function SpecialistProfile() {
                                         <p className="ml-2">- termin niedostępny</p>
                                     </div>
 
-                                    <div className="flex flex-row items-center">
+                                    <div className="flex flex-row items-center mr-6">
                                         <div className="bg-red-700 rounded-lg h-8 w-8 min-h-8 min-w-8"></div>
                                         <p className="ml-2">- usługa zarezerwowana</p>
                                     </div>
@@ -555,8 +622,8 @@ function SpecialistProfile() {
                                                         defaultValue={dayjs(newVisit.start_date)}
                                                         ampm={false}
                                                         minutesStep={15}
-                                                        minTime={dayjs().set('hour', 6).set('minute', 0)} // Ograniczenie godzin od 6:00
-                                                        maxTime={dayjs().set('hour', 21).set('minute', 0)} // Ograniczenie godzin do 21:00
+                                                        minTime={dayjs().set('hour', 6).set('minute', 0)}
+                                                        maxTime={dayjs().set('hour', 21).set('minute', 0)}
                                                         onChange={(value) => {
                                                             setNewVisit({
                                                                 ...newVisit,
@@ -615,6 +682,45 @@ function SpecialistProfile() {
                                             }
                                         </div>
 
+                                        <div className="w-full py-2">
+                                            <p className="font-bold text-left pb-2">Adres realizacji<sup>*</sup></p>
+
+                                            <select
+                                                id="client_address_id"
+                                                name="adres"
+                                                value={newVisit.client_address_id}
+                                                onChange={(value) => {
+                                                    setNewVisit({
+                                                        ...newVisit,
+                                                        client_address_id: parseInt(value.currentTarget.value)
+                                                    })
+                                                    setClientAddressError("")
+                                                }}
+                                                className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
+                                            >
+                                                <option value="" disabled={newVisit.client_address_id !== 0}>
+                                                    Adres
+                                                </option>
+                                                {clientAddresses!.map((address) => {
+                                                    return (
+                                                        <option
+                                                            key={address.id}
+                                                            value={address.id}
+                                                        >
+                                                            {address.city.name}, ul. {address.street} {address.building_nr}
+                                                        </option>
+                                                    )
+                                                })}
+                                            </select>
+
+                                            {clientAddressError &&
+                                                <div
+                                                    className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full h-7 mt-1 leading-none">
+                                                    <p>{clientAddressError}</p>
+                                                </div>
+                                            }
+                                        </div>
+
                                         <div className="w-full pt-2">
                                             <p className="font-bold text-left pb-2">Opis usługi<sup>*</sup></p>
 
@@ -661,7 +767,7 @@ function SpecialistProfile() {
                             )
                         }
 
-                        {showErrorDateWindow &&
+                        {showErrorWindow &&
                             createPortal(
                                 <div className="flex flex-col items-center">
                                     <div className="flex flex-col justify-center">
@@ -670,13 +776,40 @@ function SpecialistProfile() {
                                     </div>
 
                                     <div className="flex flex-col items-end w-4/5 mt-3 mb-5">
-                                        <p className="text-xl">{dateError}</p>
+                                        {dateError !== "" &&
+                                            <p className="text-xl">{dateError}</p>
+                                        }
+
+                                        {loginError !== "" &&
+                                            <p className="text-xl">{loginError}</p>
+                                        }
                                     </div>
 
-                                    <div onClick={() => Swal.close()}
-                                         className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
-                                        <span className="mx-3 my-2 text-xl">Ok</span>
-                                    </div>
+                                    {dateError !== "" &&
+                                        <div onClick={() => Swal.close()}
+                                             className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
+                                            <span className="mx-3 my-2 text-xl">Ok</span>
+                                        </div>
+                                    }
+
+                                    {loginError !== "" &&
+                                        <div className="flex flex-row items-center p-2">
+                                            <Link to="/klient/login" onClick={() => Swal.close()}
+                                                 className="mx-2 border-4 border-amber-600 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-600 hover:border-amber-600 hover:bg-white hover:text-amber-900 duration-300 ...">
+                                                <span className="mx-3 my-2 text-xl">Zaloguj</span>
+                                            </Link>
+
+                                            <Link to="/klient/rejestracja" onClick={() => Swal.close()}
+                                                  className="mx-2 border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
+                                                <span className="mx-3 my-2 text-xl">Zarejestruj</span>
+                                            </Link>
+
+                                            <div onClick={() => Swal.close()}
+                                                 className="mx-2 border-4 border-red-700 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-red-700 hover:border-red-700 hover:bg-white hover:text-amber-900 duration-300 ...">
+                                                <span className="mx-3 my-2 text-xl">Anuluj</span>
+                                            </div>
+                                        </div>
+                                    }
                                 </div>,
                                 Swal.getHtmlContainer()!,
                             )
