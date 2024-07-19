@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 )
 
 func (m *PG) GetTimeOffBySpecialistId(specialistId int) ([]models.TimeOff, error) {
@@ -35,6 +36,9 @@ func (m *PG) GetTimeOffBySpecialistId(specialistId int) ([]models.TimeOff, error
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %w", err)
 		}
+
+		t.StartDate = t.StartDate.Add(-2 * time.Hour)
+		t.EndDate = t.EndDate.Add(-2 * time.Hour)
 
 		timeOffs = append(timeOffs, t)
 	}

@@ -4,4 +4,5 @@ export interface SpecialistService {
     price_per: string
     price_min: number
     price_max: number
+    service_id: number
 }

@@ -191,13 +191,13 @@ CREATE TABLE public.messages
 --
 CREATE TABLE public.reviews
 (
-    id            integer PRIMARY KEY      NOT NULL,
-    rating        integer                  NOT NULL,
-    description   text                     NOT NULL,
-    specialist_id integer                  NOT NULL,
-    client_id     integer                  NOT NULL,
-    created_at    timestamp with time zone NOT NULL,
-    service_id    integer                  NOT NULL
+    id                    integer PRIMARY KEY      NOT NULL,
+    rating                integer                  NOT NULL,
+    description           text                     NOT NULL,
+    specialist_id         integer                  NOT NULL,
+    client_id             integer                  NOT NULL,
+    created_at            timestamp with time zone NOT NULL,
+    specialist_service_id integer                  NOT NULL
 );
 
 --
@@ -538,23 +538,26 @@ VALUES ('2024-07-17 08:00:00', '2024-07-17 16:00:00', 1),
 --
 -- Data for Name: visits; Type: TABLE DATA; Schema: public; Owner: -
 --
-INSERT INTO public.visits (start_date, end_date, price, description, status, client_address_id, client_id, specialist_id,
+INSERT INTO public.visits (start_date, end_date, price, description, status, client_address_id, client_id,
+                           specialist_id,
                            specialist_service_id)
-VALUES ('2024-07-18 12:00:00', '2024-07-18 15:00:00', 300, 'Potrzebuje zrobić to w kilku pomieszczeniach, w tym w kuchni i łazience', 'accepted', 1, 1, 1, 2),
-       ('2024-07-19 08:00:00', '2024-07-19 10:00:00', 500, 'Gniazdka w kuchni i łazience', 'accepted', 2, 1, 1, 5),
-       ('2024-07-21 15:00:00', '2024-07-21 20:00:00', 200, 'Gniazdka w garażu i piwnicy', 'specialist_action_required', 1, 1, 1, 5);
+VALUES ('2024-07-18 12:00:00', '2024-07-18 15:00:00', 300,
+        'Potrzebuje zrobić to w kilku pomieszczeniach, w tym w kuchni i łazience', 'accepted', 1, 1, 1, 1),
+       ('2024-07-19 08:00:00', '2024-07-19 10:00:00', 500, 'Gniazdka w kuchni i łazience', 'accepted', 2, 1, 1, 3),
+       ('2024-07-21 15:00:00', '2024-07-21 20:00:00', 200, 'Gniazdka w garażu i piwnicy', 'specialist_action_required',
+        1, 1, 1, 3);
 
 --
 -- Data for Name: services; Type: TABLE DATA; Schema: public; Owner: -
 --
-INSERT INTO public.reviews (rating, description, specialist_id, client_id, created_at, service_id)
-VALUES (4, 'Bardzo dobry specjalista, zna się na fachu', 1, 1, '2023-12-13 12:23:22', 2),
-       (5, 'Pan poradził sobie z zadaniem jak mało kto', 1, 1, '2024-03-23 20:49:00', 5),
-       (4, 'Ok', 1, 1, '2024-02-05 18:05:12', 1),
+INSERT INTO public.reviews (rating, description, specialist_id, client_id, created_at, specialist_service_id)
+VALUES (4, 'Bardzo dobry specjalista, zna się na fachu', 1, 1, '2023-12-13 12:23:22', 1),
+       (5, 'Pan poradził sobie z zadaniem jak mało kto', 1, 1, '2024-03-23 20:49:00', 3),
+       (4, 'Ok', 1, 1, '2024-02-05 18:05:12', 2),
        (3, 'Mogło być lepiej', 1, 1, '2024-01-16 07:49:50', 1),
        (4, 'Pan bardzo rzetelny', 2, 1, '2021-05-13 18:55:12', 4),
        (5, 'Lepiej nie mogłem trafić, najlepszy specjalista w okolicy!', 2, 1, '2023-08-02 22:02:42', 5),
-       (5, 'Bardzo porządna Pani, prace wykonuje od deski do deski', 3, 1, '2024-02-12 08:22:02', 33);
+       (5, 'Bardzo porządna Pani, prace wykonuje od deski do deski', 3, 1, '2024-02-12 08:22:02', 8);
 
 --
 -- Name: cities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
@@ -564,12 +567,12 @@ SELECT pg_catalog.setval('public.cities_id_seq', 5, true);
 --
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
-SELECT pg_catalog.setval('public.users_id_seq', 4, true);
+SELECT pg_catalog.setval('public.users_id_seq', 5, true);
 
 --
 -- Name: clients_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
-SELECT pg_catalog.setval('public.clients_id_seq', 1, true);
+SELECT pg_catalog.setval('public.clients_id_seq', 2, true);
 
 --
 -- Name: specialists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
@@ -579,7 +582,7 @@ SELECT pg_catalog.setval('public.specialists_id_seq', 3, true);
 --
 -- Name: clients_addresses_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
-SELECT pg_catalog.setval('public.clients_addresses_id_seq', 1, true);
+SELECT pg_catalog.setval('public.clients_addresses_id_seq', 3, true);
 
 --
 -- Name: specializations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
@@ -597,14 +600,14 @@ SELECT pg_catalog.setval('public.services_id_seq', 64, true);
 SELECT pg_catalog.setval('public.specialists_services_id_seq', 9, true);
 
 --
--- Name: time_offvi_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: time_off_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
-SELECT pg_catalog.setval('public.time_off_id_seq', 1, true);
+SELECT pg_catalog.setval('public.time_off_id_seq', 2, true);
 
 --
 -- Name: visits_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
-SELECT pg_catalog.setval('public.visits_id_seq', 1, true);
+SELECT pg_catalog.setval('public.visits_id_seq', 3, true);
 
 --
 -- Name: offers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
@@ -857,10 +860,10 @@ DELETE
 CASCADE;
 
 --
--- Name: reviews reviews_service_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: reviews reviews_specialist_service_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 ALTER TABLE ONLY public.reviews
-    ADD CONSTRAINT reviews_service_id_fk FOREIGN KEY (service_id) REFERENCES public.services(id) ON
+    ADD CONSTRAINT reviews_specialist_service_id_fk FOREIGN KEY (specialist_service_id) REFERENCES public.specialists_services(id) ON
 UPDATE CASCADE
 ON
 DELETE

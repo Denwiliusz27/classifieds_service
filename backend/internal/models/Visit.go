@@ -18,3 +18,13 @@ type VisitCalendar struct {
 	Client     Client                `json:"client"`
 	Service    SpecialistService     `json:"service"`
 }
+
+type VisitRequest struct {
+	StartDate           time.Time `json:"start_date"`
+	EndDate             time.Time `json:"end_date"`
+	Description         string    `json:"description"`
+	ClientId            int       `json:"client_id"`
+	ClientAddressId     int       `json:"client_address_id"`
+	SpecialistId        int       `json:"specialist_id"`
+	SpecialistServiceId int       `json:"specialist_service_id"`
+}

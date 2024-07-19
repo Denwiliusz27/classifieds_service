@@ -50,7 +50,7 @@ func (m *PG) GetSpecialistByUserId(userId int) (*models.Specialist, error) {
 		&specialist.SpecializationId,
 		&specialist.CityId,
 		&specialist.UserId,
-		specialist.CreatedAt,
+		&specialist.CreatedAt,
 	)
 
 	if err != nil {

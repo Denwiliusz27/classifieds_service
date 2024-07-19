@@ -39,6 +39,7 @@ func (m *PG) GetReviewsBySpecialistId(specialistId int) ([]models.Review, error)
 			&r.SpecialistService.PricePer,
 			&r.SpecialistService.PriceMin,
 			&r.SpecialistService.PriceMax,
+			&r.SpecialistService.ServiceId,
 			&r.Description,
 			&r.CreatedAt)
 

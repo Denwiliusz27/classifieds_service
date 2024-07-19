@@ -178,7 +178,7 @@ const CreateSpecialistService = `
 
 const GetSpecialistServicesBySpecialistId = `
 	SELECT
-		specialists_services.id, services.name, services.price_per, specialists_services.price_min, specialists_services.price_max
+		specialists_services.id, services.name, services.price_per, specialists_services.price_min, specialists_services.price_max, specialists_services.service_id
 	FROM
 	    specialists_services
 	LEFT JOIN
@@ -192,7 +192,7 @@ const GetSpecialistServicesBySpecialistId = `
 const GetReviewsBySpecialistId = `
 	SELECT
 		reviews.id, reviews.rating, clients.id, users.name, users.second_name, users.email, users.id, 
-		specialists_services.id, services.name, services.price_per, specialists_services.price_min, specialists_services.price_max,
+		specialists_services.id, services.name, services.price_per, specialists_services.price_min, specialists_services.price_max, specialists_services.service_id,
 		reviews.description, reviews.created_at
 	FROM
 	    reviews
@@ -200,10 +200,10 @@ const GetReviewsBySpecialistId = `
 		clients ON reviews.client_id = clients.id
 	LEFT JOIN
 		users ON clients.user_id = users.id
-	LEFT JOIN
-		services ON services.id = reviews.service_id
  	LEFT JOIN
-		specialists_services ON (reviews.service_id = specialists_services.service_id AND reviews.specialist_id = specialists_services.specialist_id) 
+		specialists_services ON reviews.specialist_service_id = specialists_services.id  
+	LEFT JOIN
+		services ON services.id = specialists_services.service_id
 	WHERE
 	    reviews.specialist_id = ($1)
 	ORDER BY 
@@ -231,10 +231,11 @@ const GetCalendarVisitsBySpecialistIdOrClientId = `
 		visits.client_address_id, clients_addresses.street, clients_addresses.building_nr, clients_addresses.flat_nr, clients_addresses.city_id, cities2.name, 
 		specialists.id, u1.name, u1.second_name, u1.email, specializations.name, cities.name, specialists.phone_nr, specialists.description, u1.created_at, 
 		clients.id, u2.name, u2.second_name, u2.email, u2.id, u2.created_at, 
-		specialists_services.service_id,
+		specialists_services.id,
 		services.name, services.price_per, 
 		specialists_services.price_min, 
-		specialists_services.price_max
+		specialists_services.price_max,
+		specialists_services.service_id
 	FROM
 	    visits
 	LEFT JOIN
@@ -254,7 +255,7 @@ const GetCalendarVisitsBySpecialistIdOrClientId = `
    	LEFT JOIN
 		users as u2 ON clients.user_id = u2.id 
   	LEFT JOIN
-  		specialists_services ON (specialists_services.service_id = visits.specialist_service_id AND visits.specialist_id = specialists_services.specialist_id)
+  		specialists_services ON specialists_services.id = visits.specialist_service_id
   	LEFT JOIN
   		services on specialists_services.service_id = services.id
   	WHERE
@@ -263,4 +264,14 @@ const GetCalendarVisitsBySpecialistIdOrClientId = `
   		visits.start_date >= current_date
 	ORDER BY
    		visits.start_date ASC;   
+`
+
+const CreateVisit = `
+	INSERT INTO
+		visits
+		(start_date, end_date, price, description, status, client_address_id, client_id, specialist_id, specialist_service_id)
+	VALUES
+	    ($1, $2, 0, $3, 'specialist_action_required', $4, $5, $6, $7)
+	RETURNING id;
+
 `

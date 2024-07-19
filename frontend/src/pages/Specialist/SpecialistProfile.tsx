@@ -21,13 +21,10 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/pl';
 import {DateTimePicker} from "@mui/x-date-pickers";
 import {TimeOff} from "../../models/TimeOff";
-import {Client} from "../../models/Client";
-import {ClientAddress, ClientAddressExtended} from "../../models/ClientAddress";
+import {ClientAddressExtended} from "../../models/ClientAddress";
 
 function SpecialistProfile() {
-    const [specialistId, setSpecialistId] = useState(0)
     const [specialist, setSpecialist] = useState<SpecialistExtendedInfo>()
-    const [client, setClient] = useState<Client>()
     const [clientAddresses, setClientAddresses] = useState<ClientAddressExtended[]>()
     const [reviews, setReviews] = useState({
         count: 0,
@@ -35,6 +32,8 @@ function SpecialistProfile() {
     })
     const [showRegisterWindow, setShowRegisterWindow] = useState(false)
     const [showErrorWindow, setShowErrorWindow] = useState(false)
+    const [successMessage, setSuccessMessage] = useState("")
+    const [universalError, setUniversalError] = useState("")
     const [dateError, setDateError] = useState("")
     const [loginError, setLoginError] = useState("")
     const [serviceError, setServiceError] = useState("")
@@ -63,8 +62,6 @@ function SpecialistProfile() {
                 return
             }
         }
-
-        setSpecialistId(location.state.specialistId)
 
         const headers = new Headers()
         headers.append("Content-Type", "application/json")
@@ -104,25 +101,15 @@ function SpecialistProfile() {
                 console.log("Error retrieving TimeOff: ", err)
             })
 
-        fetch(`http://localhost:8080/visits/${location.state.specialistId}/0`, requestOptions)
-            .then((response) => response.json())
-            .then((data) => {
+        getSpecialistVisits(location.state.specialistId)
 
-                data.forEach((v: VisitCalendar) => {
-                    v.info.start_date = new Date(v.info.start_date)
-                    v.info.end_date = new Date(v.info.end_date)
-                })
-
-                setVisits(data)
+        const user = sessionStorage.getItem(userRole)
+        if (user) {
+            var c = JSON.parse(user)
+            setNewVisit({
+                ...newVisit,
+                client_id: c.id
             })
-            .catch(err => {
-                console.log("Error retrieving Visits: ", err)
-            })
-
-        const tmp = sessionStorage.getItem(userRole)
-        if (tmp) {
-            var c = JSON.parse(tmp)
-            setClient(c)
 
             headers.append("Authorization", "Bearer " + jwtToken)
             fetch(`/client/addresses/${c.id}`, {
@@ -156,6 +143,30 @@ function SpecialistProfile() {
 
     }, [specialist]);
 
+    function getSpecialistVisits(specialistId: number) {
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+        const requestOptions = {
+            method: "GET",
+            headers: headers,
+        }
+
+        fetch(`http://localhost:8080/visits/${specialistId}/0`, requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+
+                data.forEach((v: VisitCalendar) => {
+                    v.info.start_date = new Date(v.info.start_date)
+                    v.info.end_date = new Date(v.info.end_date)
+                })
+
+                setVisits(data)
+            })
+            .catch(err => {
+                console.log("Error retrieving Visits: ", err)
+            })
+    }
+
     const eventBackgroundAdjustment = (visit: VisitCalendar) => {
         let backgroundColor = 'Maroon';
 
@@ -167,7 +178,7 @@ function SpecialistProfile() {
     };
 
     const isDateAvailable = (date: Date): boolean => {
-        if (!timeOff){
+        if (!timeOff) {
             return true
         }
         return !timeOff.some(off => {
@@ -208,13 +219,13 @@ function SpecialistProfile() {
         }
 
         if (!isDateFromFuture(start)) {
-            setDateError("Wybrana data jest datą przeszłą, wybierz termin z przyszłości.")
+            setUniversalError("Wybrana data jest datą przeszłą, wybierz termin z przyszłości.")
 
             Swal.fire({
                 didOpen: () => setShowErrorWindow(true),
                 didClose: () => {
                     setShowErrorWindow(false)
-                    setDateError("")
+                    setUniversalError("")
                 },
                 showConfirmButton: false,
             })
@@ -222,13 +233,13 @@ function SpecialistProfile() {
         }
 
         if (!isDateAvailable(start)) {
-            setDateError("Wybrana data jest niedostępna, wybierz inny termin.")
+            setUniversalError("Wybrana data jest niedostępna, wybierz inny termin.")
 
             Swal.fire({
                 didOpen: () => setShowErrorWindow(true),
                 didClose: () => {
                     setShowErrorWindow(false)
-                    setDateError("")
+                    setUniversalError("")
                 },
                 showConfirmButton: false,
             })
@@ -236,22 +247,25 @@ function SpecialistProfile() {
         }
 
         if (isDateOverlapping(start)) {
-            setDateError("W wybranym terminie istnieje już rezerwacja, wybierz inny termin.")
+            setUniversalError("W wybranym terminie istnieje już rezerwacja, wybierz inny termin.")
 
             Swal.fire({
                 didOpen: () => setShowErrorWindow(true),
                 didClose: () => {
                     setShowErrorWindow(false)
-                    setDateError("")
+                    setUniversalError("")
                 },
                 showConfirmButton: false,
             })
             return;
         }
 
+        const tmp = start.getTime();
         setNewVisit({
             ...newVisit,
+            specialist_id: specialist?.specialist.id!,
             start_date: start,
+            end_date: new Date(tmp + 2 * 60 * 60 * 1000)
         });
 
         Swal.fire({
@@ -262,6 +276,8 @@ function SpecialistProfile() {
                 setServiceError("")
                 setClientAddressError("")
                 setDescriptionError("")
+                setUniversalError("")
+                setSuccessMessage("")
 
                 setNewVisit({
                     ...newVisit,
@@ -276,7 +292,7 @@ function SpecialistProfile() {
 
     const timeOffSlotAdjustment = (date: Date) => {
         if (!isDateAvailable(date)) {
-            return { style: { backgroundColor: 'lightgray', border: 'none' } };
+            return {style: {backgroundColor: 'lightgray', border: 'none'}};
         }
         return {};
     }
@@ -292,7 +308,7 @@ function SpecialistProfile() {
         }
 
         if (dateError === "" && !isDateAvailable(newVisit.start_date)) {
-            dateError ="Wybrana data jest niedostępna, wybierz inny termin"
+            dateError = "Wybrana data jest niedostępna, wybierz inny termin"
         }
 
         if (dateError === "" && isDateOverlapping(newVisit.start_date)) {
@@ -320,7 +336,6 @@ function SpecialistProfile() {
             setDescriptionError(descriptionError)
             return false
         }
-
     }
 
     const createVisit = () => {
@@ -330,6 +345,32 @@ function SpecialistProfile() {
 
         console.log("created")
         console.log(newVisit)
+
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+        headers.append("Authorization", "Bearer " + jwtToken)
+        const method = "POST"
+
+        fetch(`/client/create_visit`, {
+            body: JSON.stringify(newVisit),
+            method: method,
+            headers: headers,
+            credentials: 'include'
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    console.log("ERRORS")
+                    setUniversalError(data.message)
+                } else {
+                    console.log("SUCCESSFULLY CREATED VISIT")
+                    setSuccessMessage("Pomyślnie utworzono rezerwację")
+                    getSpecialistVisits(specialist?.specialist.id!)
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
     }
 
     return (
@@ -550,7 +591,8 @@ function SpecialistProfile() {
                                     <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
 
                                     <p className="mb-5">
-                                        Aby zarezerwować usługę, kliknij w interesującą cię datę, a następnie wybierz usługę
+                                        Aby zarezerwować usługę, kliknij w interesującą cię datę, a następnie wybierz
+                                        usługę
                                         i podaj szczegółowy jej opis w wyświetlonym na ekranie formularz.
                                     </p>
                                 </div>
@@ -569,7 +611,10 @@ function SpecialistProfile() {
                                         onSelectSlot={handleSelectSlot}
                                         startAccessor={(event: VisitCalendar) => event.info.start_date}
                                         endAccessor={(event: VisitCalendar) => event.info.end_date}
-                                        style={{ height: (specialist?.reviews.length! <= 2 ) ? 900 : 1300, fontSize: "x-large"}}
+                                        style={{
+                                            height: (specialist?.reviews.length! <= 2) ? 900 : 1300,
+                                            fontSize: "x-large"
+                                        }}
                                         messages={{
                                             previous: "Poprzedni",
                                             next: "Następny",
@@ -630,6 +675,8 @@ function SpecialistProfile() {
                                                                 start_date: value!.toDate()
                                                             })
                                                             setDateError("")
+                                                            setUniversalError("")
+                                                            setSuccessMessage("")
                                                         }}
                                                     />
                                                 </DemoItem>
@@ -656,11 +703,13 @@ function SpecialistProfile() {
                                                         specialist_service_id: parseInt(value.currentTarget.value)
                                                     })
                                                     setServiceError("")
+                                                    setUniversalError("")
+                                                    setSuccessMessage("")
                                                 }}
                                                 className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
                                             >
-                                                <option value="" disabled={newVisit.specialist_service_id !== 0}>Nazwa
-                                                    usługi
+                                                <option value="" disabled={newVisit.specialist_service_id !== 0}>
+                                                    Nazwa usługi
                                                 </option>
                                                 {specialist?.services!.map((option) => {
                                                     return (
@@ -695,6 +744,8 @@ function SpecialistProfile() {
                                                         client_address_id: parseInt(value.currentTarget.value)
                                                     })
                                                     setClientAddressError("")
+                                                    setUniversalError("")
+                                                    setSuccessMessage("")
                                                 }}
                                                 className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
                                             >
@@ -703,12 +754,25 @@ function SpecialistProfile() {
                                                 </option>
                                                 {clientAddresses!.map((address) => {
                                                     return (
-                                                        <option
-                                                            key={address.id}
-                                                            value={address.id}
-                                                        >
-                                                            {address.city.name}, ul. {address.street} {address.building_nr}
-                                                        </option>
+                                                        <>
+                                                            {address.flat_nr === 0 ?
+                                                                <option
+                                                                    key={address.id}
+                                                                    value={address.id}
+                                                                >
+                                                                    {address.city.name},
+                                                                    ul. {address.street} {address.building_nr}
+                                                                </option>
+                                                                :
+                                                                <option
+                                                                    key={address.id}
+                                                                    value={address.id}
+                                                                >
+                                                                    {address.city.name},
+                                                                    ul. {address.street} {address.building_nr}/{address.flat_nr}
+                                                                </option>
+                                                            }
+                                                        </>
                                                     )
                                                 })}
                                             </select>
@@ -735,6 +799,8 @@ function SpecialistProfile() {
                                                         description: value.currentTarget.value
                                                     })
                                                     setDescriptionError("")
+                                                    setUniversalError("")
+                                                    setSuccessMessage("")
                                                 }}
                                                 rows={6}
                                                 cols={40}
@@ -761,6 +827,17 @@ function SpecialistProfile() {
                                             </div>
                                         </div>
 
+                                        {successMessage &&
+                                            <div className="mt-5 drop-shadow-xl text-xl font-bold text-green-500">
+                                                <p>{successMessage}</p>
+                                            </div>
+                                        }
+
+                                        {universalError &&
+                                            <div className="mt-5 drop-shadow-xl text-xl font-bold text-red-500">
+                                                <p>{universalError}</p>
+                                            </div>
+                                        }
                                     </div>
                                 </div>,
                                 Swal.getHtmlContainer()!,
@@ -776,8 +853,8 @@ function SpecialistProfile() {
                                     </div>
 
                                     <div className="flex flex-col items-end w-4/5 mt-3 mb-5">
-                                        {dateError !== "" &&
-                                            <p className="text-xl">{dateError}</p>
+                                        {universalError !== "" &&
+                                            <p className="text-xl">{universalError}</p>
                                         }
 
                                         {loginError !== "" &&
@@ -785,7 +862,7 @@ function SpecialistProfile() {
                                         }
                                     </div>
 
-                                    {dateError !== "" &&
+                                    {universalError !== "" &&
                                         <div onClick={() => Swal.close()}
                                              className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
                                             <span className="mx-3 my-2 text-xl">Ok</span>
@@ -795,7 +872,7 @@ function SpecialistProfile() {
                                     {loginError !== "" &&
                                         <div className="flex flex-row items-center p-2">
                                             <Link to="/klient/login" onClick={() => Swal.close()}
-                                                 className="mx-2 border-4 border-amber-600 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-600 hover:border-amber-600 hover:bg-white hover:text-amber-900 duration-300 ...">
+                                                  className="mx-2 border-4 border-amber-600 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-600 hover:border-amber-600 hover:bg-white hover:text-amber-900 duration-300 ...">
                                                 <span className="mx-3 my-2 text-xl">Zaloguj</span>
                                             </Link>
 

@@ -52,7 +52,8 @@ func (m *PG) GetSpecialistServicesBySpecialistId(specialistId int) ([]models.Spe
 			&service.Name,
 			&service.PricePer,
 			&service.PriceMin,
-			&service.PriceMax)
+			&service.PriceMax,
+			&service.ServiceId)
 
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %w", err)

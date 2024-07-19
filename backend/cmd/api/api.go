@@ -443,6 +443,43 @@ func (app *Application) GetCalendarVisitsBySpecialistIdOrClientId(w http.Respons
 	_ = app.writeJSON(w, http.StatusOK, visits)
 }
 
+func (app *Application) CreateVisit(w http.ResponseWriter, r *http.Request) {
+	var newVisitRequest models.VisitRequest
+
+	err := app.readJSON(w, r, &newVisitRequest)
+	if err != nil {
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	log.Println("I got new Visit to create: ", newVisitRequest)
+
+	visits, err := app.DB.GetCalendarVisitsBySpecialistIdOrClientId(&newVisitRequest.SpecialistId, nil)
+	if err != nil {
+		fmt.Println("error getting Calendar Visits from db: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	for _, v := range visits {
+		if ((newVisitRequest.StartDate.Equal(v.Info.StartDate) || newVisitRequest.StartDate.After(v.Info.StartDate)) && newVisitRequest.StartDate.Before(v.Info.EndDate)) ||
+			((newVisitRequest.EndDate.Before(v.Info.EndDate) || newVisitRequest.EndDate.Equal(v.Info.EndDate)) && newVisitRequest.StartDate.After(v.Info.StartDate)) {
+			fmt.Println("there already exist visit on this time")
+			_ = app.errorJSON(w, fmt.Errorf("W wybranym terminie istnieje już rezerwacja"))
+			return
+		}
+	}
+
+	visitId, err := app.DB.CreateVisit(newVisitRequest)
+	if err != nil {
+		log.Println(err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, visitId)
+}
+
 func (app *Application) GetClientAddressesByClientId(w http.ResponseWriter, r *http.Request) {
 	clientId, err := strconv.Atoi(chi.URLParam(r, "client_id"))
 	if err != nil {
