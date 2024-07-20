@@ -1,8 +1,9 @@
 
 export interface Client {
-    Id: number
-    Name: string
-    SecondName: string
-    Email: string
-    UserId: number
+    id: number
+    name: string
+    second_name: string
+    email: string
+    user_id: number
+    created_at: Date
 }

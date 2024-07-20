@@ -21,3 +21,27 @@
 .zooming_card:hover .zooming_card_img {
     @apply scale-150;
 }
+
+.rbc-header {
+    height: 50px;
+    line-height: 50px;
+    white-space: nowrap;
+    overflow: visible;
+}
+
+.rbc-allday-cell {
+    display: none;
+}
+
+.rbc-event-label {
+    word-wrap: break-word;
+    text-wrap: wrap;
+}
+
+.custom-datepicker .MuiOutlinedInput-root {
+    border-width: 1px;
+}
+
+.custom-datepicker .MuiOutlinedInput-notchedOutline {
+    border-width: 1px;
+}

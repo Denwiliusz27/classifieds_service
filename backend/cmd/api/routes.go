@@ -18,6 +18,8 @@ func (app *Application) Routes() http.Handler {
 		mux.Use(app.authRequired)
 		mux.Get("/reservations", app.GetClientReservations)
 		mux.Get("/info/{user_id}", app.GetClientInfoByUserId)
+		mux.Get("/addresses/{client_id}", app.GetClientAddressesByClientId)
+		mux.Post("/create_visit", app.CreateVisit)
 	})
 
 	mux.Post("/register_client", app.CreateClient)
@@ -28,7 +30,8 @@ func (app *Application) Routes() http.Handler {
 		mux.Get("/info/{user_id}", app.GetSpecialistInfoByUserId)
 	})
 
-	mux.Get("/specialists/{specialization_id}/{city_id}/{service_id}", app.GetSpecialistsByCSpecializationIdCityIdServiceId)
+	mux.Get("/specialists/{specialization_id}/{city_id}/{service_id}", app.GetSpecialistsBySpecializationIdCityIdServiceId)
+	mux.Get("/specialist/detailed_info/{specialist_id}", app.GetSpecialistDetailedInfo)
 
 	mux.Post("/register_specialist", app.CreateSpecialist)
 
@@ -39,6 +42,10 @@ func (app *Application) Routes() http.Handler {
 	mux.Get("/specializations", app.GetAllSpecializations)
 
 	mux.Get("/services", app.GetAllServices)
+
+	mux.Get("/time_off/{specialist_id}", app.GetTimeOffBySpecialistId)
+
+	mux.Get("/visits/{specialist_id}/{client_id}", app.GetCalendarVisitsBySpecialistIdOrClientId)
 
 	return mux
 }

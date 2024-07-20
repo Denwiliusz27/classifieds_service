@@ -42,6 +42,7 @@ func (m *PG) GetClientByUserId(userId int) (*models.Client, error) {
 		&client.SecondName,
 		&client.Email,
 		&client.UserId,
+		&client.CreatedAt,
 	)
 
 	if err != nil {

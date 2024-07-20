@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 )
 
 func (m *PG) CreateUser(name string, secondName string, email string, password string, role string) (int, error) {
@@ -19,6 +20,7 @@ func (m *PG) CreateUser(name string, secondName string, email string, password s
 		secondName,
 		email,
 		password,
+		time.Now(),
 		role,
 	).Scan(&newUserId)
 
@@ -47,6 +49,7 @@ func (m *PG) GetUserByEmailAndRole(email string, role string) (*models.User, err
 		&user.SecondName,
 		&user.Email,
 		&user.Password,
+		&user.CreatedAt,
 		&user.Role,
 	)
 
@@ -74,6 +77,7 @@ func (m *PG) GetUserById(id int) (*models.User, error) {
 		&user.SecondName,
 		&user.Email,
 		&user.Password,
+		&user.CreatedAt,
 		&user.Role,
 	)
 

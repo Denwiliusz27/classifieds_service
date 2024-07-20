@@ -6,12 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/form/Select.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/form/Select.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientRegister.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/SearchSpecialistsCategory.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/SearchSpecialistsCategory.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/SearchSpecialistsDetails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/SearchSpecialistsDetails.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistRegister.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistProfile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistProfile.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,8 +16,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="TypeScript File" />
         <option value="TypeScript JSX File" />
+        <option value="TypeScript File" />
       </list>
     </option>
   </component>
@@ -51,8 +46,8 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;06__search__specialists__pages&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/danwi/OneDrive/Pulpit/Things/STUDIA/classifieds_service/frontend/src/pages&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;07__specialist__detail__info__page&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/uj/Desktop/classifieds_service/frontend&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -138,7 +133,32 @@
       <workItem from="1718647509566" duration="3943000" />
       <workItem from="1718874604746" duration="594000" />
       <workItem from="1718884074385" duration="10323000" />
-      <workItem from="1718962162759" duration="4393000" />
+      <workItem from="1718962162759" duration="4677000" />
+      <workItem from="1718967305722" duration="1715000" />
+      <workItem from="1719329865147" duration="2106000" />
+      <workItem from="1719484663595" duration="14387000" />
+      <workItem from="1719514216763" duration="761000" />
+      <workItem from="1719566375812" duration="10365000" />
+      <workItem from="1719593006030" duration="4628000" />
+      <workItem from="1719855111651" duration="2780000" />
+      <workItem from="1720177944639" duration="1357000" />
+      <workItem from="1720179322689" duration="190000" />
+      <workItem from="1720179528406" duration="3574000" />
+      <workItem from="1720184057780" duration="16302000" />
+      <workItem from="1720261630147" duration="9934000" />
+      <workItem from="1720291635216" duration="3687000" />
+      <workItem from="1720629564965" duration="693000" />
+      <workItem from="1720630898416" duration="138000" />
+      <workItem from="1720631063437" duration="10463000" />
+      <workItem from="1720814880000" duration="2004000" />
+      <workItem from="1721060824347" duration="2079000" />
+      <workItem from="1721076691012" duration="3209000" />
+      <workItem from="1721148830304" duration="5552000" />
+      <workItem from="1721233444388" duration="9636000" />
+      <workItem from="1721293792156" duration="6334000" />
+      <workItem from="1721381896396" duration="5814000" />
+      <workItem from="1721417398278" duration="5891000" />
+      <workItem from="1721467749666" duration="2080000" />
     </task>
     <servers />
   </component>

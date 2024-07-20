@@ -50,6 +50,7 @@ func (m *PG) GetSpecialistByUserId(userId int) (*models.Specialist, error) {
 		&specialist.SpecializationId,
 		&specialist.CityId,
 		&specialist.UserId,
+		&specialist.CreatedAt,
 	)
 
 	if err != nil {
@@ -84,6 +85,7 @@ func (m *PG) GetSpecialistsBySpecializationIdCityIdServiceId(specializationId *i
 			&s.SecondName,
 			&s.Specialization,
 			&s.City,
+			&s.CreatedAt,
 			&s.Rating,
 			&s.Reviews)
 
@@ -97,4 +99,32 @@ func (m *PG) GetSpecialistsBySpecializationIdCityIdServiceId(specializationId *i
 	log.Println("Successfully retrieved SpecialistsGeneralInfo")
 
 	return specialists, nil
+}
+
+func (m *PG) GetSpecialistProfileInfoBySpecialistId(specialistId int) (*models.SpecialistProfileInfo, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	q := sql.GetSpecialistProfileInfoBySpecialistId
+	var specialist models.SpecialistProfileInfo
+	row := m.DB.QueryRowContext(ctx, q, specialistId)
+
+	err := row.Scan(
+		&specialist.Id,
+		&specialist.Name,
+		&specialist.SecondName,
+		&specialist.Email,
+		&specialist.Specialization,
+		&specialist.City,
+		&specialist.PhoneNr,
+		&specialist.Description,
+		&specialist.CreatedAt,
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("error getting Specialist profile info by specialistId: %w", err)
+	}
+	log.Println("Successfully retrieved Specialist profile info")
+
+	return &specialist, nil
 }

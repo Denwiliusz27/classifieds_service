@@ -111,7 +111,8 @@ function SpecialistLogin() {
                                     phone_nr: data.phone_nr,
                                     specialization_id: data.specialization_id,
                                     city_id: data.city_id,
-                                    user_id: data.user_id
+                                    user_id: data.user_id,
+                                    created_at: data.created_at
                                 }
                                 sessionStorage.setItem("specialist", JSON.stringify(specialist))
                                 setName(data.name)

@@ -82,7 +82,7 @@ function App() {
                         if (!name) {
                             const user = sessionStorage.getItem(data.user_role)
                             if (user) {
-                                setName(JSON.parse(user).Name)
+                                setName(JSON.parse(user).name)
                             }
                         }
                         toggleRefresh(true)
@@ -92,7 +92,7 @@ function App() {
                     console.log("user isn't logged", err)
                 })
         }
-    }, [jwtToken, userRole, toggleRefresh, name])
+    }, [jwtToken, userRole, toggleRefresh])
 
     const handleClickOutside = (event: MouseEvent) => {
         if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -110,10 +110,10 @@ function App() {
     return (
         <>
             <div
-                className="flex flex-row sticky top-0 h-20 justify-center items-center bg-amber-900 text-white text-2xl font-medium">
+                className="flex flex-row sticky top-0 h-20 justify-center items-center bg-amber-900 text-white text-2xl font-medium z-40">
 
                 {/* Logo */}
-                <Link to="/" className="flex w-52 justify-center items-center hover:cursor-pointer transition-all hover:tracking-widest duration-300">
+                <Link to="/" className="flex w-24 ml-10 justify-center items-center hover:cursor-pointer transition-all hover:tracking-widest duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                          stroke="currentColor" className="w-6 h-6 mx-1">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -179,9 +179,9 @@ function App() {
 
                 {/* Login button */}
                 {jwtToken === "" &&
-                    <Link to="/wybor_konta" className="flex w-52 justify-center items-center">
+                    <Link to="/wybor_konta" className="flex w-28 justify-center items-center mr-10">
                         <div
-                            className="border-2 border-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
+                            className="border-2 border-white w-full text-center rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
                             <span>zaloguj</span>
                         </div>
                     </Link>
@@ -302,7 +302,8 @@ function App() {
             </div>
 
             <div>
-                <Outlet context={{
+                <Outlet
+                    context={{
                     jwtToken,
                     setJwtToken,
                     userRole,

@@ -214,7 +214,7 @@ func (app *Application) GetSpecialistInfoByUserId(w http.ResponseWriter, r *http
 	_ = app.writeJSON(w, http.StatusOK, specialist)
 }
 
-func (app *Application) GetSpecialistsByCSpecializationIdCityIdServiceId(w http.ResponseWriter, r *http.Request) {
+func (app *Application) GetSpecialistsBySpecializationIdCityIdServiceId(w http.ResponseWriter, r *http.Request) {
 	var specId *int
 	var cId *int
 	var servId *int
@@ -263,6 +263,44 @@ func (app *Application) GetSpecialistsByCSpecializationIdCityIdServiceId(w http.
 	}
 
 	_ = app.writeJSON(w, http.StatusOK, specialists)
+}
+
+func (app *Application) GetSpecialistDetailedInfo(w http.ResponseWriter, r *http.Request) {
+	specialistId, err := strconv.Atoi(chi.URLParam(r, "specialist_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter specialist_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	specialistServices, err := app.DB.GetSpecialistServicesBySpecialistId(specialistId)
+	if err != nil {
+		fmt.Println("error getting Specialist services by specialist_id from db: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	specialistProfileInfo, err := app.DB.GetSpecialistProfileInfoBySpecialistId(specialistId)
+	if err != nil {
+		fmt.Println("error getting Specialist profile info by specialist_id from db: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	specialistReviews, err := app.DB.GetReviewsBySpecialistId(specialistId)
+	if err != nil {
+		fmt.Println("error getting Specialist reviews by specialist_id from db: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	specialist := models.SpecialistExtendedInfo{
+		Info:     *specialistProfileInfo,
+		Services: specialistServices,
+		Reviews:  specialistReviews,
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, specialist)
 }
 
 func (app *Application) GetAllSpecializations(w http.ResponseWriter, r *http.Request) {
@@ -347,4 +385,115 @@ func (app *Application) Logout(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	w.WriteHeader(http.StatusAccepted)
+}
+
+func (app *Application) GetTimeOffBySpecialistId(w http.ResponseWriter, r *http.Request) {
+	specialistId, err := strconv.Atoi(chi.URLParam(r, "specialist_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter specialist_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	timeOffs, err := app.DB.GetTimeOffBySpecialistId(specialistId)
+	if err != nil {
+		fmt.Println("error getting TimeOff from db for SpecialistId=", specialistId, " : ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, timeOffs)
+}
+
+func (app *Application) GetCalendarVisitsBySpecialistIdOrClientId(w http.ResponseWriter, r *http.Request) {
+	var specId *int
+	var clId *int
+
+	specialistId, err := strconv.Atoi(chi.URLParam(r, "specialist_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter specialist_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+	if specialistId == 0 {
+		specId = nil
+	} else {
+		specId = &specialistId
+	}
+
+	clientId, err := strconv.Atoi(chi.URLParam(r, "client_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter client_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+	if clientId == 0 {
+		clId = nil
+	} else {
+		clId = &clientId
+	}
+
+	visits, err := app.DB.GetCalendarVisitsBySpecialistIdOrClientId(specId, clId)
+	if err != nil {
+		fmt.Println("error getting Calendar Visits from db: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, visits)
+}
+
+func (app *Application) CreateVisit(w http.ResponseWriter, r *http.Request) {
+	var newVisitRequest models.VisitRequest
+
+	err := app.readJSON(w, r, &newVisitRequest)
+	if err != nil {
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	log.Println("I got new Visit to create: ", newVisitRequest)
+
+	visits, err := app.DB.GetCalendarVisitsBySpecialistIdOrClientId(&newVisitRequest.SpecialistId, nil)
+	if err != nil {
+		fmt.Println("error getting Calendar Visits from db: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	for _, v := range visits {
+		if ((newVisitRequest.StartDate.Equal(v.Info.StartDate) || newVisitRequest.StartDate.After(v.Info.StartDate)) && newVisitRequest.StartDate.Before(v.Info.EndDate)) ||
+			((newVisitRequest.EndDate.Before(v.Info.EndDate) || newVisitRequest.EndDate.Equal(v.Info.EndDate)) && newVisitRequest.StartDate.After(v.Info.StartDate)) {
+			fmt.Println("there already exist visit on this time")
+			_ = app.errorJSON(w, fmt.Errorf("W wybranym terminie istnieje już rezerwacja"))
+			return
+		}
+	}
+
+	visitId, err := app.DB.CreateVisit(newVisitRequest)
+	if err != nil {
+		log.Println(err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, visitId)
+}
+
+func (app *Application) GetClientAddressesByClientId(w http.ResponseWriter, r *http.Request) {
+	clientId, err := strconv.Atoi(chi.URLParam(r, "client_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter client_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	clientAddresses, err := app.DB.GetClientAddressesByClientId(clientId)
+	if err != nil {
+		fmt.Println("error getting ClientAddresses from db: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, clientAddresses)
 }
