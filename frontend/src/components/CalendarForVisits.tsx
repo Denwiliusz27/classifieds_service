@@ -1,5 +1,5 @@
-import React, {ChangeEvent} from "react";
-import {Calendar, CalendarProps, dateFnsLocalizer, EventProps, Views} from "react-big-calendar";
+import React from "react";
+import {Calendar, CalendarProps, dateFnsLocalizer, EventProps, View, Views} from "react-big-calendar";
 import {VisitCalendar} from "../models/Visit";
 import {pl} from "date-fns/locale";
 import {format} from "date-fns/format";
@@ -19,30 +19,31 @@ const localizer = dateFnsLocalizer({
     locales,
 });
 
-interface MyCalendarProps {
+function CalendarForVisits({
+                               events,
+                               handleSelectSlot,
+                               style,
+                               views,
+                               eventBackgroundAdjustment,
+                               selectable,
+                               EventComponent,
+                               onSelectEvent,
+                               timeOffSlotAdjustment
+                           }: {
     events: VisitCalendar[];
     handleSelectSlot: (slotInfo: any) => void;
     style: React.CSSProperties;
+    views: View[];
     eventBackgroundAdjustment: (event: VisitCalendar) => React.CSSProperties;
     selectable: boolean;
     EventComponent: React.FC<EventProps<VisitCalendar>>;
     onSelectEvent: (event: VisitCalendar) => void;
     timeOffSlotAdjustment: (slotInfo: any) => React.HTMLAttributes<HTMLDivElement>;
-}
 
-const CalendarForVisits: React.FC<MyCalendarProps> = ({
-    events,
-    handleSelectSlot,
-    style,
-    eventBackgroundAdjustment,
-    selectable,
-    EventComponent,
-    onSelectEvent,
-    timeOffSlotAdjustment
-}) => {
+}) {
     // Function to get event props
     const eventPropGetter: CalendarProps<VisitCalendar>['eventPropGetter'] = (event) => {
-        return { style: eventBackgroundAdjustment(event) };
+        return {style: eventBackgroundAdjustment(event)};
     };
 
     return (
@@ -52,7 +53,7 @@ const CalendarForVisits: React.FC<MyCalendarProps> = ({
             events={events}
             defaultView={Views.WEEK}
             step={15}
-            views={[Views.WEEK]}
+            views={views}
             min={new Date(0, 0, 0, 6, 0, 0)}
             max={new Date(0, 0, 0, 22, 0, 0)}
             onSelectSlot={handleSelectSlot}
@@ -63,6 +64,9 @@ const CalendarForVisits: React.FC<MyCalendarProps> = ({
                 previous: 'Poprzedni',
                 next: 'Następny',
                 today: 'Dziś',
+                day: 'Dzień',
+                week: 'Tydzień',
+                month: 'Miesiąc',
             }}
             eventPropGetter={eventPropGetter}
             selectable={selectable}
@@ -73,6 +77,6 @@ const CalendarForVisits: React.FC<MyCalendarProps> = ({
             slotPropGetter={timeOffSlotAdjustment}
         />
     );
-};
+}
 
 export default CalendarForVisits;
