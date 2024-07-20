@@ -202,7 +202,7 @@ function SpecialistProfile() {
         return date >= currentDate;
     }
 
-    const handleSelectSlot = ({start, end}: { start: Date; end: Date }) => {
+    const handleSelectSlot = ({start}: { start: Date }) => {
         if (jwtToken === "") {
             console.log("user isn't logged")
             setLoginError("Aby zarezerwować usługę zaloguj się lub zarejestruj konto.")
@@ -342,9 +342,6 @@ function SpecialistProfile() {
         if (!checkNewVisitErrors()) {
             return
         }
-
-        console.log("created")
-        console.log(newVisit)
 
         const headers = new Headers()
         headers.append("Content-Type", "application/json")
@@ -607,7 +604,6 @@ function SpecialistProfile() {
                                         views={[Views.WEEK]}
                                         min={new Date(0, 0, 0, 6, 0, 0)}
                                         max={new Date(0, 0, 0, 22, 0, 0)}
-                                        // dayPropGetter={dayPropGetter}
                                         onSelectSlot={handleSelectSlot}
                                         startAccessor={(event: VisitCalendar) => event.info.start_date}
                                         endAccessor={(event: VisitCalendar) => event.info.end_date}
