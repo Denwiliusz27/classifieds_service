@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type Application struct {
@@ -462,10 +463,22 @@ func (app *Application) CreateVisit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, v := range visits {
-		if ((newVisitRequest.StartDate.Equal(v.Info.StartDate) || newVisitRequest.StartDate.After(v.Info.StartDate)) && newVisitRequest.StartDate.Before(v.Info.EndDate)) ||
-			((newVisitRequest.EndDate.Before(v.Info.EndDate) || newVisitRequest.EndDate.Equal(v.Info.EndDate)) && newVisitRequest.StartDate.After(v.Info.StartDate)) {
+		fmt.Printf("Comparing: %s-%s  WITH %s-%s \n", newVisitRequest.StartDate, newVisitRequest.EndDate, v.Info.StartDate, v.Info.EndDate)
+		fmt.Printf("%v || %v && %v\n", newVisitRequest.StartDate.Equal(v.Info.StartDate), newVisitRequest.StartDate.After(v.Info.StartDate), newVisitRequest.StartDate.Before(v.Info.EndDate))
+		fmt.Printf("%v || %v && %v\n", newVisitRequest.EndDate.Before(v.Info.EndDate), newVisitRequest.EndDate.Equal(v.Info.EndDate), newVisitRequest.StartDate.After(v.Info.StartDate))
+
+		if isVisitOverlapping(newVisitRequest.StartDate, newVisitRequest.EndDate, v.Info.StartDate, v.Info.EndDate) {
 			fmt.Println("there already exist visit on this time")
-			_ = app.errorJSON(w, fmt.Errorf("W wybranym terminie istnieje już rezerwacja"))
+			_ = app.errorJSON(w, fmt.Errorf("Wybrany termin rozpoczęcia lub zakońcenia nakłada się na istniejącą już wizytę"))
+			return
+		}
+	}
+
+	timeOffs, err := app.DB.GetTimeOffBySpecialistId(newVisitRequest.SpecialistId)
+	for _, t := range timeOffs {
+		if isVisitOverlapping(newVisitRequest.StartDate, newVisitRequest.EndDate, t.StartDate, t.EndDate) {
+			fmt.Println("visit is overlapping timeOff")
+			_ = app.errorJSON(w, fmt.Errorf("Wybrany termin nakłada się na termin urlopu specjlisty"))
 			return
 		}
 	}
@@ -478,6 +491,20 @@ func (app *Application) CreateVisit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = app.writeJSON(w, http.StatusOK, visitId)
+}
+
+func isVisitOverlapping(visitStartDate, visitEndDate, existingStartDate, existingEndDate time.Time) bool {
+	if (visitStartDate.Before(existingStartDate) && (visitEndDate.After(existingStartDate) && visitEndDate.Before(existingEndDate))) ||
+		(visitStartDate.Before(existingStartDate) && visitEndDate.Equal(existingEndDate)) ||
+		(visitStartDate.Before(existingStartDate) && visitEndDate.After(existingEndDate)) ||
+		(visitStartDate.Equal(existingStartDate) && (visitEndDate.After(existingStartDate) && visitEndDate.Before(existingEndDate))) ||
+		(visitStartDate.Equal(existingStartDate) && visitEndDate.Equal(existingEndDate)) ||
+		(visitStartDate.Equal(existingStartDate) && visitEndDate.After(existingEndDate)) ||
+		((visitStartDate.After(existingStartDate) && visitStartDate.Before(existingEndDate)) && visitEndDate.Equal(existingEndDate)) ||
+		((visitStartDate.After(existingStartDate) && visitStartDate.Before(existingEndDate)) && visitEndDate.After(existingEndDate)) {
+		return true
+	}
+	return false
 }
 
 func (app *Application) GetClientAddressesByClientId(w http.ResponseWriter, r *http.Request) {
