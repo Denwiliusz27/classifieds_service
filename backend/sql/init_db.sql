@@ -301,7 +301,7 @@ ALTER TABLE public.specialists_services ALTER COLUMN id ADD GENERATED ALWAYS AS 
 --
 ALTER TABLE public.time_off ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
     SEQUENCE NAME public.time_off_id_seq
-    START WITH 2
+    START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
@@ -532,8 +532,8 @@ VALUES (300, 600, 1, 1),
 -- Data for Name: time_off; Type: TABLE DATA; Schema: public; Owner: -
 --
 INSERT INTO public.time_off (start_date, end_date, specialist_id)
-VALUES ('2024-07-17 08:00:00', '2024-07-17 16:00:00', 1),
-       ('2024-07-20 06:00:00', '2024-07-20 22:00:00', 1);
+VALUES ('2024-07-26 14:00:00', '2024-07-26 18:00:00', 1),
+       ('2024-07-27 06:00:00', '2024-07-27 22:00:00', 1);
 
 --
 -- Data for Name: visits; Type: TABLE DATA; Schema: public; Owner: -
@@ -541,10 +541,10 @@ VALUES ('2024-07-17 08:00:00', '2024-07-17 16:00:00', 1),
 INSERT INTO public.visits (start_date, end_date, price, description, status, client_address_id, client_id,
                            specialist_id,
                            specialist_service_id)
-VALUES ('2024-07-18 12:00:00', '2024-07-18 15:00:00', 300,
+VALUES ('2024-07-25 12:00:00', '2024-07-25 15:00:00', 300,
         'Potrzebuje zrobić to w kilku pomieszczeniach, w tym w kuchni i łazience', 'accepted', 1, 1, 1, 1),
-       ('2024-07-19 08:00:00', '2024-07-19 10:00:00', 500, 'Gniazdka w kuchni i łazience', 'accepted', 2, 1, 1, 3),
-       ('2024-07-21 15:00:00', '2024-07-21 20:00:00', 200, 'Gniazdka w garażu i piwnicy', 'specialist_action_required',
+       ('2024-07-26 08:00:00', '2024-07-26 10:00:00', 500, 'Gniazdka w kuchni i łazience', 'accepted', 2, 1, 1, 3),
+       ('2024-07-25 17:00:00', '2024-07-25 20:00:00', 200, 'Gniazdka w garażu i piwnicy', 'specialist_action_required',
         1, 1, 1, 3);
 
 --

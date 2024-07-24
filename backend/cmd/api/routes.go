@@ -28,6 +28,7 @@ func (app *Application) Routes() http.Handler {
 		mux.Use(app.authRequired)
 		mux.Get("/reservations", app.GetSpecialistReservations)
 		mux.Get("/info/{user_id}", app.GetSpecialistInfoByUserId)
+		mux.Post("/create_time_off", app.CreateTimeOff)
 	})
 
 	mux.Get("/specialists/{specialization_id}/{city_id}/{service_id}", app.GetSpecialistsBySpecializationIdCityIdServiceId)

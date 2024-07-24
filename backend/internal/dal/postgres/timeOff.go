@@ -47,3 +47,24 @@ func (m *PG) GetTimeOffBySpecialistId(specialistId int) ([]models.TimeOff, error
 
 	return timeOffs, nil
 }
+
+func (m *PG) CreateTimeOff(newTimeOff models.TimeOffRequest) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	var newTimeOffId int
+
+	q := sql.CreateTimeOff
+	err := m.DB.QueryRowContext(ctx, q,
+		newTimeOff.StartDate.Add(2*time.Hour),
+		newTimeOff.EndDate.Add(2*time.Hour),
+		newTimeOff.SpecialistId,
+	).Scan(&newTimeOffId)
+
+	if err != nil {
+		return 0, fmt.Errorf("cannot create new TimeOff: %w", err)
+	}
+	log.Println("Successfully created TimeOff with id ", newTimeOffId)
+
+	return newTimeOffId, nil
+}

@@ -21,6 +21,8 @@ function SpecialistReservations() {
     const [showTimeOffWindow, setShowTimeOffWindow] = useState(false)
     const [showVisitWindow, setShowVisitWindow] = useState(false)
     const [showInfoWindow, setShowInfoWindow] = useState(false)
+    const [universalError, setUniversalError] = useState("")
+    const [successMessage, setSuccessMessage] = useState("")
     const [info, setInfo] = useState("")
 
     const [timeOffs, setTimeOffs] = useState<TimeOff[]>([])
@@ -55,14 +57,7 @@ function SpecialistReservations() {
                 headers: headers,
             }
 
-            fetch(`http://localhost:8080/time_off/${specialist!.id}`, requestOptions)
-                .then((response) => response.json())
-                .then((data) => {
-                    setTimeOffs(data)
-                })
-                .catch(err => {
-                    console.log("Error retrieving TimeOff: ", err)
-                })
+            getTimeOff(specialist!.id)
 
             fetch(`http://localhost:8080/visits/${specialist!.id}/0`, requestOptions)
                 .then((response) => response.json())
@@ -83,17 +78,37 @@ function SpecialistReservations() {
 
     }, [specialist, jwtToken]);
 
+    function getTimeOff(specialistId: number) {
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+        const requestOptions = {
+            method: "GET",
+            headers: headers,
+        }
+
+        fetch(`http://localhost:8080/time_off/${specialistId}`, requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+                setTimeOffs(data)
+            })
+            .catch(err => {
+                console.log("Error retrieving TimeOff: ", err)
+            })
+    }
     const handleSelectSlot = ({start, end}: { start: Date, end: Date }) => {
         setNewTimeOff({
             ...newTimeOff,
             start_date: start,
             end_date: end,
+            specialist_id: specialist!.id,
         })
 
         Swal.fire({
             didOpen: () => setShowTimeOffWindow(true),
             didClose: () => {
                 setShowTimeOffWindow(false)
+                setUniversalError("")
+                setSuccessMessage("")
             },
             showConfirmButton: false,
         })
@@ -181,6 +196,34 @@ function SpecialistReservations() {
         }
     }
 
+    const createTimeOff = () => {
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+        headers.append("Authorization", "Bearer " + jwtToken)
+        const method = "POST"
+
+        fetch(`/specialist/create_time_off`, {
+            body: JSON.stringify(newTimeOff),
+            method: method,
+            headers: headers,
+            credentials: 'include'
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    console.log("ERRORS")
+                    setUniversalError(data.message)
+                } else {
+                    console.log("SUCCESSFULLY CREATED TIMEOFF")
+                    setSuccessMessage("Pomyślnie utworzono urlop")
+                    getTimeOff(specialist!.id)
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
+
     return (
         <div className="flex flex-col items-center overflow-auto h-full bg-fixed fixed w-full pb-32">
             <div className="w-2/3">
@@ -201,32 +244,32 @@ function SpecialistReservations() {
                 </div>
 
                 <div>
-                    <div className="bg-white drop-shadow-lg p-6 mt-3 mb-6 rounded-2xl">
+                    <div className="bg-white drop-shadow-lg pt-6 pl-6 pr-6 pb-4 mt-3 mb-8 rounded-2xl">
                         <div>
                             <p className="text-2xl font-bold">Legenda</p>
                         </div>
-                        <div className="flex flex-row flex-wrap mt-5 justify-center">
+                        <div className="flex flex-row flex-wrap mt-5 justify-center justify-items-center items-center">
                             <div className="flex flex-row items-center mr-6">
                                 <div className="bg-gray-300 rounded-lg h-8 w-8 min-h-8 min-w-8"></div>
                                 <p className="ml-2">- termin niedostępny</p>
                             </div>
 
-                            <div className="flex flex-row items-center mr-6">
+                            <div className="flex flex-row items-center mr-6 mb-3">
                                 <div className="bg-green-800 rounded-lg h-8 w-8 min-h-8 min-w-8"></div>
                                 <p className="ml-2">- usługa potwierdzona</p>
                             </div>
 
-                            <div className="flex flex-row items-center">
+                            <div className="flex flex-row items-center mr-6 mb-3">
                                 <div className="bg-pink-400 rounded-lg h-8 w-8 min-h-8 min-w-8"></div>
                                 <p className="ml-2">- wymaga akceptacji użytkownika</p>
                             </div>
 
-                            <div className="flex flex-row items-center mr-6 mt-3">
+                            <div className="flex flex-row items-center mr-6 mb-3">
                                 <div className="bg-lime-500 rounded-lg h-8 w-8 min-h-8 min-w-8"></div>
                                 <p className="ml-2">- wymaga akcji</p>
                             </div>
 
-                            <div className="flex flex-row items-center mt-3">
+                            <div className="flex flex-row items-center mb-3">
                                 <div className="bg-red-700 rounded-lg h-8 w-8 min-h-8 min-w-8"></div>
                                 <p className="ml-2">- odrzucona</p>
                             </div>
@@ -254,7 +297,7 @@ function SpecialistReservations() {
                 createPortal(
                     <div className="flex flex-col items-center">
                         <div className="flex flex-col justify-center">
-                            <p className="font-bold text-3xl pb-1">Utwórz czas wolny</p>
+                            <p className="font-bold text-3xl pb-1">Dodaj termin urlopu</p>
                             <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
                         </div>
                         <div className="w-2/3 text-2xl">
@@ -274,6 +317,8 @@ function SpecialistReservations() {
                                                     ...newTimeOff,
                                                     start_date: value!.toDate()
                                                 })
+                                                setUniversalError("")
+                                                setSuccessMessage("")
                                             }}
                                         />
                                     </DemoItem>
@@ -296,6 +341,8 @@ function SpecialistReservations() {
                                                     ...newTimeOff,
                                                     end_date: value!.toDate()
                                                 })
+                                                setUniversalError("")
+                                                setSuccessMessage("")
                                             }}
                                         />
                                     </DemoItem>
@@ -308,11 +355,23 @@ function SpecialistReservations() {
                                     <span className="mx-3 my-2 text-xl">Anuluj</span>
                                 </div>
 
-                                <div
+                                <div onClick={createTimeOff}
                                     className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
                                     <span className="mx-3 my-2 text-xl">Utwórz</span>
                                 </div>
                             </div>
+
+                            {successMessage &&
+                                <div className="mt-5 drop-shadow-xl text-xl font-bold text-green-500">
+                                    <p>{successMessage}</p>
+                                </div>
+                            }
+
+                            {universalError &&
+                                <div className="mt-5 drop-shadow-xl text-xl font-bold text-red-500">
+                                    <p>{universalError}</p>
+                                </div>
+                            }
                         </div>
                     </div>,
                     Swal.getHtmlContainer()!,

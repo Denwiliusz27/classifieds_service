@@ -493,20 +493,6 @@ func (app *Application) CreateVisit(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, visitId)
 }
 
-func isVisitOverlapping(visitStartDate, visitEndDate, existingStartDate, existingEndDate time.Time) bool {
-	if (visitStartDate.Before(existingStartDate) && (visitEndDate.After(existingStartDate) && visitEndDate.Before(existingEndDate))) ||
-		(visitStartDate.Before(existingStartDate) && visitEndDate.Equal(existingEndDate)) ||
-		(visitStartDate.Before(existingStartDate) && visitEndDate.After(existingEndDate)) ||
-		(visitStartDate.Equal(existingStartDate) && (visitEndDate.After(existingStartDate) && visitEndDate.Before(existingEndDate))) ||
-		(visitStartDate.Equal(existingStartDate) && visitEndDate.Equal(existingEndDate)) ||
-		(visitStartDate.Equal(existingStartDate) && visitEndDate.After(existingEndDate)) ||
-		((visitStartDate.After(existingStartDate) && visitStartDate.Before(existingEndDate)) && visitEndDate.Equal(existingEndDate)) ||
-		((visitStartDate.After(existingStartDate) && visitStartDate.Before(existingEndDate)) && visitEndDate.After(existingEndDate)) {
-		return true
-	}
-	return false
-}
-
 func (app *Application) GetClientAddressesByClientId(w http.ResponseWriter, r *http.Request) {
 	clientId, err := strconv.Atoi(chi.URLParam(r, "client_id"))
 	if err != nil {
@@ -523,4 +509,42 @@ func (app *Application) GetClientAddressesByClientId(w http.ResponseWriter, r *h
 	}
 
 	_ = app.writeJSON(w, http.StatusOK, clientAddresses)
+}
+
+func (app *Application) CreateTimeOff(w http.ResponseWriter, r *http.Request) {
+	var newTimeOff models.TimeOffRequest
+
+	err := app.readJSON(w, r, &newTimeOff)
+	if err != nil {
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	log.Println("I got new TimeOff to create: ", newTimeOff)
+
+	// sprawdzenie czy nakłada się na inny timeoff
+	// sprawdzenie czy nakłada się na jakieś istniejące wizyty
+
+	newTimeOffId, err := app.DB.CreateTimeOff(newTimeOff)
+	if err != nil {
+		log.Println(err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, newTimeOffId)
+}
+
+func isVisitOverlapping(visitStartDate, visitEndDate, existingStartDate, existingEndDate time.Time) bool {
+	if (visitStartDate.Before(existingStartDate) && (visitEndDate.After(existingStartDate) && visitEndDate.Before(existingEndDate))) ||
+		(visitStartDate.Before(existingStartDate) && visitEndDate.Equal(existingEndDate)) ||
+		(visitStartDate.Before(existingStartDate) && visitEndDate.After(existingEndDate)) ||
+		(visitStartDate.Equal(existingStartDate) && (visitEndDate.After(existingStartDate) && visitEndDate.Before(existingEndDate))) ||
+		(visitStartDate.Equal(existingStartDate) && visitEndDate.Equal(existingEndDate)) ||
+		(visitStartDate.Equal(existingStartDate) && visitEndDate.After(existingEndDate)) ||
+		((visitStartDate.After(existingStartDate) && visitStartDate.Before(existingEndDate)) && visitEndDate.Equal(existingEndDate)) ||
+		((visitStartDate.After(existingStartDate) && visitStartDate.Before(existingEndDate)) && visitEndDate.After(existingEndDate)) {
+		return true
+	}
+	return false
 }

@@ -223,6 +223,15 @@ const GetTimeOffBySpecialistId = `
 	    start_date ASC;
 `
 
+const CreateTimeOff = `
+	INSERT INTO
+		time_off
+	(start_date, end_date, specialist_id)
+	VALUES
+	    ($1, $2, $3)
+	RETURNING id;
+`
+
 // --- VISITS ---
 
 const GetCalendarVisitsBySpecialistIdOrClientId = `
