@@ -21,6 +21,7 @@ function SpecialistReservations() {
     const [showTimeOffWindow, setShowTimeOffWindow] = useState(false)
     const [showVisitWindow, setShowVisitWindow] = useState(false)
     const [showInfoWindow, setShowInfoWindow] = useState(false)
+    const [showErrorWindow, setShowErrorWindow] = useState(false)
     const [universalError, setUniversalError] = useState("")
     const [successMessage, setSuccessMessage] = useState("")
     const [info, setInfo] = useState("")
@@ -95,7 +96,54 @@ function SpecialistReservations() {
                 console.log("Error retrieving TimeOff: ", err)
             })
     }
+
     const handleSelectSlot = ({start, end}: { start: Date, end: Date }) => {
+        if (!isDateFromFuture(start)) {
+            console.log("date is from present")
+            setUniversalError("Wybrany przedział czasowy jest terminem z przeszłości.")
+
+            Swal.fire({
+                didOpen: () => setShowErrorWindow(true),
+                didClose: () => {
+                    setShowErrorWindow(false)
+                    setUniversalError("")
+                },
+                showConfirmButton: false,
+            })
+            return;
+        }
+
+        if (areTimeOffsOverlapping(start, end)) {
+            console.log("timeOffs overlapping")
+            setUniversalError("Wybrany przedział czasowy nakłada się z istniejącym już urlopem.")
+
+            Swal.fire({
+                didOpen: () => setShowErrorWindow(true),
+                didClose: () => {
+                    setShowErrorWindow(false)
+                    setUniversalError("")
+                },
+                showConfirmButton: false,
+            })
+            return;
+        }
+
+        if (isTimeOffOverlappingVisit(start, end)) {
+            console.log("timeOff overlapps visit")
+            setUniversalError("Wybrany przedział czasowy nakłada się z istniejącą wizytą. Wybierz inny termin lub " +
+                "zmodyfikuj wizytę.")
+
+            Swal.fire({
+                didOpen: () => setShowErrorWindow(true),
+                didClose: () => {
+                    setShowErrorWindow(false)
+                    setUniversalError("")
+                },
+                showConfirmButton: false,
+            })
+            return;
+        }
+
         setNewTimeOff({
             ...newTimeOff,
             start_date: start,
@@ -140,6 +188,12 @@ function SpecialistReservations() {
             return date >= start && date < end;
         });
     };
+
+    const isDateFromFuture = (date: Date): boolean => {
+        const currentDate = new Date();
+        return date >= currentDate;
+    }
+
     const timeOffSlotAdjustment = (date: Date) => {
         if (!isDateAvailable(date)) {
             return {style: {backgroundColor: 'lightgray', border: 'none'}};
@@ -196,7 +250,74 @@ function SpecialistReservations() {
         }
     }
 
+    function areTimeOffsOverlapping(start: Date, end: Date) {
+        const newStartDate = start.getTime()
+        const newEndDate = end.getTime()
+
+        for (let i = 0; i < timeOffs.length; i++) {
+            const startDate = new Date(timeOffs[i].start_date).getTime()
+            const endDate = new Date(timeOffs[i].end_date).getTime()
+
+            if (isTimeOffOverlappingCheck(newStartDate, newEndDate, startDate, endDate)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    function isTimeOffOverlappingVisit(start: Date, end: Date) {
+        const newStartDate = start.getTime()
+        const newEndDate = end.getTime()
+
+        for (let i = 0; i < visits.length; i++) {
+            const startDate = new Date(visits[i].info.start_date).getTime()
+            const endDate = new Date(visits[i].info.end_date).getTime()
+
+            if (isTimeOffOverlappingCheck(newStartDate, newEndDate, startDate, endDate)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    function isTimeOffOverlappingCheck(newStartDate: number, newEndDate: number, startDate: number, endDate: number) {
+        if (
+            (newStartDate < startDate && (newEndDate > startDate && newEndDate < endDate)) ||
+            (newStartDate < startDate && newEndDate === endDate) ||
+            (newStartDate < startDate && newEndDate > endDate) ||
+            (newStartDate === startDate && (newEndDate > startDate && newEndDate < endDate)) ||
+            (newStartDate === startDate && newEndDate > endDate) ||
+            ((newStartDate > startDate && newStartDate < endDate) && newEndDate === endDate) ||
+            ((newStartDate > startDate && newStartDate < endDate) && newEndDate > endDate) ||
+            ((newStartDate > startDate && newStartDate < endDate) && (newEndDate > startDate && newEndDate < endDate)) ||
+            (newStartDate === startDate && newEndDate === endDate)
+        ) {
+            return true
+        }
+
+        return false
+    }
+
     const createTimeOff = () => {
+        if (!isDateFromFuture(newTimeOff.start_date)) {
+            console.log("date is from present")
+            setUniversalError("Wybrany przedział czasowy jest terminem z przeszłości.")
+            return;
+        }
+
+        if (areTimeOffsOverlapping(newTimeOff.start_date, newTimeOff.end_date)) {
+            console.log("timeOffs overlapping")
+            setUniversalError("Wybrany przedział czasowy nakłada się z istniejącym już urlopem.")
+            return;
+        }
+
+        if (isTimeOffOverlappingVisit(newTimeOff.start_date, newTimeOff.end_date)) {
+            console.log("timeOff overlapps visit")
+            setUniversalError("Wybrany przedział czasowy nakłada się z istniejącą wizytą. Wybierz inny termin lub " +
+                "zmodyfikuj wizytę.")
+            return;
+        }
+
         const headers = new Headers()
         headers.append("Content-Type", "application/json")
         headers.append("Authorization", "Bearer " + jwtToken)
@@ -356,7 +477,7 @@ function SpecialistReservations() {
                                 </div>
 
                                 <div onClick={createTimeOff}
-                                    className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
+                                     className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
                                     <span className="mx-3 my-2 text-xl">Utwórz</span>
                                 </div>
                             </div>
@@ -392,7 +513,8 @@ function SpecialistReservations() {
                         <div className="">
                             <p>Data rozpoczęcia: {selectedVisit!.info.start_date.toLocaleString()}</p>
                             <p>Data zakończenia: {selectedVisit!.info.end_date.toLocaleString()}</p>
-                            <p>Adres realizacji: ul. {selectedVisit!.info.client_address.street} {selectedVisit!.info.client_address.building_nr}</p>
+                            <p>Adres realizacji:
+                                ul. {selectedVisit!.info.client_address.street} {selectedVisit!.info.client_address.building_nr}</p>
                             <p>Opis: {selectedVisit!.info.description}</p>
                         </div>
 
@@ -419,7 +541,8 @@ function SpecialistReservations() {
                         <div className="">
                             <p>Data rozpoczęcia: {selectedVisit!.info.start_date.toLocaleString()}</p>
                             <p>Data zakończenia: {selectedVisit!.info.end_date.toLocaleString()}</p>
-                            <p>Adres realizacji: ul. {selectedVisit!.info.client_address.street} {selectedVisit!.info.client_address.building_nr}</p>
+                            <p>Adres realizacji:
+                                ul. {selectedVisit!.info.client_address.street} {selectedVisit!.info.client_address.building_nr}</p>
                             <p>Opis: {selectedVisit!.info.description}</p>
                         </div>
 
@@ -431,6 +554,27 @@ function SpecialistReservations() {
                         </div>
                     </div>
                     ,
+                    Swal.getHtmlContainer()!,
+                )
+            }
+
+            {showErrorWindow &&
+                createPortal(
+                    <div className="flex flex-col items-center">
+                        <div className="flex flex-col justify-center">
+                            <p className="font-bold text-3xl pb-1">Błąd</p>
+                            <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
+                        </div>
+
+                        <div className="flex flex-col items-end w-4/5 mt-3 mb-5">
+                            <p className="text-xl">{universalError}</p>
+                        </div>
+
+                        <div onClick={() => Swal.close()}
+                             className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
+                            <span className="mx-3 my-2 text-xl">Ok</span>
+                        </div>
+                    </div>,
                     Swal.getHtmlContainer()!,
                 )
             }

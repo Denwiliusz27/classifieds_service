@@ -463,10 +463,6 @@ func (app *Application) CreateVisit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, v := range visits {
-		fmt.Printf("Comparing: %s-%s  WITH %s-%s \n", newVisitRequest.StartDate, newVisitRequest.EndDate, v.Info.StartDate, v.Info.EndDate)
-		fmt.Printf("%v || %v && %v\n", newVisitRequest.StartDate.Equal(v.Info.StartDate), newVisitRequest.StartDate.After(v.Info.StartDate), newVisitRequest.StartDate.Before(v.Info.EndDate))
-		fmt.Printf("%v || %v && %v\n", newVisitRequest.EndDate.Before(v.Info.EndDate), newVisitRequest.EndDate.Equal(v.Info.EndDate), newVisitRequest.StartDate.After(v.Info.StartDate))
-
 		if isVisitOverlapping(newVisitRequest.StartDate, newVisitRequest.EndDate, v.Info.StartDate, v.Info.EndDate) {
 			fmt.Println("there already exist visit on this time")
 			_ = app.errorJSON(w, fmt.Errorf("Wybrany termin rozpoczęcia lub zakońcenia nakłada się na istniejącą już wizytę"))
@@ -522,8 +518,21 @@ func (app *Application) CreateTimeOff(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("I got new TimeOff to create: ", newTimeOff)
 
-	// sprawdzenie czy nakłada się na inny timeoff
 	// sprawdzenie czy nakłada się na jakieś istniejące wizyty
+	visits, err := app.DB.GetCalendarVisitsBySpecialistIdOrClientId(&newTimeOff.SpecialistId, nil)
+	if err != nil {
+		fmt.Println("error getting Calendar Visits from db: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	for _, v := range visits {
+		if isVisitOverlapping(newTimeOff.StartDate, newTimeOff.EndDate, v.Info.StartDate, v.Info.EndDate) {
+			fmt.Println("timeOff overlapping on existing visits")
+			_ = app.errorJSON(w, fmt.Errorf("Wybrany termin urlopu nakłada się na istniejącą wizytę"))
+			return
+		}
+	}
 
 	newTimeOffId, err := app.DB.CreateTimeOff(newTimeOff)
 	if err != nil {
@@ -543,6 +552,7 @@ func isVisitOverlapping(visitStartDate, visitEndDate, existingStartDate, existin
 		(visitStartDate.Equal(existingStartDate) && visitEndDate.Equal(existingEndDate)) ||
 		(visitStartDate.Equal(existingStartDate) && visitEndDate.After(existingEndDate)) ||
 		((visitStartDate.After(existingStartDate) && visitStartDate.Before(existingEndDate)) && visitEndDate.Equal(existingEndDate)) ||
+		((visitStartDate.After(existingStartDate) && visitStartDate.Before(existingEndDate)) && (visitEndDate.After(existingStartDate) && visitEndDate.Before(existingEndDate))) ||
 		((visitStartDate.After(existingStartDate) && visitStartDate.Before(existingEndDate)) && visitEndDate.After(existingEndDate)) {
 		return true
 	}

@@ -5,8 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_15_07_2024_18_15_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_15_07_2024_18_15__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/api.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistReservations.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistReservations.tsx" afterDir="false" />
     </list>
@@ -162,7 +161,8 @@
       <workItem from="1721417398278" duration="5891000" />
       <workItem from="1721467749666" duration="2905000" />
       <workItem from="1721475791986" duration="16642000" />
-      <workItem from="1721842277611" duration="5574000" />
+      <workItem from="1721842277611" duration="6192000" />
+      <workItem from="1721921961592" duration="7103000" />
     </task>
     <servers />
   </component>
