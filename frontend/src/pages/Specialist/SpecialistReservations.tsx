@@ -20,7 +20,6 @@ function SpecialistReservations() {
 
     const [showTimeOffWindow, setShowTimeOffWindow] = useState(false)
     const [showVisitWindow, setShowVisitWindow] = useState(false)
-    const [showInfoWindow, setShowInfoWindow] = useState(false)
     const [showErrorWindow, setShowErrorWindow] = useState(false)
     const [universalError, setUniversalError] = useState("")
     const [successMessage, setSuccessMessage] = useState("")
@@ -207,42 +206,45 @@ function SpecialistReservations() {
         console.log(visit.info.status)
 
         if (visit.info.status === 'declined') {
-            setInfo("Wybrana wizyta została już anulowana")
+            setInfo("Wybrana wizyta została już anulowana.")
 
             Swal.fire({
-                didOpen: () => setShowInfoWindow(true),
+                didOpen: () => setShowVisitWindow(true),
                 didClose: () => {
-                    setShowInfoWindow(false)
+                    setShowVisitWindow(false)
                     setInfo("")
                 },
                 showConfirmButton: false,
             })
         } else if (visit.info.status === 'client_action_required') {
-            setInfo("Wybrana wizyta wymaga działania po stronie klienta")
+            setInfo("Wybrana wizyta wymaga działania po stronie klienta.")
 
             Swal.fire({
-                didOpen: () => setShowInfoWindow(true),
+                didOpen: () => setShowVisitWindow(true),
                 didClose: () => {
-                    setShowInfoWindow(false)
+                    setShowVisitWindow(false)
                     setInfo("")
                 },
                 showConfirmButton: false,
             })
         } else if (visit.info.status === 'specialist_action_required') {
+            setInfo("Wybrana wizyta wymaga działania - zaproponuj zmiany, zaakceptuj bądź odrzuć wizytę.")
+
             Swal.fire({
                 didOpen: () => setShowVisitWindow(true),
                 didClose: () => {
                     setShowVisitWindow(false)
+                    setInfo("")
                 },
                 showConfirmButton: false,
             })
         } else if (visit.info.status === 'accepted') {
-            setInfo("Wybrana wizyta została już zaakceptowana")
+            setInfo("Wybrana wizyta została już zaakceptowana.")
 
             Swal.fire({
-                didOpen: () => setShowInfoWindow(true),
+                didOpen: () => setShowVisitWindow(true),
                 didClose: () => {
-                    setShowInfoWindow(false)
+                    setShowVisitWindow(false)
                     setInfo("")
                 },
                 showConfirmButton: false,
@@ -499,37 +501,6 @@ function SpecialistReservations() {
                 )
             }
 
-            {showInfoWindow &&
-                createPortal(
-                    <div className="flex flex-col items-center">
-                        <div className="flex flex-col justify-center">
-                            <p className="font-bold text-3xl pb-1">Informacja</p>
-                            <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
-                        </div>
-                        <div className="w-2/3 text-2xl">
-                            <p>{info}</p>
-                        </div>
-
-                        <div className="">
-                            <p>Data rozpoczęcia: {selectedVisit!.info.start_date.toLocaleString()}</p>
-                            <p>Data zakończenia: {selectedVisit!.info.end_date.toLocaleString()}</p>
-                            <p>Adres realizacji:
-                                ul. {selectedVisit!.info.client_address.street} {selectedVisit!.info.client_address.building_nr}</p>
-                            <p>Opis: {selectedVisit!.info.description}</p>
-                        </div>
-
-                        <div className="flex flex-row justify-evenly mt-5">
-                            <div onClick={() => Swal.close()}
-                                 className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
-                                <span className="mx-3 my-2 text-xl">Ok</span>
-                            </div>
-                        </div>
-                    </div>
-                    ,
-                    Swal.getHtmlContainer()!,
-                )
-            }
-
             {showVisitWindow &&
                 createPortal(
                     <div className="flex flex-col items-center">
@@ -538,12 +509,110 @@ function SpecialistReservations() {
                             <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
                         </div>
 
-                        <div className="">
-                            <p>Data rozpoczęcia: {selectedVisit!.info.start_date.toLocaleString()}</p>
-                            <p>Data zakończenia: {selectedVisit!.info.end_date.toLocaleString()}</p>
-                            <p>Adres realizacji:
-                                ul. {selectedVisit!.info.client_address.street} {selectedVisit!.info.client_address.building_nr}</p>
-                            <p>Opis: {selectedVisit!.info.description}</p>
+                        {info !== "" &&
+                            <div className="w-3/4">
+                                <div className="text-2xl">
+                                    <p>{info}</p>
+                                </div>
+
+                                <div className="bg-amber-900 rounded-md h-1 my-3"></div>
+                            </div>
+                        }
+
+
+                        <div className="w-3/4">
+                            <p className="font-bold pb-2 text-left">Data rozpoczęcia<sup>*</sup></p>
+
+                            <div className="w-full py-2">
+                                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
+                                    <DemoItem>
+                                        <DateTimePicker
+                                            defaultValue={dayjs(selectedVisit!.info.start_date)}
+                                            disabled={selectedVisit!.info.status === 'accepted' || selectedVisit!.info.status === 'declined' || selectedVisit!.info.status === 'client_action_required'}
+                                            ampm={false}
+                                            minutesStep={15}
+                                            minTime={dayjs().set('hour', 6).set('minute', 0)}
+                                            maxTime={dayjs().set('hour', 21).set('minute', 0)}
+                                            onChange={(value) => {
+                                                setNewTimeOff({
+                                                    ...newTimeOff,
+                                                    end_date: value!.toDate()
+                                                })
+                                                setUniversalError("")
+                                                setSuccessMessage("")
+                                            }}
+                                        />
+                                    </DemoItem>
+                                </LocalizationProvider>
+                            </div>
+
+                            <div className="w-full py-2">
+                                <p className="font-bold pb-2 text-left">Data zakończenia<sup>*</sup></p>
+
+                                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
+                                    <DemoItem>
+                                        <DateTimePicker
+                                            defaultValue={dayjs(selectedVisit!.info.end_date)}
+                                            disabled={selectedVisit!.info.status === 'accepted' || selectedVisit!.info.status === 'declined' || selectedVisit!.info.status === 'client_action_required'}
+                                            ampm={false}
+                                            minutesStep={15}
+                                            minTime={dayjs().set('hour', 6).set('minute', 0)}
+                                            maxTime={dayjs().set('hour', 21).set('minute', 0)}
+                                            onChange={(value) => {
+                                                setNewTimeOff({
+                                                    ...newTimeOff,
+                                                    end_date: value!.toDate()
+                                                })
+                                                setUniversalError("")
+                                                setSuccessMessage("")
+                                            }}
+                                        />
+                                    </DemoItem>
+                                </LocalizationProvider>
+                            </div>
+
+                            <div className="w-full py-2">
+                                <p className="font-bold pb-2 text-left">Adres realizacji<sup>*</sup></p>
+
+                                <select
+                                    id="client_address_id"
+                                    disabled={true}
+                                    name="adres"
+                                    value={"Kraków, ul." + selectedVisit!.info.client_address.street + selectedVisit!.info.client_address.building_nr }
+                                    className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
+                                >
+                                    <option value="">
+                                        Kraków, ul. {selectedVisit!.info.client_address.street} {selectedVisit!.info.client_address.building_nr}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div className="w-full py-2">
+                                <p className="font-bold pb-2 text-left">Cena<sup>*</sup></p>
+
+                                <input
+                                    type="number"
+                                    id="price"
+                                    disabled={selectedVisit!.info.status === 'accepted' || selectedVisit!.info.status === 'declined' || selectedVisit!.info.status === 'client_action_required'}
+                                    placeholder={"Cena realizacji usługi"}
+                                    value={0 || selectedVisit!.info.price}
+                                    className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
+                                />
+                            </div>
+
+                            <div className="w-full py-2">
+                                <p className="font-bold text-left pb-2">Opis usługi<sup>*</sup></p>
+
+                                <textarea
+                                    id="description"
+                                    name="description"
+                                    placeholder="Opis usługi"
+                                    value={selectedVisit?.info.description}
+                                    rows={6}
+                                    cols={40}
+                                    className={`w-full border-2 text-lg border-gray-300 rounded-md p-3`}
+                                />
+                            </div>
                         </div>
 
                         <div className="flex flex-row justify-evenly mt-5">
