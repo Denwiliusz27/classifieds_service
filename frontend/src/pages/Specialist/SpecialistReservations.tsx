@@ -22,6 +22,8 @@ function SpecialistReservations() {
     const [showVisitWindow, setShowVisitWindow] = useState(false)
     const [showErrorWindow, setShowErrorWindow] = useState(false)
     const [universalError, setUniversalError] = useState("")
+    const [dateError, setDateError] = useState("")
+    const [priceError, setPriceError] = useState("")
     const [successMessage, setSuccessMessage] = useState("")
     const [info, setInfo] = useState("")
 
@@ -112,7 +114,7 @@ function SpecialistReservations() {
             return;
         }
 
-        if (areTimeOffsOverlapping(start, end)) {
+        if (isNewTimeOverlappingTimeOffs(start, end)) {
             console.log("timeOffs overlapping")
             setUniversalError("Wybrany przedział czasowy nakłada się z istniejącym już urlopem.")
 
@@ -127,7 +129,7 @@ function SpecialistReservations() {
             return;
         }
 
-        if (isTimeOffOverlappingVisit(start, end)) {
+        if (isNewTimeOverlappingVisits(start, end)) {
             console.log("timeOff overlapps visit")
             setUniversalError("Wybrany przedział czasowy nakłada się z istniejącą wizytą. Wybierz inny termin lub " +
                 "zmodyfikuj wizytę.")
@@ -213,7 +215,9 @@ function SpecialistReservations() {
                 didOpen: () => setShowVisitWindow(true),
                 didClose: () => {
                     setShowVisitWindow(false)
+                    setDateError("")
                     setInfo("")
+                    setSuccessMessage("")
                 },
                 showConfirmButton: false,
             })
@@ -226,6 +230,8 @@ function SpecialistReservations() {
                 didClose: () => {
                     setShowVisitWindow(false)
                     setInfo("")
+                    setDateError("")
+                    setSuccessMessage("")
                 },
                 showConfirmButton: false,
             })
@@ -238,6 +244,8 @@ function SpecialistReservations() {
                 didClose: () => {
                     setShowVisitWindow(false)
                     setInfo("")
+                    setDateError("")
+                    setSuccessMessage("")
                 },
                 showConfirmButton: false,
             })
@@ -250,13 +258,15 @@ function SpecialistReservations() {
                 didClose: () => {
                     setShowVisitWindow(false)
                     setInfo("")
+                    setDateError("")
+                    setSuccessMessage("")
                 },
                 showConfirmButton: false,
             })
         }
     }
 
-    function areTimeOffsOverlapping(start: Date, end: Date) {
+    function isNewTimeOverlappingTimeOffs(start: Date, end: Date) {
         const newStartDate = start.getTime()
         const newEndDate = end.getTime()
 
@@ -264,29 +274,37 @@ function SpecialistReservations() {
             const startDate = new Date(timeOffs[i].start_date).getTime()
             const endDate = new Date(timeOffs[i].end_date).getTime()
 
-            if (isTimeOffOverlappingCheck(newStartDate, newEndDate, startDate, endDate)) {
+            if (isNewDateOverlappingExistingCheck(newStartDate, newEndDate, startDate, endDate)) {
                 return true
             }
         }
         return false
     }
 
-    function isTimeOffOverlappingVisit(start: Date, end: Date) {
+    function isNewTimeOverlappingVisits(start: Date, end: Date, visitId=0) {
         const newStartDate = start.getTime()
         const newEndDate = end.getTime()
 
         for (let i = 0; i < visits.length; i++) {
+            if (visitId !== 0 && (visitId === visits[i].info.id)) {
+                continue
+            }
+            console.log(visitId, " --- ", visits[i].info.id)
+
             const startDate = new Date(visits[i].info.start_date).getTime()
             const endDate = new Date(visits[i].info.end_date).getTime()
 
-            if (isTimeOffOverlappingCheck(newStartDate, newEndDate, startDate, endDate)) {
+            console.log(start, " - ", end)
+            console.log(visits[i].info.start_date, " - ", visits[i].info.end_date)
+
+            if (isNewDateOverlappingExistingCheck(newStartDate, newEndDate, startDate, endDate)) {
                 return true
             }
         }
         return false
     }
 
-    function isTimeOffOverlappingCheck(newStartDate: number, newEndDate: number, startDate: number, endDate: number) {
+    function isNewDateOverlappingExistingCheck(newStartDate: number, newEndDate: number, startDate: number, endDate: number) {
         if (
             (newStartDate < startDate && (newEndDate > startDate && newEndDate < endDate)) ||
             (newStartDate < startDate && newEndDate === endDate) ||
@@ -311,13 +329,13 @@ function SpecialistReservations() {
             return;
         }
 
-        if (areTimeOffsOverlapping(newTimeOff.start_date, newTimeOff.end_date)) {
+        if (isNewTimeOverlappingTimeOffs(newTimeOff.start_date, newTimeOff.end_date)) {
             console.log("timeOffs overlapping")
             setUniversalError("Wybrany przedział czasowy nakłada się z istniejącym już urlopem.")
             return;
         }
 
-        if (isTimeOffOverlappingVisit(newTimeOff.start_date, newTimeOff.end_date)) {
+        if (isNewTimeOverlappingVisits(newTimeOff.start_date, newTimeOff.end_date)) {
             console.log("timeOff overlapps visit")
             setUniversalError("Wybrany przedział czasowy nakłada się z istniejącą wizytą. Wybierz inny termin lub " +
                 "zmodyfikuj wizytę.")
@@ -354,6 +372,54 @@ function SpecialistReservations() {
     const changeVisitStatus = (status: string) => {
         console.log(status)
         Swal.close()
+    }
+
+    const modifyVisit = () =>{
+        console.log(selectedVisit)
+
+        if (!isDateFromFuture(selectedVisit!.info.start_date)){
+            setDateError("Data rozpoczęcia jest datą przeszłą")
+            return;
+        }
+
+        if (!isDateFromFuture(selectedVisit!.info.end_date)){
+            setDateError("Data rozpoczęcia jest datą przeszłą")
+            return;
+        }
+
+        if (selectedVisit!.info.start_date.getTime() > selectedVisit!.info.end_date.getTime()) {
+            setDateError("Data zakończenia nie może być datą wcześniejszą niż data rozpoczęcia")
+            return;
+        }
+
+        if (selectedVisit!.info.start_date.getTime() === selectedVisit!.info.end_date.getTime()) {
+            setDateError("Data rozpoczęcia i data zakończenia nie mogą być takie same")
+            return;
+        }
+
+        if (selectedVisit!.info.start_date.getDate() !== selectedVisit!.info.end_date.getDate()){
+            setDateError("Dzień rozpoczęcia i zakończenia różnią się")
+            return;
+        }
+
+        if (isNewTimeOverlappingTimeOffs(selectedVisit!.info.start_date, selectedVisit!.info.end_date)) {
+            console.log("changed selected visit overlapps timeoff")
+            setDateError("Nowy termin rezerwacji nakłada się z istniejącym już urlopem.")
+            return;
+        }
+
+        if (isNewTimeOverlappingVisits(selectedVisit!.info.start_date, selectedVisit!.info.end_date, selectedVisit!.info.id)) {
+            console.log("changed selected visit overlapps existing visit")
+            setDateError("Wybrany przedział czasowy nakłada się z istniejącą wizytą. Wybierz inny termin lub " +
+                "zmodyfikuj wizytę.")
+            return;
+        }
+
+        if (selectedVisit!.info.price <= 0) {
+            setPriceError("Szacowana cena musi być wartością większą od zera")
+            return;
+        }
+
     }
 
     return (
@@ -443,7 +509,7 @@ function SpecialistReservations() {
                                             ampm={false}
                                             minutesStep={15}
                                             minTime={dayjs().set('hour', 6).set('minute', 0)}
-                                            maxTime={dayjs().set('hour', 21).set('minute', 0)}
+                                            maxTime={dayjs().set('hour', 22).set('minute', 0)}
                                             onChange={(value) => {
                                                 setNewTimeOff({
                                                     ...newTimeOff,
@@ -467,7 +533,7 @@ function SpecialistReservations() {
                                             ampm={false}
                                             minutesStep={15}
                                             minTime={dayjs().set('hour', 6).set('minute', 0)}
-                                            maxTime={dayjs().set('hour', 21).set('minute', 0)}
+                                            maxTime={dayjs().set('hour', 22).set('minute', 0)}
                                             onChange={(value) => {
                                                 setNewTimeOff({
                                                     ...newTimeOff,
@@ -581,13 +647,18 @@ function SpecialistReservations() {
                                                 ampm={false}
                                                 minutesStep={15}
                                                 minTime={dayjs().set('hour', 6).set('minute', 0)}
-                                                maxTime={dayjs().set('hour', 21).set('minute', 0)}
+                                                maxTime={dayjs().set('hour', 22).set('minute', 0)}
                                                 onChange={(value) => {
-                                                    setNewTimeOff({
-                                                        ...newTimeOff,
-                                                        end_date: value!.toDate()
-                                                    })
-                                                    setUniversalError("")
+                                                    if (selectedVisit) {
+                                                        setSelectedVisit({
+                                                            ...selectedVisit,
+                                                            info: {
+                                                                ...selectedVisit?.info,
+                                                                start_date: value!.toDate()
+                                                            }
+                                                        })
+                                                    }
+                                                    setDateError("")
                                                     setSuccessMessage("")
                                                 }}
                                             />
@@ -606,13 +677,18 @@ function SpecialistReservations() {
                                                 ampm={false}
                                                 minutesStep={15}
                                                 minTime={dayjs().set('hour', 6).set('minute', 0)}
-                                                maxTime={dayjs().set('hour', 21).set('minute', 0)}
+                                                maxTime={dayjs().set('hour', 22).set('minute', 0)}
                                                 onChange={(value) => {
-                                                    setNewTimeOff({
-                                                        ...newTimeOff,
-                                                        end_date: value!.toDate()
-                                                    })
-                                                    setUniversalError("")
+                                                    if (selectedVisit) {
+                                                        setSelectedVisit({
+                                                            ...selectedVisit,
+                                                            info: {
+                                                                ...selectedVisit?.info,
+                                                                end_date: value!.toDate()
+                                                            }
+                                                        })
+                                                    }
+                                                    setDateError("")
                                                     setSuccessMessage("")
                                                 }}
                                             />
@@ -620,6 +696,13 @@ function SpecialistReservations() {
                                     </LocalizationProvider>
                                 </div>
                             </div>
+
+                            {dateError &&
+                                <div
+                                    className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full mb-2 leading-none">
+                                    <p>{dateError}</p>
+                                </div>
+                            }
 
                             <div className="w-full py-2">
                                 <p className="font-bold pb-2 text-left">Usługa<sup>*</sup></p>
@@ -637,7 +720,7 @@ function SpecialistReservations() {
                             </div>
 
                             <div className="w-full py-2">
-                                <p className="font-bold pb-2 text-left">Cena<sup>*</sup></p>
+                                <p className="font-bold pb-2 text-left">Szacowana cena<sup>*</sup></p>
 
                                 <input
                                     type="number"
@@ -646,8 +729,29 @@ function SpecialistReservations() {
                                     placeholder={"Cena realizacji usługi"}
                                     value={0 || selectedVisit!.info.price}
                                     className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
+                                    onChange={(value) => {
+                                        setPriceError("")
+                                        setSuccessMessage("")
+
+                                        if (selectedVisit) {
+                                            setSelectedVisit({
+                                                ...selectedVisit,
+                                                info: {
+                                                    ...selectedVisit.info,
+                                                    price: parseInt(value.target.value, 10)
+                                                }
+                                            })
+                                        }
+                                    }}
                                 />
                             </div>
+
+                            {priceError &&
+                                <div
+                                    className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full mb-2 leading-none">
+                                    <p>{priceError}</p>
+                                </div>
+                            }
 
                             <div className="w-full py-2">
                                 <p className="font-bold text-left pb-2">Opis usługi<sup>*</sup></p>
@@ -685,7 +789,7 @@ function SpecialistReservations() {
                                         <span className="mx-3 my-2 text-xl">Zaakceptuj</span>
                                     </div>
 
-                                    <div onClick={() => changeVisitStatus("accepted")}
+                                    <div onClick={() => modifyVisit()}
                                          className="ml-2 border-4 border-yellow-500 text-yellow-500 rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-white hover:border-yellow-500 hover:bg-yellow-500 hover:text-white duration-300 ...">
                                         <span className="mx-3 my-2 text-xl">Zmodyfikuj</span>
                                     </div>
