@@ -169,7 +169,7 @@ function SpecialistReservations() {
         } else if (event.info.status === 'specialist_action_required') {
             backgroundColor = 'DarkSeaGreen';
         } else if (event.info.status === 'client_action_required') {
-            backgroundColor = 'LightCoral';
+            backgroundColor = 'DarkGoldenRod';//'LightCoral';
         } else if (event.info.status === 'declined') {
             backgroundColor = 'FireBrick';
         }
@@ -209,6 +209,7 @@ function SpecialistReservations() {
             setInfo("Wybrana wizyta została już anulowana.")
 
             Swal.fire({
+                customClass: 'swal-wide',
                 didOpen: () => setShowVisitWindow(true),
                 didClose: () => {
                     setShowVisitWindow(false)
@@ -220,6 +221,7 @@ function SpecialistReservations() {
             setInfo("Wybrana wizyta wymaga działania po stronie klienta.")
 
             Swal.fire({
+                customClass: 'swal-wide',
                 didOpen: () => setShowVisitWindow(true),
                 didClose: () => {
                     setShowVisitWindow(false)
@@ -231,6 +233,7 @@ function SpecialistReservations() {
             setInfo("Wybrana wizyta wymaga działania - zaproponuj zmiany, zaakceptuj bądź odrzuć wizytę.")
 
             Swal.fire({
+                customClass: 'swal-wide',
                 didOpen: () => setShowVisitWindow(true),
                 didClose: () => {
                     setShowVisitWindow(false)
@@ -242,6 +245,7 @@ function SpecialistReservations() {
             setInfo("Wybrana wizyta została już zaakceptowana.")
 
             Swal.fire({
+                customClass: 'swal-wide',
                 didOpen: () => setShowVisitWindow(true),
                 didClose: () => {
                     setShowVisitWindow(false)
@@ -347,6 +351,11 @@ function SpecialistReservations() {
             })
     }
 
+    const changeVisitStatus = (status: string) => {
+        console.log(status)
+        Swal.close()
+    }
+
     return (
         <div className="flex flex-col items-center overflow-auto h-full bg-fixed fixed w-full pb-32">
             <div className="w-2/3">
@@ -383,7 +392,7 @@ function SpecialistReservations() {
                             </div>
 
                             <div className="flex flex-row items-center mr-6 mb-3">
-                                <div className="bg-pink-400 rounded-lg h-8 w-8 min-h-8 min-w-8"></div>
+                                <div className=" bg-yellow-600 rounded-lg h-8 w-8 min-h-8 min-w-8"></div>
                                 <p className="ml-2">- wymaga akceptacji użytkownika</p>
                             </div>
 
@@ -503,14 +512,14 @@ function SpecialistReservations() {
 
             {showVisitWindow &&
                 createPortal(
-                    <div className="flex flex-col items-center">
+                    <div className="flex flex-col items-center justify-center">
                         <div className="flex flex-col justify-center">
                             <p className="font-bold text-3xl pb-1">Wizyta</p>
                             <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
                         </div>
 
                         {info !== "" &&
-                            <div className="w-3/4">
+                            <div className="w-full">
                                 <div className="text-2xl">
                                     <p>{info}</p>
                                 </div>
@@ -519,70 +528,110 @@ function SpecialistReservations() {
                             </div>
                         }
 
+                        <p className="font-bold text-left w-full">Klient</p>
 
-                        <div className="w-3/4">
-                            <p className="font-bold pb-2 text-left">Data rozpoczęcia<sup>*</sup></p>
+                        <div className="bg-white drop-shadow-lg my-3 rounded-2xl w-full py-4">
+                            <div className="flex flex-col items-center">
+                                <div className="flex flex-col justify-center">
+                                    <p className="font-bold text-2xl pb-1">{selectedVisit?.client.name} {selectedVisit?.client.second_name}</p>
+                                    <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
+                                </div>
 
-                            <div className="w-full py-2">
-                                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
-                                    <DemoItem>
-                                        <DateTimePicker
-                                            defaultValue={dayjs(selectedVisit!.info.start_date)}
-                                            disabled={selectedVisit!.info.status === 'accepted' || selectedVisit!.info.status === 'declined' || selectedVisit!.info.status === 'client_action_required'}
-                                            ampm={false}
-                                            minutesStep={15}
-                                            minTime={dayjs().set('hour', 6).set('minute', 0)}
-                                            maxTime={dayjs().set('hour', 21).set('minute', 0)}
-                                            onChange={(value) => {
-                                                setNewTimeOff({
-                                                    ...newTimeOff,
-                                                    end_date: value!.toDate()
-                                                })
-                                                setUniversalError("")
-                                                setSuccessMessage("")
-                                            }}
-                                        />
-                                    </DemoItem>
-                                </LocalizationProvider>
+                                {/* contact info */}
+                                <div className="flex flex-col items-center w-full font-extrabold">
+                                    <div className="flex flex-row py-1 items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                             stroke-width="1.5" stroke="currentColor" className="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                  d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/>
+                                        </svg>
+                                        <p className="pl-3 font-bold break-all">{selectedVisit?.client.email}</p>
+                                    </div>
+
+                                    <div className="flex flex-row py-1 items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                             stroke-width="1.5" stroke="currentColor" className="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                  d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
+                                        </svg>
+                                        {selectedVisit!.info.client_address.flat_nr !== 0 ?
+                                            <p className="pl-3 font-bold break-all">{selectedVisit!.info.client_address.city.name},
+                                                ul. {selectedVisit!.info.client_address.street} {selectedVisit!.info.client_address.building_nr}/{selectedVisit!.info.client_address.flat_nr}</p>
+                                            :
+                                            <p className="pl-3 font-bold break-all">{selectedVisit!.info.client_address.city.name},
+                                                ul. {selectedVisit!.info.client_address.street} {selectedVisit!.info.client_address.building_nr}</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="w-full">
+                            <div className="flex flex-row py-2">
+                                <div className="w-1/2 pr-2">
+                                    <p className="font-bold pb-2 text-left">Data rozpoczęcia<sup>*</sup></p>
+
+                                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
+                                        <DemoItem>
+                                            <DateTimePicker
+                                                defaultValue={dayjs(selectedVisit!.info.start_date)}
+                                                disabled={selectedVisit!.info.status === 'accepted' || selectedVisit!.info.status === 'declined' || selectedVisit!.info.status === 'client_action_required'}
+                                                ampm={false}
+                                                minutesStep={15}
+                                                minTime={dayjs().set('hour', 6).set('minute', 0)}
+                                                maxTime={dayjs().set('hour', 21).set('minute', 0)}
+                                                onChange={(value) => {
+                                                    setNewTimeOff({
+                                                        ...newTimeOff,
+                                                        end_date: value!.toDate()
+                                                    })
+                                                    setUniversalError("")
+                                                    setSuccessMessage("")
+                                                }}
+                                            />
+                                        </DemoItem>
+                                    </LocalizationProvider>
+                                </div>
+
+                                <div className="w-1/2 pl-2">
+                                    <p className="font-bold pb-2 text-left">Data zakończenia<sup>*</sup></p>
+
+                                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
+                                        <DemoItem>
+                                            <DateTimePicker
+                                                defaultValue={dayjs(selectedVisit!.info.end_date)}
+                                                disabled={selectedVisit!.info.status === 'accepted' || selectedVisit!.info.status === 'declined' || selectedVisit!.info.status === 'client_action_required'}
+                                                ampm={false}
+                                                minutesStep={15}
+                                                minTime={dayjs().set('hour', 6).set('minute', 0)}
+                                                maxTime={dayjs().set('hour', 21).set('minute', 0)}
+                                                onChange={(value) => {
+                                                    setNewTimeOff({
+                                                        ...newTimeOff,
+                                                        end_date: value!.toDate()
+                                                    })
+                                                    setUniversalError("")
+                                                    setSuccessMessage("")
+                                                }}
+                                            />
+                                        </DemoItem>
+                                    </LocalizationProvider>
+                                </div>
                             </div>
 
                             <div className="w-full py-2">
-                                <p className="font-bold pb-2 text-left">Data zakończenia<sup>*</sup></p>
-
-                                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
-                                    <DemoItem>
-                                        <DateTimePicker
-                                            defaultValue={dayjs(selectedVisit!.info.end_date)}
-                                            disabled={selectedVisit!.info.status === 'accepted' || selectedVisit!.info.status === 'declined' || selectedVisit!.info.status === 'client_action_required'}
-                                            ampm={false}
-                                            minutesStep={15}
-                                            minTime={dayjs().set('hour', 6).set('minute', 0)}
-                                            maxTime={dayjs().set('hour', 21).set('minute', 0)}
-                                            onChange={(value) => {
-                                                setNewTimeOff({
-                                                    ...newTimeOff,
-                                                    end_date: value!.toDate()
-                                                })
-                                                setUniversalError("")
-                                                setSuccessMessage("")
-                                            }}
-                                        />
-                                    </DemoItem>
-                                </LocalizationProvider>
-                            </div>
-
-                            <div className="w-full py-2">
-                                <p className="font-bold pb-2 text-left">Adres realizacji<sup>*</sup></p>
+                                <p className="font-bold pb-2 text-left">Usługa<sup>*</sup></p>
 
                                 <select
                                     id="client_address_id"
                                     disabled={true}
                                     name="adres"
-                                    value={"Kraków, ul." + selectedVisit!.info.client_address.street + selectedVisit!.info.client_address.building_nr }
                                     className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
                                 >
                                     <option value="">
-                                        Kraków, ul. {selectedVisit!.info.client_address.street} {selectedVisit!.info.client_address.building_nr}
+                                        {selectedVisit!.service.name}
                                     </option>
                                 </select>
                             </div>
@@ -606,6 +655,7 @@ function SpecialistReservations() {
                                 <textarea
                                     id="description"
                                     name="description"
+                                    disabled={true}
                                     placeholder="Opis usługi"
                                     value={selectedVisit?.info.description}
                                     rows={6}
@@ -615,11 +665,32 @@ function SpecialistReservations() {
                             </div>
                         </div>
 
-                        <div className="flex flex-row justify-evenly mt-5">
+                        <div className="flex flex-row justify-evenly mt-5 font-medium">
                             <div onClick={() => Swal.close()}
                                  className="border-4 border-amber-900 text-white rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:border-amber-900 hover:bg-white hover:text-amber-900 duration-300 ...">
-                                <span className="mx-3 my-2 text-xl">Ok</span>
+                                <span className="mx-3 my-2 text-xl">Anuluj</span>
                             </div>
+
+                            {selectedVisit?.info.status !== "declined" &&
+                                <div onClick={() => changeVisitStatus("declined")}
+                                     className="ml-2 border-4 border-red-700 text-red-700 rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-white hover:border-red-700 hover:bg-red-700 hover:text-white duration-300 ...">
+                                    <span className="mx-3 my-2 text-xl">Odrzuć</span>
+                                </div>
+                            }
+
+                            {selectedVisit?.info.status === "specialist_action_required" &&
+                                <>
+                                    <div onClick={() => changeVisitStatus("accepted")}
+                                         className="ml-2 border-4 border-green-700 text-green-700 rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-white hover:border-green-700 hover:bg-green-700 hover:text-white duration-300 ...">
+                                        <span className="mx-3 my-2 text-xl">Zaakceptuj</span>
+                                    </div>
+
+                                    <div onClick={() => changeVisitStatus("accepted")}
+                                         className="ml-2 border-4 border-yellow-500 text-yellow-500 rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-white hover:border-yellow-500 hover:bg-yellow-500 hover:text-white duration-300 ...">
+                                        <span className="mx-3 my-2 text-xl">Zmodyfikuj</span>
+                                    </div>
+                                </>
+                            }
                         </div>
                     </div>
                     ,
