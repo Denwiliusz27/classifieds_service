@@ -387,7 +387,6 @@ function SpecialistReservations() {
                     setSuccessMessage(message)
 
                     if (!data.error && selectedVisit){
-                        console.log(" TUTAJ JESTEM")
                         setSelectedVisit({
                             ...selectedVisit,
                             info: {
@@ -396,7 +395,6 @@ function SpecialistReservations() {
                             }
                         })
                     }
-                    console.log(selectedVisit)
 
                     getVisits()
                 }
@@ -407,7 +405,6 @@ function SpecialistReservations() {
     }
 
     const changeVisitStatus = (status: string) => {
-        console.log(status)
         const updatedVisit = cloneDeep(selectedVisit!)
         updatedVisit!.info.status = status
 
