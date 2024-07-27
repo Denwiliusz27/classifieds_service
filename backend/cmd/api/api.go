@@ -463,6 +463,10 @@ func (app *Application) CreateVisit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, v := range visits {
+		if v.Info.Status == "declined" {
+			continue
+		}
+
 		if isVisitOverlapping(newVisitRequest.StartDate, newVisitRequest.EndDate, v.Info.StartDate, v.Info.EndDate) {
 			fmt.Println("there already exist visit on this time")
 			_ = app.errorJSON(w, fmt.Errorf("Wybrany termin rozpoczęcia lub zakońcenia nakłada się na istniejącą już wizytę"))
@@ -527,6 +531,10 @@ func (app *Application) CreateTimeOff(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, v := range visits {
+		if v.Info.Status == "declined" {
+			continue
+		}
+
 		if isVisitOverlapping(newTimeOff.StartDate, newTimeOff.EndDate, v.Info.StartDate, v.Info.EndDate) {
 			fmt.Println("timeOff overlapping on existing visits")
 			_ = app.errorJSON(w, fmt.Errorf("Wybrany termin urlopu nakłada się na istniejącą wizytę"))
@@ -542,6 +550,49 @@ func (app *Application) CreateTimeOff(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = app.writeJSON(w, http.StatusOK, newTimeOffId)
+}
+
+func (app *Application) UpdateVisit(w http.ResponseWriter, r *http.Request) {
+	var visit models.VisitCalendar
+
+	err := app.readJSON(w, r, &visit)
+	if err != nil {
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	log.Println("I got Visit to update: ", visit)
+
+	// sprawdzenie czy nakłada się na jakieś istniejące wizyty
+	visits, err := app.DB.GetCalendarVisitsBySpecialistIdOrClientId(&visit.Specialist.Id, nil)
+	if err != nil {
+		fmt.Println("error getting Calendar Visits from db: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	for _, v := range visits {
+		if v.Info.Status == "declined" {
+			continue
+		}
+
+		if v.Info.Id != visit.Info.Id {
+			if isVisitOverlapping(visit.Info.StartDate, visit.Info.EndDate, v.Info.StartDate, v.Info.EndDate) {
+				fmt.Println("visit overlapping on existing visits")
+				_ = app.errorJSON(w, fmt.Errorf("Wybrany termin nakłada się na istniejącą wizytę"))
+				return
+			}
+		}
+	}
+
+	err = app.DB.UpdateVisit(visit)
+	if err != nil {
+		log.Println(err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, visit.Info.Id)
 }
 
 func isVisitOverlapping(visitStartDate, visitEndDate, existingStartDate, existingEndDate time.Time) bool {

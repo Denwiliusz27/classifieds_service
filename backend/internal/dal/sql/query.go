@@ -282,5 +282,18 @@ const CreateVisit = `
 	VALUES
 	    ($1, $2, 0, $3, 'specialist_action_required', $4, $5, $6, $7)
 	RETURNING id;
+`
 
+const UpdateVisit = `
+	UPDATE visits
+	SET
+	  start_date = $2,
+	  end_date = $3,
+	  price = $4,
+	  status = $5,
+	  description = $6,
+	  client_address_id = $7
+	WHERE
+	  id = $1
+	RETURNING id;
 `

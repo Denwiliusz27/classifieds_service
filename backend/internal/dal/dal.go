@@ -38,4 +38,5 @@ type DAL interface {
 
 	GetCalendarVisitsBySpecialistIdOrClientId(specialistId *int, clientId *int) ([]models.VisitCalendar, error)
 	CreateVisit(visitRequest models.VisitRequest) (int, error)
+	UpdateVisit(visit models.VisitCalendar) error
 }
