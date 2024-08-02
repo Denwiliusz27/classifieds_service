@@ -1,4 +1,4 @@
-import {useNavigate, useOutletContext} from "react-router-dom";
+import {Link, useNavigate, useOutletContext} from "react-router-dom";
 import {AuthContextType} from "../../App";
 import React, {useEffect, useState} from "react";
 import CalendarForVisits from "../../components/CalendarForVisits";
@@ -13,18 +13,21 @@ import Swal from "sweetalert2";
 import {VisitCalendar} from "../../models/Visit";
 import cloneDeep from "lodash/cloneDeep";
 import {Client} from "../../models/Client";
+import {ClientAddressExtended} from "../../models/ClientAddress";
 
 function ClientReservations() {
     const {jwtToken, userRole} = useOutletContext<AuthContextType>();
     const navigate = useNavigate()
 
     const [client, setClient] = useState<Client>()
+    const [clientAddresses, setClientAddresses] = useState<ClientAddressExtended[]>()
     const [visits, setVisits] = useState<VisitCalendar[]>([])
     const [selectedVisit, setSelectedVisit] = useState<VisitCalendar>()
     const [showVisitWindow, setShowVisitWindow] = useState(false)
     const [universalError, setUniversalError] = useState("")
+    const [descriptionError, setDescriptionError] = useState("")
+    const [addressError, setAddressError] = useState("")
     const [dateError, setDateError] = useState("")
-    const [priceError, setPriceError] = useState("")
     const [successMessage, setSuccessMessage] = useState("")
     const [info, setInfo] = useState("")
 
@@ -43,8 +46,6 @@ function ClientReservations() {
 
     useEffect(() => {
         if (client) {
-            console.log(client)
-
             const headers = new Headers()
             headers.append("Content-Type", "application/json")
             const requestOptions = {
@@ -52,7 +53,7 @@ function ClientReservations() {
                 headers: headers,
             }
 
-            fetch(`http://localhost:8080/visits/0/${client!.id}`, requestOptions)
+            fetch(`http://localhost:8080/visits/0/${client.id}`, requestOptions)
                 .then((response) => response.json())
                 .then((data) => {
                     data.forEach((v: VisitCalendar) => {
@@ -66,7 +67,18 @@ function ClientReservations() {
                     console.log("Error retrieving Visits: ", err)
                 })
 
-
+            headers.append("Authorization", "Bearer " + jwtToken)
+            fetch(`/client/addresses/${client.id}`, {
+                method: "GET",
+                headers: headers,
+                credentials: 'include'
+            }).then((response) => response.json())
+                .then((data) => {
+                    setClientAddresses(data)
+                })
+                .catch(err => {
+                    console.log("Error retrieving Addresses: ", err)
+                })
         }
     }, [client, jwtToken]);
 
@@ -91,7 +103,7 @@ function ClientReservations() {
         return date >= currentDate;
     }
 
-    function isNewTimeOverlappingVisits(start: Date, end: Date, visitId=0) {
+    function isNewTimeOverlappingVisits(start: Date, end: Date, visitId = 0) {
         const newStartDate = start.getTime()
         const newEndDate = end.getTime()
 
@@ -130,6 +142,26 @@ function ClientReservations() {
     const selectVisit = (visit: VisitCalendar) => {
         setSelectedVisit(visit)
 
+        if (visit.info.start_date < new Date()) {
+            setInfo("Wybrana wizyta jest wizytą z przeszłości")
+
+            Swal.fire({
+                customClass: 'swal-wide',
+                didOpen: () => setShowVisitWindow(true),
+                didClose: () => {
+                    setShowVisitWindow(false)
+                    setDescriptionError("")
+                    setInfo("")
+                    setDateError("")
+                    setAddressError("")
+                    setSuccessMessage("")
+                    setUniversalError("")
+                },
+                showConfirmButton: false,
+            })
+            return
+        }
+
         if (visit.info.status === 'declined') {
             setInfo("Wybrana wizyta została już anulowana.")
 
@@ -138,15 +170,17 @@ function ClientReservations() {
                 didOpen: () => setShowVisitWindow(true),
                 didClose: () => {
                     setShowVisitWindow(false)
-                    setDateError("")
+                    setDescriptionError("")
                     setInfo("")
+                    setDateError("")
+                    setAddressError("")
                     setSuccessMessage("")
                     setUniversalError("")
                 },
                 showConfirmButton: false,
             })
         } else if (visit.info.status === 'client_action_required') {
-            setInfo("Wybrana wizyta wymaga działania po stronie klienta.")
+            setInfo("Wybrana wizyta wymaga działania - zaproponuj zmiany, zaakceptuj bądź odrzuć wizytę")
 
             Swal.fire({
                 customClass: 'swal-wide',
@@ -154,14 +188,16 @@ function ClientReservations() {
                 didClose: () => {
                     setShowVisitWindow(false)
                     setInfo("")
-                    setDateError("")
+                    setDescriptionError("")
                     setUniversalError("")
+                    setAddressError("")
+                    setDateError("")
                     setSuccessMessage("")
                 },
                 showConfirmButton: false,
             })
         } else if (visit.info.status === 'specialist_action_required') {
-            setInfo("Wybrana wizyta wymaga działania - zaproponuj zmiany, zaakceptuj bądź odrzuć wizytę.")
+            setInfo("Wybrana wizyta wymaga działania po stronie specjalisty")
 
             Swal.fire({
                 customClass: 'swal-wide',
@@ -170,6 +206,8 @@ function ClientReservations() {
                     setShowVisitWindow(false)
                     setInfo("")
                     setDateError("")
+                    setDescriptionError("")
+                    setAddressError("")
                     setUniversalError("")
                     setSuccessMessage("")
                 },
@@ -183,8 +221,10 @@ function ClientReservations() {
                 didOpen: () => setShowVisitWindow(true),
                 didClose: () => {
                     setShowVisitWindow(false)
-                    setInfo("")
                     setDateError("")
+                    setInfo("")
+                    setAddressError("")
+                    setDescriptionError("")
                     setUniversalError("")
                     setSuccessMessage("")
                 },
@@ -197,6 +237,8 @@ function ClientReservations() {
         const updatedVisit = cloneDeep(selectedVisit!)
         updatedVisit!.info.status = status
 
+        console.log(updatedVisit)
+
         if (status === 'declined') {
             updateVisit(updatedVisit, 'declined', "Pomyślnie odrzucono wizytę")
         } else if (status === 'accepted') {
@@ -204,7 +246,30 @@ function ClientReservations() {
         }
     }
 
-    function updateVisit(visit: VisitCalendar, newStatus: string, message: string){
+    const changeVisitAddress = (event: React.FormEvent<HTMLSelectElement>) => {
+        const tmp = clientAddresses!.find((element) => {
+            return element.id === parseInt(event.currentTarget.value);
+        })
+
+        if (selectedVisit) {
+            setSelectedVisit({
+                ...selectedVisit,
+                info: {
+                    ...selectedVisit.info,
+                    client_address: {
+                        ...selectedVisit.info.client_address,
+                        id: tmp!.id,
+                        street: tmp!.street,
+                        building_nr: tmp!.building_nr,
+                        flat_nr: tmp!.flat_nr,
+                        city: tmp!.city
+                    }
+                }
+            })
+        }
+    }
+
+    function updateVisit(visit: VisitCalendar, newStatus: string, message: string) {
         setSuccessMessage("")
         setUniversalError("")
 
@@ -246,13 +311,13 @@ function ClientReservations() {
         //     })
     }
 
-    const modifyVisit = () =>{
-        if (!isDateFromFuture(selectedVisit!.info.start_date)){
+    const modifyVisit = () => {
+        if (!isDateFromFuture(selectedVisit!.info.start_date)) {
             setDateError("Data rozpoczęcia jest datą przeszłą")
             return;
         }
 
-        if (!isDateFromFuture(selectedVisit!.info.end_date)){
+        if (!isDateFromFuture(selectedVisit!.info.end_date)) {
             setDateError("Data rozpoczęcia jest datą przeszłą")
             return;
         }
@@ -267,7 +332,7 @@ function ClientReservations() {
             return;
         }
 
-        if (selectedVisit!.info.start_date.getDate() !== selectedVisit!.info.end_date.getDate()){
+        if (selectedVisit!.info.start_date.getDate() !== selectedVisit!.info.end_date.getDate()) {
             setDateError("Dzień rozpoczęcia i zakończenia różnią się")
             return;
         }
@@ -278,8 +343,8 @@ function ClientReservations() {
             return;
         }
 
-        if (selectedVisit!.info.price <= 0) {
-            setPriceError("Szacowana cena musi być wartością większą od zera")
+        if (selectedVisit!.info.description.length === 0) {
+            setDescriptionError("Podaj opis rezerwowanej usługi")
             return;
         }
 
@@ -297,10 +362,10 @@ function ClientReservations() {
                     </div>
 
                     <p className="mb-6 text-2xl">
-                        Poniżej znajduje się kalendarz zarezerwowanych przez ciebie usług. Wizyty potwierdzone, odrzucone oraz
-                        te oczekujące na akcje, zaznaczone są określonym kolorem (patrz legenda poniżej). Aby wyświetlić szczegóły
-                        wizyty, kliknij w nią. W celu potwierdzenia, modyfikacji lub odrzucenia rezerwacji, wypełnij formularz
-                        wyświetlony po kliknięciu w daną pozycję.
+                        Poniżej znajduje się kalendarz zarezerwowanych przez ciebie usług. Wizyty potwierdzone,
+                        odrzucone oraz te oczekujące na akcje, zaznaczone są określonym kolorem (patrz legenda poniżej).
+                        Aby wyświetlić szczegóły wizyty, kliknij w nią. W celu potwierdzenia, modyfikacji lub odrzucenia
+                        rezerwacji, wypełnij formularz wyświetlony po kliknięciu w daną pozycję.
                     </p>
 
                     <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
@@ -319,7 +384,7 @@ function ClientReservations() {
 
                             <div className="flex flex-row items-center mr-6 mb-3">
                                 <div className=" bg-yellow-600 rounded-lg h-8 w-8 min-h-8 min-w-8"></div>
-                                <p className="ml-2">- wymaga użytkownika</p>
+                                <p className="ml-2">- wymaga akcji</p>
                             </div>
 
                             <div className="flex flex-row items-center mr-6 mb-3">
@@ -346,7 +411,9 @@ function ClientReservations() {
                         views={[Views.DAY, Views.WEEK, Views.MONTH]}
                         EventComponent={EventComponent}
                         onSelectEvent={(event) => selectVisit(event)}
-                        timeOffSlotAdjustment={() => {return {}}}
+                        timeOffSlotAdjustment={() => {
+                            return {}
+                        }}
                     />
                 </div>
             </div>
@@ -369,45 +436,62 @@ function ClientReservations() {
                             </div>
                         }
 
-                        <p className="font-bold text-left w-full">Klient</p>
+                        <p className="font-bold text-left w-full">Specjalista</p>
 
-                        <div className="bg-white drop-shadow-lg my-3 rounded-2xl w-full py-4">
+                        <Link to="/specjalista/szczegóły" state={{specialistId: selectedVisit?.specialist.id}} onClick={() => Swal.close()}
+                              className="bg-white drop-shadow-lg my-3 rounded-2xl w-full py-4 transition-transform hover:-translate-y-1 duration-300">
                             <div className="flex flex-col items-center">
                                 <div className="flex flex-col justify-center">
-                                    <p className="font-bold text-2xl pb-1">{selectedVisit?.client.name} {selectedVisit?.client.second_name}</p>
+                                    <p className="font-bold text-2xl pb-1">{selectedVisit?.specialist.name} {selectedVisit?.specialist.second_name}</p>
                                     <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
                                 </div>
 
                                 {/* contact info */}
-                                <div className="flex flex-col items-center w-full font-extrabold">
-                                    <div className="flex flex-row py-1 items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                             stroke-width="1.5" stroke="currentColor" className="size-6">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                  d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/>
-                                        </svg>
-                                        <p className="pl-3 font-bold break-all">{selectedVisit?.client.email}</p>
+                                <div className="flex flex-row justify-center w-full font-extrabold">
+                                    <div className="w-1/3">
+                                        <div className="flex flex-row py-2 items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                 stroke-width="1.5" stroke="currentColor" className="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z"/>
+                                            </svg>
+                                            <p className="pl-3 font-bold">{selectedVisit?.specialist.specialization}</p>
+                                        </div>
+
+                                        <div className="flex flex-row py-1 items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                 stroke-width="1.5" stroke="currentColor" className="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
+                                            </svg>
+                                            <p className="pl-3 font-bold">{selectedVisit?.specialist.city}</p>
+                                        </div>
                                     </div>
 
-                                    <div className="flex flex-row py-1 items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                             stroke-width="1.5" stroke="currentColor" className="size-6">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                  d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
-                                        </svg>
-                                        {selectedVisit!.info.client_address.flat_nr !== 0 ?
-                                            <p className="pl-3 font-bold break-all">{selectedVisit!.info.client_address.city.name},
-                                                ul. {selectedVisit!.info.client_address.street} {selectedVisit!.info.client_address.building_nr}/{selectedVisit!.info.client_address.flat_nr}</p>
-                                            :
-                                            <p className="pl-3 font-bold break-all">{selectedVisit!.info.client_address.city.name},
-                                                ul. {selectedVisit!.info.client_address.street} {selectedVisit!.info.client_address.building_nr}</p>
-                                        }
+                                    <div className="">
+                                        <div className="flex flex-row py-2 items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                 stroke-width="1.5" stroke="currentColor" className="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z"/>
+                                            </svg>
+                                            <p className="pl-3 font-bold">{selectedVisit?.specialist.phone_nr}</p>
+                                        </div>
+
+                                        <div className="flex flex-row py-1 items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                 stroke-width="1.5" stroke="currentColor" className="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/>
+                                            </svg>
+                                            <p className="pl-3 font-bold break-all w-full">{selectedVisit?.specialist.email}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
 
                         <div className="w-full">
                             <div className="flex flex-row py-2">
@@ -418,7 +502,7 @@ function ClientReservations() {
                                         <DemoItem>
                                             <DateTimePicker
                                                 defaultValue={dayjs(selectedVisit!.info.start_date)}
-                                                disabled={selectedVisit!.info.status === 'accepted' || selectedVisit!.info.status === 'declined' || selectedVisit!.info.status === 'client_action_required'}
+                                                disabled={selectedVisit!.info.status !== 'client_action_required' || selectedVisit!.info.start_date < new Date()}
                                                 ampm={false}
                                                 minutesStep={15}
                                                 minTime={dayjs().set('hour', 6).set('minute', 0)}
@@ -449,7 +533,7 @@ function ClientReservations() {
                                         <DemoItem>
                                             <DateTimePicker
                                                 defaultValue={dayjs(selectedVisit!.info.end_date)}
-                                                disabled={selectedVisit!.info.status === 'accepted' || selectedVisit!.info.status === 'declined' || selectedVisit!.info.status === 'client_action_required'}
+                                                disabled={selectedVisit!.info.status !== 'client_action_required' || selectedVisit!.info.start_date < new Date()}
                                                 ampm={false}
                                                 minutesStep={15}
                                                 minTime={dayjs().set('hour', 6).set('minute', 0)}
@@ -482,6 +566,63 @@ function ClientReservations() {
                             }
 
                             <div className="w-full py-2">
+                                <p className="font-bold text-left pb-2">Adres realizacji<sup>*</sup></p>
+
+                                <select
+                                    id="id"
+                                    name="adres"
+                                    disabled={selectedVisit!.info.status !== 'client_action_required' || selectedVisit!.info.start_date < new Date()}
+                                    value={selectedVisit?.info.client_address.id}
+                                    onChange={changeVisitAddress
+                                    // {
+                                    //     // setSelectedVisit({
+                                    //     //     ...selectedVisit,
+                                    //     //     info: {
+                                    //     //         ...selectedVisit?.info,
+                                    //     //         client_address: value.currentTarget.value
+                                    //     //     }
+                                    //     // })
+                                    //     setAddressError("")
+                                    //     setUniversalError("")
+                                    //     setSuccessMessage("")
+                                    // }
+                                }
+                                    className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
+                                >
+                                    {clientAddresses!.map((address) => {
+                                        return (
+                                            <>
+                                                {address.flat_nr === 0 ?
+                                                    <option
+                                                        key={address.id}
+                                                        value={address.id}
+                                                    >
+                                                        {address.city.name},
+                                                        ul. {address.street} {address.building_nr}
+                                                    </option>
+                                                    :
+                                                    <option
+                                                        key={address.id}
+                                                        value={address.id}
+                                                    >
+                                                        {address.city.name},
+                                                        ul. {address.street} {address.building_nr}/{address.flat_nr}
+                                                    </option>
+                                                }
+                                            </>
+                                        )
+                                    })}
+                                </select>
+
+                                {addressError &&
+                                    <div
+                                        className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full h-7 mt-1 leading-none">
+                                        <p>{addressError}</p>
+                                    </div>
+                                }
+                            </div>
+
+                            <div className="w-full py-2">
                                 <p className="font-bold pb-2 text-left">Usługa<sup>*</sup></p>
 
                                 <select
@@ -502,33 +643,12 @@ function ClientReservations() {
                                 <input
                                     type="number"
                                     id="price"
-                                    disabled={selectedVisit!.info.status === 'accepted' || selectedVisit!.info.status === 'declined' || selectedVisit!.info.status === 'client_action_required'}
+                                    disabled={true}
                                     placeholder={"Cena realizacji usługi"}
                                     value={0 || selectedVisit!.info.price}
                                     className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
-                                    onChange={(value) => {
-                                        setPriceError("")
-                                        setSuccessMessage("")
-
-                                        if (selectedVisit) {
-                                            setSelectedVisit({
-                                                ...selectedVisit,
-                                                info: {
-                                                    ...selectedVisit.info,
-                                                    price: parseInt(value.target.value, 10)
-                                                }
-                                            })
-                                        }
-                                    }}
                                 />
                             </div>
-
-                            {priceError &&
-                                <div
-                                    className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full mb-2 leading-none">
-                                    <p>{priceError}</p>
-                                </div>
-                            }
 
                             <div className="w-full py-2">
                                 <p className="font-bold text-left pb-2">Opis usługi<sup>*</sup></p>
@@ -536,14 +656,35 @@ function ClientReservations() {
                                 <textarea
                                     id="description"
                                     name="description"
-                                    disabled={true}
+                                    disabled={selectedVisit!.info.status !== 'client_action_required' || selectedVisit!.info.start_date < new Date()}
                                     placeholder="Opis usługi"
                                     value={selectedVisit?.info.description}
                                     rows={6}
                                     cols={40}
                                     className={`w-full border-2 text-lg border-gray-300 rounded-md p-3`}
+                                    onChange={(value) => {
+                                        if (selectedVisit) {
+                                            setSelectedVisit({
+                                                ...selectedVisit,
+                                                info: {
+                                                    ...selectedVisit?.info,
+                                                    description: value.currentTarget.value
+                                                }
+                                            })
+                                        }
+                                        setDescriptionError("")
+                                        setUniversalError("")
+                                        setSuccessMessage("")
+                                    }}
                                 />
                             </div>
+
+                            {descriptionError &&
+                                <div
+                                    className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full mb-2 leading-none">
+                                    <p>{descriptionError}</p>
+                                </div>
+                            }
                         </div>
 
                         <div className="flex flex-row justify-evenly mt-5 font-medium">
@@ -552,14 +693,14 @@ function ClientReservations() {
                                 <span className="mx-3 my-2 text-xl">Anuluj</span>
                             </div>
 
-                            {selectedVisit?.info.status !== "declined" &&
+                            {(selectedVisit?.info.status !== "declined" && selectedVisit!.info.end_date > new Date()) &&
                                 <div onClick={() => changeVisitStatus("declined")}
                                      className="ml-2 border-4 border-red-700 text-red-700 rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-white hover:border-red-700 hover:bg-red-700 hover:text-white duration-300 ...">
                                     <span className="mx-3 my-2 text-xl">Odrzuć</span>
                                 </div>
                             }
 
-                            {selectedVisit?.info.status === "specialist_action_required" &&
+                            {(selectedVisit?.info.status === "client_action_required" && selectedVisit!.info.end_date > new Date()) &&
                                 <>
                                     <div onClick={() => changeVisitStatus("accepted")}
                                          className="ml-2 border-4 border-green-700 text-green-700 rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-white hover:border-green-700 hover:bg-green-700 hover:text-white duration-300 ...">
