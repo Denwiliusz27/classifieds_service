@@ -1,4 +1,4 @@
-import {Link, useNavigate, useOutletContext} from "react-router-dom";
+import {useNavigate, useOutletContext} from "react-router-dom";
 import {AuthContextType} from "../../App";
 import React, {useEffect, useState} from "react";
 import CalendarForVisits from "../../components/CalendarForVisits";
@@ -87,7 +87,6 @@ function SpecialistReservations() {
         fetch(`http://localhost:8080/visits/${specialist!.id}/0`, requestOptions)
             .then((response) => response.json())
             .then((data) => {
-
                 data.forEach((v: VisitCalendar) => {
                     v.info.start_date = new Date(v.info.start_date)
                     v.info.end_date = new Date(v.info.end_date)
@@ -170,7 +169,7 @@ function SpecialistReservations() {
         } else if (event.info.status === 'specialist_action_required') {
             backgroundColor = 'DarkSeaGreen';
         } else if (event.info.status === 'client_action_required') {
-            backgroundColor = 'DarkGoldenRod';//'LightCoral';
+            backgroundColor = 'DarkGoldenRod';
         } else if (event.info.status === 'declined') {
             backgroundColor = 'FireBrick';
         }
