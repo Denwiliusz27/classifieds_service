@@ -101,3 +101,27 @@ func (m *PG) CreateVisit(visitRequest models.VisitRequest) (int, error) {
 
 	return newVisitId, nil
 }
+
+func (m *PG) UpdateVisit(visit models.VisitCalendar) error {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	q := sql.UpdateVisit
+
+	_, err := m.DB.ExecContext(ctx, q,
+		visit.Info.Id,
+		visit.Info.StartDate.Add(2*time.Hour),
+		visit.Info.EndDate.Add(2*time.Hour),
+		visit.Info.Price,
+		visit.Info.Status,
+		visit.Info.Description,
+		visit.Info.ClientAddress.Id,
+	)
+
+	if err != nil {
+		return fmt.Errorf("cannot update Visit: %w", err)
+	}
+	log.Println("Successfully updated Visit with id ", visit.Info.Id)
+
+	return nil
+}

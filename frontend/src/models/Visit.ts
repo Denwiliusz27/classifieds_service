@@ -1,7 +1,7 @@
-import {SpecialistGeneralInfo, SpecialistProfileInfo} from "./Specialist";
+import {SpecialistProfileInfo} from "./Specialist";
 import {Client} from "./Client";
 import {SpecialistService} from "./SpecialistService";
-import {ClientAddress} from "./ClientAddress";
+import {ClientAddressExtended} from "./ClientAddress";
 
 export interface Visit {
     id: number
@@ -10,7 +10,7 @@ export interface Visit {
     price: number
     description: string
     status: string
-    client_address: ClientAddress
+    client_address: ClientAddressExtended
 }
 
 export interface VisitCalendar {

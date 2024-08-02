@@ -155,12 +155,17 @@ function SpecialistProfile() {
             .then((response) => response.json())
             .then((data) => {
 
+                const tmp: VisitCalendar[] = []
+
                 data.forEach((v: VisitCalendar) => {
                     v.info.start_date = new Date(v.info.start_date)
                     v.info.end_date = new Date(v.info.end_date)
+                    if (v.info.status !== 'declined') {
+                        tmp.push(v)
+                    }
                 })
 
-                setVisits(data)
+                setVisits(tmp)
             })
             .catch(err => {
                 console.log("Error retrieving Visits: ", err)

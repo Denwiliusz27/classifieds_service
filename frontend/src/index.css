@@ -45,3 +45,7 @@
 .custom-datepicker .MuiOutlinedInput-notchedOutline {
     border-width: 1px;
 }
+
+.swal-wide{
+    width:650px !important;
+}

@@ -8,3 +8,9 @@ type TimeOff struct {
 	EndDate      time.Time `json:"end_date"`
 	SpecialistId int       `json:"specialist_id"`
 }
+
+type TimeOffRequest struct {
+	StartDate    time.Time `json:"start_date"`
+	EndDate      time.Time `json:"end_date"`
+	SpecialistId int       `json:"specialist_id"`
+}
