@@ -20,6 +20,7 @@ func (app *Application) Routes() http.Handler {
 		mux.Get("/info/{user_id}", app.GetClientInfoByUserId)
 		mux.Get("/addresses/{client_id}", app.GetClientAddressesByClientId)
 		mux.Post("/create_visit", app.CreateVisit)
+		mux.Patch("/update_visit", app.UpdateVisitByClient)
 	})
 
 	mux.Post("/register_client", app.CreateClient)
@@ -29,7 +30,7 @@ func (app *Application) Routes() http.Handler {
 		mux.Get("/reservations", app.GetSpecialistReservations)
 		mux.Get("/info/{user_id}", app.GetSpecialistInfoByUserId)
 		mux.Post("/create_time_off", app.CreateTimeOff)
-		mux.Patch("/update_visit", app.UpdateVisit)
+		mux.Patch("/update_visit", app.UpdateVisitBySpecialist)
 	})
 
 	mux.Get("/specialists/{specialization_id}/{city_id}/{service_id}", app.GetSpecialistsBySpecializationIdCityIdServiceId)

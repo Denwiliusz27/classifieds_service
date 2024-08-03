@@ -26,10 +26,10 @@ function ClientReservations() {
     const [showVisitWindow, setShowVisitWindow] = useState(false)
     const [universalError, setUniversalError] = useState("")
     const [descriptionError, setDescriptionError] = useState("")
-    const [addressError, setAddressError] = useState("")
     const [dateError, setDateError] = useState("")
     const [successMessage, setSuccessMessage] = useState("")
     const [info, setInfo] = useState("")
+    const [isVisitOld, setIsVisitOld] = useState(false)
 
     useEffect(() => {
         if (jwtToken === "" && userRole !== "client") {
@@ -144,6 +144,7 @@ function ClientReservations() {
 
         if (visit.info.start_date < new Date()) {
             setInfo("Wybrana wizyta jest wizytą z przeszłości")
+            setIsVisitOld(true)
 
             Swal.fire({
                 customClass: 'swal-wide',
@@ -153,9 +154,9 @@ function ClientReservations() {
                     setDescriptionError("")
                     setInfo("")
                     setDateError("")
-                    setAddressError("")
                     setSuccessMessage("")
                     setUniversalError("")
+                    setIsVisitOld(false)
                 },
                 showConfirmButton: false,
             })
@@ -173,7 +174,6 @@ function ClientReservations() {
                     setDescriptionError("")
                     setInfo("")
                     setDateError("")
-                    setAddressError("")
                     setSuccessMessage("")
                     setUniversalError("")
                 },
@@ -190,7 +190,6 @@ function ClientReservations() {
                     setInfo("")
                     setDescriptionError("")
                     setUniversalError("")
-                    setAddressError("")
                     setDateError("")
                     setSuccessMessage("")
                 },
@@ -207,7 +206,6 @@ function ClientReservations() {
                     setInfo("")
                     setDateError("")
                     setDescriptionError("")
-                    setAddressError("")
                     setUniversalError("")
                     setSuccessMessage("")
                 },
@@ -223,7 +221,6 @@ function ClientReservations() {
                     setShowVisitWindow(false)
                     setDateError("")
                     setInfo("")
-                    setAddressError("")
                     setDescriptionError("")
                     setUniversalError("")
                     setSuccessMessage("")
@@ -234,15 +231,16 @@ function ClientReservations() {
     }
 
     const changeVisitStatus = (status: string) => {
-        const updatedVisit = cloneDeep(selectedVisit!)
+        const updatedVisit = cloneDeep(visits!.find((element) => {
+            return element.info.id === selectedVisit!.info.id;
+        }))
+
         updatedVisit!.info.status = status
 
-        console.log(updatedVisit)
-
         if (status === 'declined') {
-            updateVisit(updatedVisit, 'declined', "Pomyślnie odrzucono wizytę")
+            updateVisit(updatedVisit!, 'declined', "Pomyślnie odrzucono wizytę")
         } else if (status === 'accepted') {
-            updateVisit(updatedVisit, 'accepted', "Pomyślnie zaakceptowano wizytę")
+            updateVisit(updatedVisit!, 'accepted', "Pomyślnie zaakceptowano wizytę")
         }
     }
 
@@ -267,48 +265,74 @@ function ClientReservations() {
                 }
             })
         }
+
+        setUniversalError("")
+        setSuccessMessage("")
     }
 
     function updateVisit(visit: VisitCalendar, newStatus: string, message: string) {
         setSuccessMessage("")
         setUniversalError("")
 
+        console.log("WYSYŁAM WIZYTE:")
+        console.log(visit)
+
         const headers = new Headers()
         headers.append("Content-Type", "application/json")
         headers.append("Authorization", "Bearer " + jwtToken)
         const method = "PATCH"
 
-        // fetch(`/specialist/update_visit`, {
-        //     body: JSON.stringify(visit),
-        //     method: method,
-        //     headers: headers,
-        //     credentials: 'include'
-        // })
-        //     .then((response) => response.json())
-        //     .then((data) => {
-        //         if (data.error) {
-        //             console.log("ERRORS")
-        //             setUniversalError(data.message)
-        //         } else {
-        //             console.log("SUCCESSFULLY UPDATED VISIT")
-        //             setSuccessMessage(message)
-        //
-        //             if (!data.error && selectedVisit){
-        //                 setSelectedVisit({
-        //                     ...selectedVisit,
-        //                     info: {
-        //                         ...selectedVisit?.info,
-        //                         status: newStatus
-        //                     }
-        //                 })
-        //             }
-        //
-        //             getVisits()
-        //         }
-        //     })
-        //     .catch((err) => {
-        //         console.log(err)
-        //     })
+        fetch(`/client/update_visit`, {
+            body: JSON.stringify(visit),
+            method: method,
+            headers: headers,
+            credentials: 'include'
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    console.log("ERRORS")
+                    setUniversalError(data.message)
+                } else {
+                    console.log("SUCCESSFULLY UPDATED VISIT")
+                    setSuccessMessage(message)
+
+                    if (!data.error && selectedVisit){
+                        setSelectedVisit({
+                            ...selectedVisit,
+                            info: {
+                                ...selectedVisit?.info,
+                                status: newStatus
+                            }
+                        })
+                    }
+
+
+                    const headers = new Headers()
+                    headers.append("Content-Type", "application/json")
+                    const requestOptions = {
+                        method: "GET",
+                        headers: headers,
+                    }
+                    
+                    fetch(`http://localhost:8080/visits/0/${client!.id}`, requestOptions)
+                        .then((response) => response.json())
+                        .then((data) => {
+                            data.forEach((v: VisitCalendar) => {
+                                v.info.start_date = new Date(v.info.start_date)
+                                v.info.end_date = new Date(v.info.end_date)
+                            })
+
+                            setVisits(data)
+                        })
+                        .catch(err => {
+                            console.log("Error retrieving Visits: ", err)
+                        })
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
     }
 
     const modifyVisit = () => {
@@ -349,8 +373,8 @@ function ClientReservations() {
         }
 
         const updatedVisit = cloneDeep(selectedVisit!)
-        updatedVisit!.info.status = 'client_action_required'
-        updateVisit(updatedVisit, 'client_action_required', "Pomyślnie zaktualizowano wizytę")
+        updatedVisit!.info.status = 'specialist_action_required'
+        updateVisit(updatedVisit, 'specialist_action_required', "Pomyślnie zaktualizowano wizytę")
     }
 
     return (
@@ -502,7 +526,7 @@ function ClientReservations() {
                                         <DemoItem>
                                             <DateTimePicker
                                                 defaultValue={dayjs(selectedVisit!.info.start_date)}
-                                                disabled={selectedVisit!.info.status !== 'client_action_required' || selectedVisit!.info.start_date < new Date()}
+                                                disabled={selectedVisit!.info.status !== 'client_action_required' || isVisitOld}
                                                 ampm={false}
                                                 minutesStep={15}
                                                 minTime={dayjs().set('hour', 6).set('minute', 0)}
@@ -520,6 +544,7 @@ function ClientReservations() {
                                                     setDateError("")
                                                     setSuccessMessage("")
                                                     setUniversalError("")
+                                                    console.log(selectedVisit?.info.status)
                                                 }}
                                             />
                                         </DemoItem>
@@ -533,7 +558,7 @@ function ClientReservations() {
                                         <DemoItem>
                                             <DateTimePicker
                                                 defaultValue={dayjs(selectedVisit!.info.end_date)}
-                                                disabled={selectedVisit!.info.status !== 'client_action_required' || selectedVisit!.info.start_date < new Date()}
+                                                disabled={selectedVisit!.info.status !== 'client_action_required' || isVisitOld}
                                                 ampm={false}
                                                 minutesStep={15}
                                                 minTime={dayjs().set('hour', 6).set('minute', 0)}
@@ -571,22 +596,9 @@ function ClientReservations() {
                                 <select
                                     id="id"
                                     name="adres"
-                                    disabled={selectedVisit!.info.status !== 'client_action_required' || selectedVisit!.info.start_date < new Date()}
+                                    disabled={selectedVisit!.info.status !== 'client_action_required' || isVisitOld}
                                     value={selectedVisit?.info.client_address.id}
-                                    onChange={changeVisitAddress
-                                    // {
-                                    //     // setSelectedVisit({
-                                    //     //     ...selectedVisit,
-                                    //     //     info: {
-                                    //     //         ...selectedVisit?.info,
-                                    //     //         client_address: value.currentTarget.value
-                                    //     //     }
-                                    //     // })
-                                    //     setAddressError("")
-                                    //     setUniversalError("")
-                                    //     setSuccessMessage("")
-                                    // }
-                                }
+                                    onChange={changeVisitAddress}
                                     className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
                                 >
                                     {clientAddresses!.map((address) => {
@@ -613,13 +625,6 @@ function ClientReservations() {
                                         )
                                     })}
                                 </select>
-
-                                {addressError &&
-                                    <div
-                                        className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full h-7 mt-1 leading-none">
-                                        <p>{addressError}</p>
-                                    </div>
-                                }
                             </div>
 
                             <div className="w-full py-2">
@@ -656,7 +661,7 @@ function ClientReservations() {
                                 <textarea
                                     id="description"
                                     name="description"
-                                    disabled={selectedVisit!.info.status !== 'client_action_required' || selectedVisit!.info.start_date < new Date()}
+                                    disabled={selectedVisit!.info.status !== 'client_action_required' || isVisitOld}
                                     placeholder="Opis usługi"
                                     value={selectedVisit?.info.description}
                                     rows={6}
@@ -693,14 +698,14 @@ function ClientReservations() {
                                 <span className="mx-3 my-2 text-xl">Anuluj</span>
                             </div>
 
-                            {(selectedVisit?.info.status !== "declined" && selectedVisit!.info.end_date > new Date()) &&
+                            {(selectedVisit?.info.status !== "declined" && !isVisitOld) &&
                                 <div onClick={() => changeVisitStatus("declined")}
                                      className="ml-2 border-4 border-red-700 text-red-700 rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-white hover:border-red-700 hover:bg-red-700 hover:text-white duration-300 ...">
                                     <span className="mx-3 my-2 text-xl">Odrzuć</span>
                                 </div>
                             }
 
-                            {(selectedVisit?.info.status === "client_action_required" && selectedVisit!.info.end_date > new Date()) &&
+                            {(selectedVisit?.info.status === "client_action_required" && !isVisitOld) &&
                                 <>
                                     <div onClick={() => changeVisitStatus("accepted")}
                                          className="ml-2 border-4 border-green-700 text-green-700 rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-white hover:border-green-700 hover:bg-green-700 hover:text-white duration-300 ...">

@@ -552,7 +552,7 @@ func (app *Application) CreateTimeOff(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, newTimeOffId)
 }
 
-func (app *Application) UpdateVisit(w http.ResponseWriter, r *http.Request) {
+func (app *Application) UpdateVisitBySpecialist(w http.ResponseWriter, r *http.Request) {
 	var visit models.VisitCalendar
 
 	err := app.readJSON(w, r, &visit)
@@ -563,23 +563,79 @@ func (app *Application) UpdateVisit(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("I got Visit to update: ", visit)
 
-	// sprawdzenie czy nakłada się na jakieś istniejące wizyty
-	visits, err := app.DB.GetCalendarVisitsBySpecialistIdOrClientId(&visit.Specialist.Id, nil)
+	if !(visit.Info.Status == "declined") {
+		// sprawdzenie czy nakłada się na jakieś istniejące wizyty
+		visits, err := app.DB.GetCalendarVisitsBySpecialistIdOrClientId(&visit.Specialist.Id, nil)
+		if err != nil {
+			fmt.Println("error getting Calendar Visits from db: ", err)
+			_ = app.errorJSON(w, err)
+			return
+		}
+
+		for _, v := range visits {
+			if v.Info.Status == "declined" {
+				continue
+			}
+
+			if v.Info.Id != visit.Info.Id {
+				if isVisitOverlapping(visit.Info.StartDate, visit.Info.EndDate, v.Info.StartDate, v.Info.EndDate) {
+					fmt.Println("visit overlapping on existing visits")
+					_ = app.errorJSON(w, fmt.Errorf("Wybrany termin nakłada się na istniejącą wizytę"))
+					return
+				}
+			}
+		}
+	}
+
+	err = app.DB.UpdateVisit(visit)
 	if err != nil {
-		fmt.Println("error getting Calendar Visits from db: ", err)
+		log.Println(err)
 		_ = app.errorJSON(w, err)
 		return
 	}
 
-	for _, v := range visits {
-		if v.Info.Status == "declined" {
-			continue
+	_ = app.writeJSON(w, http.StatusOK, visit.Info.Id)
+}
+
+func (app *Application) UpdateVisitByClient(w http.ResponseWriter, r *http.Request) {
+	var visit models.VisitCalendar
+
+	err := app.readJSON(w, r, &visit)
+	if err != nil {
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	log.Println("I got Visit to update: ", visit)
+
+	if !(visit.Info.Status == "declined") {
+		// sprawdzenie czy nakłada się na jakieś istniejące wizyty
+		visits, err := app.DB.GetCalendarVisitsBySpecialistIdOrClientId(&visit.Specialist.Id, nil)
+		if err != nil {
+			fmt.Println("error getting Calendar Visits from db: ", err)
+			_ = app.errorJSON(w, err)
+			return
 		}
 
-		if v.Info.Id != visit.Info.Id {
-			if isVisitOverlapping(visit.Info.StartDate, visit.Info.EndDate, v.Info.StartDate, v.Info.EndDate) {
-				fmt.Println("visit overlapping on existing visits")
-				_ = app.errorJSON(w, fmt.Errorf("Wybrany termin nakłada się na istniejącą wizytę"))
+		for _, v := range visits {
+			if v.Info.Status == "declined" {
+				continue
+			}
+
+			if v.Info.Id != visit.Info.Id {
+				if isVisitOverlapping(visit.Info.StartDate, visit.Info.EndDate, v.Info.StartDate, v.Info.EndDate) {
+					fmt.Println("visit overlapping on existing visits")
+					_ = app.errorJSON(w, fmt.Errorf("Wybrany termin nakłada się na istniejącą wizytę specjalisty"))
+					return
+				}
+			}
+		}
+
+		timeOffs, err := app.DB.GetTimeOffBySpecialistId(visit.Specialist.Id)
+		for _, t := range timeOffs {
+			if isVisitOverlapping(visit.Info.StartDate, visit.Info.EndDate, t.StartDate, t.EndDate) {
+				fmt.Println("visit is overlapping timeOff")
+				_ = app.errorJSON(w, fmt.Errorf("Wybrany termin nakłada się na termin urlopu specjlisty"))
 				return
 			}
 		}
