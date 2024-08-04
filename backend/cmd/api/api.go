@@ -478,7 +478,7 @@ func (app *Application) CreateVisit(w http.ResponseWriter, r *http.Request) {
 	for _, t := range timeOffs {
 		if isVisitOverlapping(newVisitRequest.StartDate, newVisitRequest.EndDate, t.StartDate, t.EndDate) {
 			fmt.Println("visit is overlapping timeOff")
-			_ = app.errorJSON(w, fmt.Errorf("Wybrany termin nakłada się na termin urlopu specjlisty"))
+			_ = app.errorJSON(w, fmt.Errorf("Wybrany termin nakłada się na termin urlopu specjalisty"))
 			return
 		}
 	}
@@ -635,7 +635,7 @@ func (app *Application) UpdateVisitByClient(w http.ResponseWriter, r *http.Reque
 		for _, t := range timeOffs {
 			if isVisitOverlapping(visit.Info.StartDate, visit.Info.EndDate, t.StartDate, t.EndDate) {
 				fmt.Println("visit is overlapping timeOff")
-				_ = app.errorJSON(w, fmt.Errorf("Wybrany termin nakłada się na termin urlopu specjlisty"))
+				_ = app.errorJSON(w, fmt.Errorf("Wybrany termin nakłada się na termin urlopu specjalisty"))
 				return
 			}
 		}
