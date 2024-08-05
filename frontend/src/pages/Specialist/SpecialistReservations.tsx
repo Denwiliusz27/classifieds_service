@@ -216,6 +216,7 @@ function SpecialistReservations() {
                     setInfo("")
                     setDateError("")
                     setSuccessMessage("")
+                    setPriceError("")
                     setUniversalError("")
                     setIsVisitOld(false)
                 },
@@ -232,6 +233,7 @@ function SpecialistReservations() {
                 didOpen: () => setShowVisitWindow(true),
                 didClose: () => {
                     setShowVisitWindow(false)
+                    setPriceError("")
                     setDateError("")
                     setInfo("")
                     setSuccessMessage("")
@@ -248,6 +250,7 @@ function SpecialistReservations() {
                 didClose: () => {
                     setShowVisitWindow(false)
                     setInfo("")
+                    setPriceError("")
                     setDateError("")
                     setUniversalError("")
                     setSuccessMessage("")
@@ -264,6 +267,7 @@ function SpecialistReservations() {
                     setShowVisitWindow(false)
                     setInfo("")
                     setDateError("")
+                    setPriceError("")
                     setUniversalError("")
                     setSuccessMessage("")
                 },
@@ -278,6 +282,7 @@ function SpecialistReservations() {
                 didClose: () => {
                     setShowVisitWindow(false)
                     setInfo("")
+                    setPriceError("")
                     setDateError("")
                     setUniversalError("")
                     setSuccessMessage("")
@@ -291,6 +296,10 @@ function SpecialistReservations() {
         const newStartDate = start.getTime()
         const newEndDate = end.getTime()
 
+        if (!timeOffs) {
+            return false
+        }
+
         for (let i = 0; i < timeOffs.length; i++) {
             const startDate = new Date(timeOffs[i].start_date).getTime()
             const endDate = new Date(timeOffs[i].end_date).getTime()
@@ -299,6 +308,7 @@ function SpecialistReservations() {
                 return true
             }
         }
+
         return false
     }
 
@@ -438,7 +448,24 @@ function SpecialistReservations() {
         }
     }
 
-    const modifyVisit = () =>{
+    function hasVisitChanged(): boolean {
+        const tmp = visits!.find((element) => {
+            return element.info.id === selectedVisit?.info.id;
+        })
+
+        return !(tmp!.info.start_date.getTime() === selectedVisit?.info.start_date.getTime() &&
+            tmp!.info.end_date.getTime() === selectedVisit?.info.end_date.getTime() &&
+            tmp!.info.client_address.id === selectedVisit?.info.client_address.id &&
+            tmp!.info.description === selectedVisit?.info.description &&
+            tmp!.info.price === selectedVisit?.info.price);
+    }
+
+    const modifyVisit = () => {
+        if (!hasVisitChanged()) {
+            setUniversalError("Wprowadź zmiany aby zmodyfikować wizytę")
+            return;
+        }
+
         if (!isDateFromFuture(selectedVisit!.info.start_date)){
             setDateError("Data rozpoczęcia jest datą przeszłą")
             return;
@@ -797,7 +824,7 @@ function SpecialistReservations() {
                                     onChange={(value) => {
                                         setPriceError("")
                                         setSuccessMessage("")
-
+                                        setUniversalError("")
                                         if (selectedVisit) {
                                             setSelectedVisit({
                                                 ...selectedVisit,

@@ -33,6 +33,7 @@ function ClientReservations() {
     const [successMessage, setSuccessMessage] = useState("")
     const [info, setInfo] = useState("")
     const [isVisitOld, setIsVisitOld] = useState(false)
+    const [openCalendar, setOpenCalendar] = useState(false)
 
     useEffect(() => {
         if (jwtToken === "" && userRole !== "client") {
@@ -211,6 +212,8 @@ function ClientReservations() {
                 showConfirmButton: false,
             })
         } else if (visit.info.status === 'client_action_required') {
+            setOpenCalendar(true)
+
             setInfo("Wybrana wizyta wymaga działania - zaproponuj zmiany, zaakceptuj bądź odrzuć wizytę")
 
             const headers = new Headers()
@@ -219,8 +222,6 @@ function ClientReservations() {
                 method: "GET",
                 headers: headers,
             }
-
-            console.log(visit.specialist.id)
 
             fetch(`http://localhost:8080/time_off/${visit.specialist.id}`, requestOptions)
                 .then((response) => response.json())
@@ -260,6 +261,7 @@ function ClientReservations() {
                     setDescriptionError("")
                     setUniversalError("")
                     setDateError("")
+                    setOpenCalendar(false)
                     setSuccessMessage("")
                 },
                 showConfirmButton: false,
@@ -343,9 +345,6 @@ function ClientReservations() {
         setSuccessMessage("")
         setUniversalError("")
 
-        console.log("WYSYŁAM WIZYTE:")
-        console.log(visit)
-
         const headers = new Headers()
         headers.append("Content-Type", "application/json")
         headers.append("Authorization", "Bearer " + jwtToken)
@@ -404,7 +403,23 @@ function ClientReservations() {
             })
     }
 
+    function hasVisitChanged(): boolean {
+        const tmp = visits!.find((element) => {
+            return element.info.id === selectedVisit?.info.id;
+        })
+
+        return !(tmp!.info.start_date.getTime() === selectedVisit?.info.start_date.getTime() &&
+            tmp!.info.end_date.getTime() === selectedVisit?.info.end_date.getTime() &&
+            tmp!.info.client_address.id === selectedVisit?.info.client_address.id &&
+            tmp!.info.description === selectedVisit?.info.description);
+    }
+
     const modifyVisit = () => {
+        if (!hasVisitChanged()) {
+            setUniversalError("Wprowadź zmiany aby zmodyfikować wizytę")
+            return;
+        }
+
         if (!isDateFromFuture(selectedVisit!.info.start_date)) {
             setDateError("Data rozpoczęcia jest datą przeszłą")
             return;
@@ -531,7 +546,7 @@ function ClientReservations() {
 
                         <div className="flex flex-row w-full">
                             <div
-                                className={`${selectedVisit?.info.status === 'client_action_required' && !isVisitOld ? 'w-1/3' : 'w-full'}`}>
+                                className={`${((selectedVisit?.info.status === 'client_action_required' && !isVisitOld) || openCalendar) ? 'w-1/3' : 'w-full'}`}>
                                 <p className="font-bold text-left w-full">Specjalista</p>
 
                                 <div className="bg-white drop-shadow-lg my-3 rounded-2xl w-full py-4 transition-transform hover:-translate-y-1 duration-300">
@@ -623,7 +638,6 @@ function ClientReservations() {
                                                             setDateError("")
                                                             setSuccessMessage("")
                                                             setUniversalError("")
-                                                            console.log(selectedVisit?.info.status)
                                                         }}
                                                     />
                                                 </DemoItem>
@@ -773,7 +787,7 @@ function ClientReservations() {
                             </div>
 
 
-                            {(selectedVisit?.info.status === 'client_action_required' && !isVisitOld) &&
+                            {((selectedVisit?.info.status === 'client_action_required' && !isVisitOld) || openCalendar) &&
                                 <div className="w-2/3 pl-5">
                                     <p className="font-bold pb-2 text-left">Kalendarz dostępności specjalisty</p>
 
