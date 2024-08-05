@@ -15,6 +15,7 @@ import cloneDeep from "lodash/cloneDeep";
 import {Client} from "../../models/Client";
 import {ClientAddressExtended} from "../../models/ClientAddress";
 import {TimeOff} from "../../models/TimeOff";
+import {ReviewRequest} from "../../models/Review";
 
 function ClientReservations() {
     const {jwtToken, userRole} = useOutletContext<AuthContextType>();
@@ -34,6 +35,15 @@ function ClientReservations() {
     const [info, setInfo] = useState("")
     const [isVisitOld, setIsVisitOld] = useState(false)
     const [openCalendar, setOpenCalendar] = useState(false)
+    const [rating, setRating] = useState(0);
+    const [newReview, setNewReview] = useState<ReviewRequest>({
+        rating: 0,
+        description: "",
+        client_id: 0,
+        specialist_id: 0,
+        specialist_service_id: 0,
+    })
+
 
     useEffect(() => {
         if (jwtToken === "" && userRole !== "client") {
@@ -189,6 +199,14 @@ function ClientReservations() {
                     setSuccessMessage("")
                     setUniversalError("")
                     setIsVisitOld(false)
+                    setRating(0)
+                    setNewReview({
+                        rating: 0,
+                        description: "",
+                        client_id: 0,
+                        specialist_id: 0,
+                        specialist_service_id: 0,
+                    })
                 },
                 showConfirmButton: false,
             })
@@ -375,7 +393,6 @@ function ClientReservations() {
                         })
                     }
 
-
                     const headers = new Headers()
                     headers.append("Content-Type", "application/json")
                     const requestOptions = {
@@ -460,6 +477,41 @@ function ClientReservations() {
         updatedVisit!.info.status = 'specialist_action_required'
         updateVisit(updatedVisit, 'specialist_action_required', "Pomyślnie zaktualizowano wizytę")
     }
+
+    function setReviewRating(rating: number) {
+        setNewReview({
+            ...newReview,
+            rating: rating
+        })
+    }
+
+    const renderStars = () => {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            stars.push(
+                <svg
+                    key={i}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill={i <= (rating || newReview.rating) ? "gold" : "none"}
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="size-6"
+                    onMouseEnter={() => setRating(i)}
+                    onMouseLeave={() => setRating(0)}
+                    onClick={() => setReviewRating(i)}
+                    style={{ cursor: 'pointer' }}
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
+                    />
+                </svg>
+            );
+        }
+        return stars;
+    };
 
     return (
         <div className="flex flex-col items-center overflow-auto h-full bg-fixed fixed w-full pb-32">
@@ -611,181 +663,223 @@ function ClientReservations() {
                                     </Link>
                                 </div>
 
-                                <div className="w-full">
-                                    <div className="flex flex-row py-2">
-                                        <div className="w-1/2 pr-2">
-                                            <p className="font-bold pb-2 text-left">Data rozpoczęcia<sup>*</sup></p>
+                                {isVisitOld && selectedVisit?.info.status === 'accepted' ?
+                                    <>
+                                        <div className="w-full">
+                                            <p className="font-bold text-left w-full">Szczegóły</p>
+                                            <div className="flex flex-col bg-white drop-shadow-lg my-3 rounded-2xl w-full py-4">
+                                                <div className="flex flex-row justify-center mx-6 my-1">
+                                                    <p className="w-1/3 font-bold text-right mr-5">Data:</p>
+                                                    <p className="w-2/3 text-left">{selectedVisit.info.start_date.getHours()}:{selectedVisit.info.start_date.getMinutes()} - {selectedVisit.info.end_date.getHours()}:{selectedVisit.info.end_date.getMinutes() === 0 ? '00' : selectedVisit.info.end_date.getMinutes()} ({selectedVisit.info.end_date.toLocaleDateString()})</p>
+                                                </div>
 
-                                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
-                                                <DemoItem>
-                                                    <DateTimePicker
-                                                        defaultValue={dayjs(selectedVisit!.info.start_date)}
-                                                        disabled={selectedVisit!.info.status !== 'client_action_required' || isVisitOld}
-                                                        ampm={false}
-                                                        minutesStep={15}
-                                                        minTime={dayjs().set('hour', 6).set('minute', 0)}
-                                                        maxTime={dayjs().set('hour', 22).set('minute', 0)}
-                                                        onChange={(value) => {
-                                                            if (selectedVisit) {
-                                                                setSelectedVisit({
-                                                                    ...selectedVisit,
-                                                                    info: {
-                                                                        ...selectedVisit?.info,
-                                                                        start_date: value!.toDate()
-                                                                    }
-                                                                })
+                                                <div className="flex flex-row justify-center mx-6 my-1">
+                                                    <p className="w-1/3 font-bold text-right mr-5">Usługa:</p>
+                                                    <p className="w-2/3 text-left">{selectedVisit.service.name}</p>
+                                                </div>
+
+                                                <div className="flex flex-row justify-center mx-6 my-1">
+                                                    <p className="w-1/3 font-bold text-right mr-5">Cena:</p>
+                                                    <p className="w-2/3 text-left">{selectedVisit.info.price} zł</p>
+                                                </div>
+
+                                                <div className="flex flex-row justify-center mx-6 my-1">
+                                                    <p className="w-1/3 font-bold text-right mr-5">Opis:</p>
+                                                    <p className="w-2/3 text-left">{selectedVisit.info.description}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
+                                        <p className="font-bold text-3xl pb-1">Wystaw ocenę</p>
+
+                                        <div className="flex flex-col bg-white drop-shadow-lg my-3 rounded-2xl w-full py-4">
+                                            <div className="flex flex-row justify-center mx-6 my-1">
+                                                <p className="w-1/3 font-bold text-right mr-5">Ocena:</p>
+                                                <div className="flex flex-row mx-3 w-2/3">
+                                                    {renderStars()}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </>
+
+                                :
+                                    <div className="w-full">
+                                        <div className="flex flex-row py-2">
+                                            <div className="w-1/2 pr-2">
+                                                <p className="font-bold pb-2 text-left">Data rozpoczęcia<sup>*</sup></p>
+
+                                                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
+                                                    <DemoItem>
+                                                        <DateTimePicker
+                                                            defaultValue={dayjs(selectedVisit!.info.start_date)}
+                                                            disabled={selectedVisit!.info.status !== 'client_action_required' || isVisitOld}
+                                                            ampm={false}
+                                                            minutesStep={15}
+                                                            minTime={dayjs().set('hour', 6).set('minute', 0)}
+                                                            maxTime={dayjs().set('hour', 22).set('minute', 0)}
+                                                            onChange={(value) => {
+                                                                if (selectedVisit) {
+                                                                    setSelectedVisit({
+                                                                        ...selectedVisit,
+                                                                        info: {
+                                                                            ...selectedVisit?.info,
+                                                                            start_date: value!.toDate()
+                                                                        }
+                                                                    })
+                                                                }
+                                                                setDateError("")
+                                                                setSuccessMessage("")
+                                                                setUniversalError("")
+                                                            }}
+                                                        />
+                                                    </DemoItem>
+                                                </LocalizationProvider>
+                                            </div>
+
+                                            <div className="w-1/2 pl-2">
+                                                <p className="font-bold pb-2 text-left">Data zakończenia<sup>*</sup></p>
+
+                                                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
+                                                    <DemoItem>
+                                                        <DateTimePicker
+                                                            defaultValue={dayjs(selectedVisit!.info.end_date)}
+                                                            disabled={selectedVisit!.info.status !== 'client_action_required' || isVisitOld}
+                                                            ampm={false}
+                                                            minutesStep={15}
+                                                            minTime={dayjs().set('hour', 6).set('minute', 0)}
+                                                            maxTime={dayjs().set('hour', 22).set('minute', 0)}
+                                                            onChange={(value) => {
+                                                                if (selectedVisit) {
+                                                                    setSelectedVisit({
+                                                                        ...selectedVisit,
+                                                                        info: {
+                                                                            ...selectedVisit?.info,
+                                                                            end_date: value!.toDate()
+                                                                        }
+                                                                    })
+                                                                }
+                                                                setDateError("")
+                                                                setUniversalError("")
+                                                                setSuccessMessage("")
+                                                            }}
+                                                        />
+                                                    </DemoItem>
+                                                </LocalizationProvider>
+                                            </div>
+                                        </div>
+
+                                        {dateError &&
+                                            <div
+                                                className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full mb-2 leading-none">
+                                                <p>{dateError}</p>
+                                            </div>
+                                        }
+
+                                        <div className="w-full py-2">
+                                            <p className="font-bold text-left pb-2">Adres realizacji<sup>*</sup></p>
+
+                                            <select
+                                                id="id"
+                                                name="adres"
+                                                disabled={selectedVisit!.info.status !== 'client_action_required' || isVisitOld}
+                                                value={selectedVisit?.info.client_address.id}
+                                                onChange={changeVisitAddress}
+                                                className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
+                                            >
+                                                {clientAddresses!.map((address) => {
+                                                    return (
+                                                        <>
+                                                            {address.flat_nr === 0 ?
+                                                                <option
+                                                                    key={address.id}
+                                                                    value={address.id}
+                                                                >
+                                                                    {address.city.name},
+                                                                    ul. {address.street} {address.building_nr}
+                                                                </option>
+                                                                :
+                                                                <option
+                                                                    key={address.id}
+                                                                    value={address.id}
+                                                                >
+                                                                    {address.city.name},
+                                                                    ul. {address.street} {address.building_nr}/{address.flat_nr}
+                                                                </option>
                                                             }
-                                                            setDateError("")
-                                                            setSuccessMessage("")
-                                                            setUniversalError("")
-                                                        }}
-                                                    />
-                                                </DemoItem>
-                                            </LocalizationProvider>
+                                                        </>
+                                                    )
+                                                })}
+                                            </select>
                                         </div>
 
-                                        <div className="w-1/2 pl-2">
-                                            <p className="font-bold pb-2 text-left">Data zakończenia<sup>*</sup></p>
+                                        <div className="w-full py-2">
+                                            <p className="font-bold pb-2 text-left">Usługa<sup>*</sup></p>
 
-                                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pl">
-                                                <DemoItem>
-                                                    <DateTimePicker
-                                                        defaultValue={dayjs(selectedVisit!.info.end_date)}
-                                                        disabled={selectedVisit!.info.status !== 'client_action_required' || isVisitOld}
-                                                        ampm={false}
-                                                        minutesStep={15}
-                                                        minTime={dayjs().set('hour', 6).set('minute', 0)}
-                                                        maxTime={dayjs().set('hour', 22).set('minute', 0)}
-                                                        onChange={(value) => {
-                                                            if (selectedVisit) {
-                                                                setSelectedVisit({
-                                                                    ...selectedVisit,
-                                                                    info: {
-                                                                        ...selectedVisit?.info,
-                                                                        end_date: value!.toDate()
-                                                                    }
-                                                                })
+                                            <select
+                                                id="client_address_id"
+                                                disabled={true}
+                                                name="adres"
+                                                className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
+                                            >
+                                                <option value="">
+                                                    {selectedVisit!.service.name}
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <div className="w-full py-2">
+                                            <p className="font-bold pb-2 text-left">Szacowana cena<sup>*</sup></p>
+
+                                            <input
+                                                type="number"
+                                                id="price"
+                                                disabled={true}
+                                                placeholder={"Cena realizacji usługi"}
+                                                value={0 || selectedVisit!.info.price}
+                                                className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
+                                            />
+                                        </div>
+
+                                        <div className="w-full py-2">
+                                            <p className="font-bold text-left pb-2">Opis usługi<sup>*</sup></p>
+
+                                            <textarea
+                                                id="description"
+                                                name="description"
+                                                disabled={selectedVisit!.info.status !== 'client_action_required' || isVisitOld}
+                                                placeholder="Opis usługi"
+                                                value={selectedVisit?.info.description}
+                                                rows={6}
+                                                cols={40}
+                                                className={`w-full border-2 text-lg border-gray-300 rounded-md p-3`}
+                                                onChange={(value) => {
+                                                    if (selectedVisit) {
+                                                        setSelectedVisit({
+                                                            ...selectedVisit,
+                                                            info: {
+                                                                ...selectedVisit?.info,
+                                                                description: value.currentTarget.value
                                                             }
-                                                            setDateError("")
-                                                            setUniversalError("")
-                                                            setSuccessMessage("")
-                                                        }}
-                                                    />
-                                                </DemoItem>
-                                            </LocalizationProvider>
+                                                        })
+                                                    }
+                                                    setDescriptionError("")
+                                                    setUniversalError("")
+                                                    setSuccessMessage("")
+                                                }}
+                                            />
                                         </div>
+
+                                        {descriptionError &&
+                                            <div
+                                                className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full mb-2 leading-none">
+                                                <p>{descriptionError}</p>
+                                            </div>
+                                        }
                                     </div>
-
-                                    {dateError &&
-                                        <div
-                                            className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full mb-2 leading-none">
-                                            <p>{dateError}</p>
-                                        </div>
-                                    }
-
-                                    <div className="w-full py-2">
-                                        <p className="font-bold text-left pb-2">Adres realizacji<sup>*</sup></p>
-
-                                        <select
-                                            id="id"
-                                            name="adres"
-                                            disabled={selectedVisit!.info.status !== 'client_action_required' || isVisitOld}
-                                            value={selectedVisit?.info.client_address.id}
-                                            onChange={changeVisitAddress}
-                                            className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
-                                        >
-                                            {clientAddresses!.map((address) => {
-                                                return (
-                                                    <>
-                                                        {address.flat_nr === 0 ?
-                                                            <option
-                                                                key={address.id}
-                                                                value={address.id}
-                                                            >
-                                                                {address.city.name},
-                                                                ul. {address.street} {address.building_nr}
-                                                            </option>
-                                                            :
-                                                            <option
-                                                                key={address.id}
-                                                                value={address.id}
-                                                            >
-                                                                {address.city.name},
-                                                                ul. {address.street} {address.building_nr}/{address.flat_nr}
-                                                            </option>
-                                                        }
-                                                    </>
-                                                )
-                                            })}
-                                        </select>
-                                    </div>
-
-                                    <div className="w-full py-2">
-                                        <p className="font-bold pb-2 text-left">Usługa<sup>*</sup></p>
-
-                                        <select
-                                            id="client_address_id"
-                                            disabled={true}
-                                            name="adres"
-                                            className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
-                                        >
-                                            <option value="">
-                                                {selectedVisit!.service.name}
-                                            </option>
-                                        </select>
-                                    </div>
-
-                                    <div className="w-full py-2">
-                                        <p className="font-bold pb-2 text-left">Szacowana cena<sup>*</sup></p>
-
-                                        <input
-                                            type="number"
-                                            id="price"
-                                            disabled={true}
-                                            placeholder={"Cena realizacji usługi"}
-                                            value={0 || selectedVisit!.info.price}
-                                            className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
-                                        />
-                                    </div>
-
-                                    <div className="w-full py-2">
-                                        <p className="font-bold text-left pb-2">Opis usługi<sup>*</sup></p>
-
-                                        <textarea
-                                            id="description"
-                                            name="description"
-                                            disabled={selectedVisit!.info.status !== 'client_action_required' || isVisitOld}
-                                            placeholder="Opis usługi"
-                                            value={selectedVisit?.info.description}
-                                            rows={6}
-                                            cols={40}
-                                            className={`w-full border-2 text-lg border-gray-300 rounded-md p-3`}
-                                            onChange={(value) => {
-                                                if (selectedVisit) {
-                                                    setSelectedVisit({
-                                                        ...selectedVisit,
-                                                        info: {
-                                                            ...selectedVisit?.info,
-                                                            description: value.currentTarget.value
-                                                        }
-                                                    })
-                                                }
-                                                setDescriptionError("")
-                                                setUniversalError("")
-                                                setSuccessMessage("")
-                                            }}
-                                        />
-                                    </div>
-
-                                    {descriptionError &&
-                                        <div
-                                            className="italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full mb-2 leading-none">
-                                            <p>{descriptionError}</p>
-                                        </div>
-                                    }
-                                </div>
+                                }
                             </div>
-
 
                             {((selectedVisit?.info.status === 'client_action_required' && !isVisitOld) || openCalendar) &&
                                 <div className="w-2/3 pl-5">
