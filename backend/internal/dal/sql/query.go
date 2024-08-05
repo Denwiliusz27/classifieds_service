@@ -269,8 +269,8 @@ const GetCalendarVisitsBySpecialistIdOrClientId = `
   		services on specialists_services.service_id = services.id
   	WHERE
   		(visits.specialist_id = ($1) OR ($1) IS NULL) AND
-		(visits.client_id = ($2) OR ($2) IS NULL) AND
-  		visits.start_date >= current_date
+		(visits.client_id = ($2) OR ($2) IS NULL)
+--   		visits.start_date >= current_date
 	ORDER BY
    		visits.start_date ASC;   
 `

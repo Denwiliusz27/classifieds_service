@@ -27,6 +27,7 @@ function SpecialistReservations() {
     const [priceError, setPriceError] = useState("")
     const [successMessage, setSuccessMessage] = useState("")
     const [info, setInfo] = useState("")
+    const [isVisitOld, setIsVisitOld] = useState(false)
 
     const [timeOffs, setTimeOffs] = useState<TimeOff[]>([])
     const [specialist, setSpecialist] = useState<Specialist>()
@@ -203,6 +204,27 @@ function SpecialistReservations() {
     const selectVisit = (visit: VisitCalendar) => {
         setSelectedVisit(visit)
 
+        if (visit.info.start_date < new Date()) {
+            setInfo("Wybrana wizyta jest wizytą z przeszłości")
+            setIsVisitOld(true)
+
+            Swal.fire({
+                customClass: 'swal-wide',
+                didOpen: () => setShowVisitWindow(true),
+                didClose: () => {
+                    setShowVisitWindow(false)
+                    setInfo("")
+                    setDateError("")
+                    setSuccessMessage("")
+                    setPriceError("")
+                    setUniversalError("")
+                    setIsVisitOld(false)
+                },
+                showConfirmButton: false,
+            })
+            return
+        }
+
         if (visit.info.status === 'declined') {
             setInfo("Wybrana wizyta została już anulowana.")
 
@@ -211,6 +233,7 @@ function SpecialistReservations() {
                 didOpen: () => setShowVisitWindow(true),
                 didClose: () => {
                     setShowVisitWindow(false)
+                    setPriceError("")
                     setDateError("")
                     setInfo("")
                     setSuccessMessage("")
@@ -227,6 +250,7 @@ function SpecialistReservations() {
                 didClose: () => {
                     setShowVisitWindow(false)
                     setInfo("")
+                    setPriceError("")
                     setDateError("")
                     setUniversalError("")
                     setSuccessMessage("")
@@ -243,6 +267,7 @@ function SpecialistReservations() {
                     setShowVisitWindow(false)
                     setInfo("")
                     setDateError("")
+                    setPriceError("")
                     setUniversalError("")
                     setSuccessMessage("")
                 },
@@ -257,6 +282,7 @@ function SpecialistReservations() {
                 didClose: () => {
                     setShowVisitWindow(false)
                     setInfo("")
+                    setPriceError("")
                     setDateError("")
                     setUniversalError("")
                     setSuccessMessage("")
@@ -270,6 +296,10 @@ function SpecialistReservations() {
         const newStartDate = start.getTime()
         const newEndDate = end.getTime()
 
+        if (!timeOffs) {
+            return false
+        }
+
         for (let i = 0; i < timeOffs.length; i++) {
             const startDate = new Date(timeOffs[i].start_date).getTime()
             const endDate = new Date(timeOffs[i].end_date).getTime()
@@ -278,6 +308,7 @@ function SpecialistReservations() {
                 return true
             }
         }
+
         return false
     }
 
@@ -404,17 +435,37 @@ function SpecialistReservations() {
     }
 
     const changeVisitStatus = (status: string) => {
-        const updatedVisit = cloneDeep(selectedVisit!)
+        const updatedVisit = cloneDeep(visits!.find((element) => {
+            return element.info.id === selectedVisit!.info.id;
+        }))
+
         updatedVisit!.info.status = status
 
         if (status === 'declined') {
-            updateVisit(updatedVisit, 'declined', "Pomyślnie odrzucono wizytę")
+            updateVisit(updatedVisit!, 'declined', "Pomyślnie odrzucono wizytę")
         } else if (status === 'accepted') {
-            updateVisit(updatedVisit, 'accepted', "Pomyślnie zaakceptowano wizytę")
+            updateVisit(updatedVisit!, 'accepted', "Pomyślnie zaakceptowano wizytę")
         }
     }
 
-    const modifyVisit = () =>{
+    function hasVisitChanged(): boolean {
+        const tmp = visits!.find((element) => {
+            return element.info.id === selectedVisit?.info.id;
+        })
+
+        return !(tmp!.info.start_date.getTime() === selectedVisit?.info.start_date.getTime() &&
+            tmp!.info.end_date.getTime() === selectedVisit?.info.end_date.getTime() &&
+            tmp!.info.client_address.id === selectedVisit?.info.client_address.id &&
+            tmp!.info.description === selectedVisit?.info.description &&
+            tmp!.info.price === selectedVisit?.info.price);
+    }
+
+    const modifyVisit = () => {
+        if (!hasVisitChanged()) {
+            setUniversalError("Wprowadź zmiany aby zmodyfikować wizytę")
+            return;
+        }
+
         if (!isDateFromFuture(selectedVisit!.info.start_date)){
             setDateError("Data rozpoczęcia jest datą przeszłą")
             return;
@@ -682,7 +733,7 @@ function SpecialistReservations() {
                                         <DemoItem>
                                             <DateTimePicker
                                                 defaultValue={dayjs(selectedVisit!.info.start_date)}
-                                                disabled={selectedVisit!.info.status === 'accepted' || selectedVisit!.info.status === 'declined' || selectedVisit!.info.status === 'client_action_required'}
+                                                disabled={selectedVisit!.info.status !== 'specialist_action_required' || isVisitOld}
                                                 ampm={false}
                                                 minutesStep={15}
                                                 minTime={dayjs().set('hour', 6).set('minute', 0)}
@@ -713,7 +764,7 @@ function SpecialistReservations() {
                                         <DemoItem>
                                             <DateTimePicker
                                                 defaultValue={dayjs(selectedVisit!.info.end_date)}
-                                                disabled={selectedVisit!.info.status === 'accepted' || selectedVisit!.info.status === 'declined' || selectedVisit!.info.status === 'client_action_required'}
+                                                disabled={selectedVisit!.info.status !== 'specialist_action_required' || isVisitOld}
                                                 ampm={false}
                                                 minutesStep={15}
                                                 minTime={dayjs().set('hour', 6).set('minute', 0)}
@@ -766,14 +817,14 @@ function SpecialistReservations() {
                                 <input
                                     type="number"
                                     id="price"
-                                    disabled={selectedVisit!.info.status === 'accepted' || selectedVisit!.info.status === 'declined' || selectedVisit!.info.status === 'client_action_required'}
+                                    disabled={selectedVisit!.info.status !== 'specialist_action_required' || isVisitOld}
                                     placeholder={"Cena realizacji usługi"}
                                     value={0 || selectedVisit!.info.price}
                                     className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
                                     onChange={(value) => {
                                         setPriceError("")
                                         setSuccessMessage("")
-
+                                        setUniversalError("")
                                         if (selectedVisit) {
                                             setSelectedVisit({
                                                 ...selectedVisit,
@@ -816,14 +867,14 @@ function SpecialistReservations() {
                                 <span className="mx-3 my-2 text-xl">Anuluj</span>
                             </div>
 
-                            {selectedVisit?.info.status !== "declined" &&
+                            {(selectedVisit?.info.status !== "declined" && !isVisitOld ) &&
                                 <div onClick={() => changeVisitStatus("declined")}
                                      className="ml-2 border-4 border-red-700 text-red-700 rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-white hover:border-red-700 hover:bg-red-700 hover:text-white duration-300 ...">
                                     <span className="mx-3 my-2 text-xl">Odrzuć</span>
                                 </div>
                             }
 
-                            {selectedVisit?.info.status === "specialist_action_required" &&
+                            {(selectedVisit?.info.status === "specialist_action_required" && !isVisitOld) &&
                                 <>
                                     <div onClick={() => changeVisitStatus("accepted")}
                                          className="ml-2 border-4 border-green-700 text-green-700 rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-white hover:border-green-700 hover:bg-green-700 hover:text-white duration-300 ...">

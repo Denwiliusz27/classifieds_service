@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientReservations.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientReservations.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistReservations.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistReservations.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -46,7 +47,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;08__specialist__visit__calendar&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;09__client__visit__calendar&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/uj/Desktop/classifieds_service/frontend&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -167,6 +168,10 @@
       <workItem from="1722078792049" duration="9989000" />
       <workItem from="1722096609551" duration="1917000" />
       <workItem from="1722585686655" duration="688000" />
+      <workItem from="1722623378323" duration="962000" />
+      <workItem from="1722709488237" duration="7936000" />
+      <workItem from="1722779831299" duration="2992000" />
+      <workItem from="1722872893521" duration="4859000" />
     </task>
     <servers />
   </component>

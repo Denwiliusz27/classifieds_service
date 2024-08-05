@@ -49,3 +49,7 @@
 .swal-wide{
     width:650px !important;
 }
+
+.swal-extra_wide{
+    width:1500px !important;
+}
