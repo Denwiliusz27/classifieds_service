@@ -230,6 +230,15 @@ const GetReviewByVisitId = `
 	    reviews.visit_id = ($1)
 `
 
+const CreateReview = `
+	INSERT INTO
+		reviews
+	(rating, description, specialist_id, client_id, created_at, specialist_service_id, visit_id)
+	VALUES
+	    ($1, $2, $3, $4, $5, $6, $7)
+	RETURNING id;
+`
+
 // --- TIME_OFF ---
 
 const GetTimeOffBySpecialistId = `

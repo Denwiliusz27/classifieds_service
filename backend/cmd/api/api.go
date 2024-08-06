@@ -669,6 +669,27 @@ func (app *Application) GetReviewByVisitId(w http.ResponseWriter, r *http.Reques
 	app.writeJSON(w, http.StatusOK, review)
 }
 
+func (app *Application) CreateReview(w http.ResponseWriter, r *http.Request) {
+	var newReview models.ReviewRequest
+
+	err := app.readJSON(w, r, &newReview)
+	if err != nil {
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	log.Println("I got new Review to create: ", newReview)
+
+	newReviewId, err := app.DB.CreateReview(newReview)
+	if err != nil {
+		log.Println(err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, newReviewId)
+}
+
 func isVisitOverlapping(visitStartDate, visitEndDate, existingStartDate, existingEndDate time.Time) bool {
 	if (visitStartDate.Before(existingStartDate) && (visitEndDate.After(existingStartDate) && visitEndDate.Before(existingEndDate))) ||
 		(visitStartDate.Before(existingStartDate) && visitEndDate.Equal(existingEndDate)) ||

@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 )
 
 func (m *PG) GetReviewsBySpecialistId(specialistId int) ([]models.Review, error) {
@@ -85,4 +86,29 @@ func (m *PG) GetReviewByVisitId(visitId int) (*models.Review, error) {
 	log.Println("Successfully retrieved Review by visitId")
 
 	return &review, nil
+}
+
+func (m *PG) CreateReview(review models.ReviewRequest) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	var newReviewId int
+
+	q := sql.CreateReview
+	err := m.DB.QueryRowContext(ctx, q,
+		review.Rating,
+		review.Description,
+		review.SpecialistId,
+		review.ClientId,
+		time.Now(),
+		review.SpecialistServiceId,
+		review.VisitId,
+	).Scan(&newReviewId)
+
+	if err != nil {
+		return 0, fmt.Errorf("cannot create new Review: %w", err)
+	}
+	log.Println("Successfully created Review with id ", newReviewId)
+
+	return newReviewId, nil
 }

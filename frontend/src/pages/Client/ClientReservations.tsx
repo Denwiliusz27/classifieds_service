@@ -196,10 +196,8 @@ function ClientReservations() {
             .then((data) => {
                 if (data === null) {
                     setReviewNotExists(true)
-                    console.log("REVIEW NOT EXIST")
                     return
                 }
-                console.log("EXIST")
             })
             .catch(err => {
                 console.log("Error retrieving Review: ", err)
@@ -557,6 +555,32 @@ function ClientReservations() {
             setRatingError("Wybierz ocenę")
             return
         }
+
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+        headers.append("Authorization", "Bearer " + jwtToken)
+        const method = "POST"
+
+        fetch(`/client/visit/create`, {
+            body: JSON.stringify(newReview),
+            method: method,
+            headers: headers,
+            credentials: 'include'
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    console.log("ERRORS")
+                    setUniversalError(data.message)
+                } else {
+                    console.log("SUCCESSFULLY CREATED REVIEW")
+                    setSuccessMessage("Pomyślnie dodano opinię")
+                    setReviewNotExists(false)
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
 
         console.log(newReview)
     }
