@@ -50,6 +50,9 @@ func (app *Application) Routes() http.Handler {
 
 	mux.Get("/visits/{specialist_id}/{client_id}", app.GetCalendarVisitsBySpecialistIdOrClientId)
 
+	mux.Route("/reviews", func(mux chi.Router) {
+		mux.Get("/{visit_id}", app.GetReviewByVisitId)
+	})
 	return mux
 }
 

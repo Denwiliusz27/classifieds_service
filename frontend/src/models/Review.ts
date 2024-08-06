@@ -16,4 +16,5 @@ export interface ReviewRequest {
     client_id: number
     specialist_id: number
     specialist_service_id: number
+    visit_id: number
 }

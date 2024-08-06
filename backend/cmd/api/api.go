@@ -651,6 +651,24 @@ func (app *Application) UpdateVisitByClient(w http.ResponseWriter, r *http.Reque
 	_ = app.writeJSON(w, http.StatusOK, visit.Info.Id)
 }
 
+func (app *Application) GetReviewByVisitId(w http.ResponseWriter, r *http.Request) {
+	visitId, err := strconv.Atoi(chi.URLParam(r, "visit_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter visit_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	review, err := app.DB.GetReviewByVisitId(visitId)
+	if err != nil {
+		fmt.Println("error getting Review from db for visitId=", visitId, " : ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, review)
+}
+
 func isVisitOverlapping(visitStartDate, visitEndDate, existingStartDate, existingEndDate time.Time) bool {
 	if (visitStartDate.Before(existingStartDate) && (visitEndDate.After(existingStartDate) && visitEndDate.Before(existingEndDate))) ||
 		(visitStartDate.Before(existingStartDate) && visitEndDate.Equal(existingEndDate)) ||

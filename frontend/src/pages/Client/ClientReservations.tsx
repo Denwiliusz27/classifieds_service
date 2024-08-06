@@ -36,14 +36,16 @@ function ClientReservations() {
     const [isVisitOld, setIsVisitOld] = useState(false)
     const [openCalendar, setOpenCalendar] = useState(false)
     const [rating, setRating] = useState(0);
+    const [ratingError, setRatingError] = useState("")
+    const [reviewNotExists, setReviewNotExists] = useState(false)
     const [newReview, setNewReview] = useState<ReviewRequest>({
         rating: 0,
         description: "",
         client_id: 0,
         specialist_id: 0,
         specialist_service_id: 0,
+        visit_id: 0
     })
-
 
     useEffect(() => {
         if (jwtToken === "" && userRole !== "client") {
@@ -181,12 +183,44 @@ function ClientReservations() {
         return {};
     }
 
+    const getReviewForVisit = (visitId: number) => {
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+        const requestOptions = {
+            method: "GET",
+            headers: headers,
+        }
+
+        fetch(`http://localhost:8080/reviews/${visitId}`, requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data === null) {
+                    setReviewNotExists(true)
+                    console.log("REVIEW NOT EXIST")
+                    return
+                }
+                console.log("EXIST")
+            })
+            .catch(err => {
+                console.log("Error retrieving Review: ", err)
+            })
+    }
+
     const selectVisit = (visit: VisitCalendar) => {
         setSelectedVisit(visit)
+
+        setNewReview({
+            ...newReview,
+            specialist_id: visit.specialist.id,
+            client_id: visit.client.id,
+            visit_id: visit.info.id,
+            specialist_service_id: visit.service.id,
+        })
 
         if (visit.info.start_date < new Date()) {
             setInfo("Wybrana wizyta jest wizytą z przeszłości")
             setIsVisitOld(true)
+            getReviewForVisit(visit.info.id)
 
             Swal.fire({
                 customClass: 'swal-wide',
@@ -200,12 +234,14 @@ function ClientReservations() {
                     setUniversalError("")
                     setIsVisitOld(false)
                     setRating(0)
+                    setReviewNotExists(false)
                     setNewReview({
                         rating: 0,
                         description: "",
                         client_id: 0,
                         specialist_id: 0,
                         specialist_service_id: 0,
+                        visit_id: 0
                     })
                 },
                 showConfirmButton: false,
@@ -499,8 +535,11 @@ function ClientReservations() {
                     className="size-6"
                     onMouseEnter={() => setRating(i)}
                     onMouseLeave={() => setRating(0)}
-                    onClick={() => setReviewRating(i)}
-                    style={{ cursor: 'pointer' }}
+                    onClick={() => {
+                        setReviewRating(i)
+                        setRatingError("")
+                    }}
+                    style={{cursor: 'pointer'}}
                 >
                     <path
                         strokeLinecap="round"
@@ -512,6 +551,15 @@ function ClientReservations() {
         }
         return stars;
     };
+
+    function addReview() {
+        if (newReview.rating === 0) {
+            setRatingError("Wybierz ocenę")
+            return
+        }
+
+        console.log(newReview)
+    }
 
     return (
         <div className="flex flex-col items-center overflow-auto h-full bg-fixed fixed w-full pb-32">
@@ -601,8 +649,10 @@ function ClientReservations() {
                                 className={`${((selectedVisit?.info.status === 'client_action_required' && !isVisitOld) || openCalendar) ? 'w-1/3' : 'w-full'}`}>
                                 <p className="font-bold text-left w-full">Specjalista</p>
 
-                                <div className="bg-white drop-shadow-lg my-3 rounded-2xl w-full py-4 transition-transform hover:-translate-y-1 duration-300">
-                                    <Link to="/specjalista/szczegóły" state={{specialistId: selectedVisit?.specialist.id}}
+                                <div
+                                    className="bg-white drop-shadow-lg my-3 rounded-2xl w-full py-4 transition-transform hover:-translate-y-1 duration-300">
+                                    <Link to="/specjalista/szczegóły"
+                                          state={{specialistId: selectedVisit?.specialist.id}}
                                           onClick={() => Swal.close()}
                                           className="">
                                         <div className="flex flex-col items-center">
@@ -617,7 +667,8 @@ function ClientReservations() {
                                                     <div className="flex flex-row py-2 items-center">
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                              viewBox="0 0 24 24"
-                                                             stroke-width="1.5" stroke="currentColor" className="size-6">
+                                                             stroke-width="1.5" stroke="currentColor"
+                                                             className="size-6">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                   d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z"/>
                                                         </svg>
@@ -627,7 +678,8 @@ function ClientReservations() {
                                                     <div className="flex flex-row py-1 items-center">
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                              viewBox="0 0 24 24"
-                                                             stroke-width="1.5" stroke="currentColor" className="size-6">
+                                                             stroke-width="1.5" stroke="currentColor"
+                                                             className="size-6">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                   d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -641,7 +693,8 @@ function ClientReservations() {
                                                     <div className="flex flex-row py-2 items-center">
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                              viewBox="0 0 24 24"
-                                                             stroke-width="1.5" stroke="currentColor" className="size-6">
+                                                             stroke-width="1.5" stroke="currentColor"
+                                                             className="size-6">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                   d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z"/>
                                                         </svg>
@@ -651,7 +704,8 @@ function ClientReservations() {
                                                     <div className="flex flex-row py-1 items-center">
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                              viewBox="0 0 24 24"
-                                                             stroke-width="1.5" stroke="currentColor" className="size-6">
+                                                             stroke-width="1.5" stroke="currentColor"
+                                                             className="size-6">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                   d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/>
                                                         </svg>
@@ -667,44 +721,88 @@ function ClientReservations() {
                                     <>
                                         <div className="w-full">
                                             <p className="font-bold text-left w-full">Szczegóły</p>
-                                            <div className="flex flex-col bg-white drop-shadow-lg my-3 rounded-2xl w-full py-4">
+                                            <div
+                                                className="flex flex-col bg-white drop-shadow-lg my-3 rounded-2xl w-full py-4">
                                                 <div className="flex flex-row justify-center mx-6 my-1">
                                                     <p className="w-1/3 font-bold text-right mr-5">Data:</p>
-                                                    <p className="w-2/3 text-left">{selectedVisit.info.start_date.getHours()}:{selectedVisit.info.start_date.getMinutes()} - {selectedVisit.info.end_date.getHours()}:{selectedVisit.info.end_date.getMinutes() === 0 ? '00' : selectedVisit.info.end_date.getMinutes()} ({selectedVisit.info.end_date.toLocaleDateString()})</p>
+                                                    <p className="w-2/3 text-left font-medium">{selectedVisit.info.start_date.getHours()}:{selectedVisit.info.start_date.getMinutes() === 0 ? '00' : selectedVisit.info.end_date.getMinutes()} - {selectedVisit.info.end_date.getHours()}:{selectedVisit.info.end_date.getMinutes() === 0 ? '00' : selectedVisit.info.end_date.getMinutes()} ({selectedVisit.info.end_date.toLocaleDateString()})</p>
                                                 </div>
 
                                                 <div className="flex flex-row justify-center mx-6 my-1">
                                                     <p className="w-1/3 font-bold text-right mr-5">Usługa:</p>
-                                                    <p className="w-2/3 text-left">{selectedVisit.service.name}</p>
+                                                    <p className="w-2/3 text-left font-medium">{selectedVisit.service.name}</p>
                                                 </div>
 
                                                 <div className="flex flex-row justify-center mx-6 my-1">
                                                     <p className="w-1/3 font-bold text-right mr-5">Cena:</p>
-                                                    <p className="w-2/3 text-left">{selectedVisit.info.price} zł</p>
+                                                    <p className="w-2/3 text-left font-medium">{selectedVisit.info.price} zł</p>
                                                 </div>
 
                                                 <div className="flex flex-row justify-center mx-6 my-1">
                                                     <p className="w-1/3 font-bold text-right mr-5">Opis:</p>
-                                                    <p className="w-2/3 text-left">{selectedVisit.info.description}</p>
+                                                    <p className="w-2/3 text-left font-medium">{selectedVisit.info.description}</p>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
-                                        <p className="font-bold text-3xl pb-1">Wystaw ocenę</p>
+                                        {reviewNotExists &&
+                                            <>
+                                                <div className="bg-amber-900 rounded-md h-1 mb-3"></div>
+                                                <p className="font-bold text-3xl pb-1">Wystaw opinię</p>
 
-                                        <div className="flex flex-col bg-white drop-shadow-lg my-3 rounded-2xl w-full py-4">
-                                            <div className="flex flex-row justify-center mx-6 my-1">
-                                                <p className="w-1/3 font-bold text-right mr-5">Ocena:</p>
-                                                <div className="flex flex-row mx-3 w-2/3">
-                                                    {renderStars()}
+                                                <div
+                                                    className="flex flex-col bg-white drop-shadow-lg items-center border-amber-900 border-2 my-3 rounded-2xl w-full py-4">
+                                                    <div className="flex flex-row justify-center mx-6 my-2 w-full">
+                                                        <p className="w-1/3 font-bold text-right mr-5">Ocena:</p>
+                                                        <div className="flex flex-row mr-3 pl-5 w-2/3">
+                                                            {renderStars()}
+                                                        </div>
+                                                    </div>
+
+                                                    {ratingError &&
+                                                        <div
+                                                            className="mr-4 italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full mb-2 leading-none">
+                                                            <p>{ratingError}</p>
+                                                        </div>
+                                                    }
+
+                                                    <div className="flex flex-row justify-center mx-6 my-1 w-full">
+                                                        <p className="w-1/3 font-bold text-right mr-5">Komentarz:</p>
+                                                        <div className="flex flex-row mr-3 pl-5 w-2/3">
+                                                    <textarea
+                                                        id="description"
+                                                        name="description"
+                                                        placeholder="Opisz doświadczenia z wizyty"
+                                                        value={newReview.description}
+                                                        rows={6}
+                                                        cols={40}
+                                                        className={`w-full border-2 text-lg border-gray-300 rounded-md mr-3 p-3`}
+                                                        onChange={(value) => {
+                                                            setNewReview({
+                                                                ...newReview,
+                                                                description: value.currentTarget.value
+                                                            })
+                                                        }}
+                                                    />
+                                                        </div>
+                                                    </div>
+
+                                                    <div onClick={() => addReview()}
+                                                         className="mt-5 mb-2 border-4 border-green-700 text-green-700 rounded-2xl cursor-pointer p-2 transition ease-in-out delay-0 bg-white hover:border-green-700 hover:bg-green-700 hover:text-white duration-300 ...">
+                                                        <span className="mx-3 my-2 text-xl">Dodaj opinię</span>
+                                                    </div>
+
+                                                    {universalError &&
+                                                        <div
+                                                            className="mr-4 italic text-red-500 drop-shadow-2xl font-bold text-lg text-center w-full mb-2 leading-none">
+                                                            <p>{universalError}</p>
+                                                        </div>
+                                                    }
                                                 </div>
-                                            </div>
-                                        </div>
-
+                                            </>
+                                        }
                                     </>
-
-                                :
+                                    :
                                     <div className="w-full">
                                         <div className="flex flex-row py-2">
                                             <div className="w-1/2 pr-2">
