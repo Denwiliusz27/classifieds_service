@@ -100,7 +100,7 @@ func (m *PG) CreateReview(review models.ReviewRequest) (int, error) {
 		review.Description,
 		review.SpecialistId,
 		review.ClientId,
-		time.Now(),
+		time.Now().Add(2*time.Hour),
 		review.SpecialistServiceId,
 		review.VisitId,
 	).Scan(&newReviewId)
