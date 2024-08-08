@@ -9,3 +9,12 @@ export interface Review {
     description: string
     created_at: string
 }
+
+export interface ReviewRequest {
+    rating: number
+    description: string
+    client_id: number
+    specialist_id: number
+    specialist_service_id: number
+    visit_id: number
+}

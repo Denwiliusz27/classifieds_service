@@ -197,7 +197,8 @@ CREATE TABLE public.reviews
     specialist_id         integer                  NOT NULL,
     client_id             integer                  NOT NULL,
     created_at            timestamp with time zone NOT NULL,
-    specialist_service_id integer                  NOT NULL
+    specialist_service_id integer                  NOT NULL,
+    visit_id              integer                  NOT NULL
 );
 
 --
@@ -541,23 +542,18 @@ VALUES ('2024-07-26 14:00:00', '2024-07-26 18:00:00', 1),
 INSERT INTO public.visits (start_date, end_date, price, description, status, client_address_id, client_id,
                            specialist_id,
                            specialist_service_id)
-VALUES ('2024-07-25 12:00:00', '2024-07-25 15:00:00', 300,
+VALUES ('2024-08-05 12:00:00', '2024-08-05 15:00:00', 300,
         'Potrzebuje zrobić to w kilku pomieszczeniach, w tym w kuchni i łazience', 'accepted', 1, 1, 1, 1),
-       ('2024-07-26 08:00:00', '2024-07-26 10:00:00', 500, 'Gniazdka w kuchni i łazience', 'accepted', 2, 1, 1, 3),
-       ('2024-07-25 17:00:00', '2024-07-25 20:00:00', 200, 'Gniazdka w garażu i piwnicy', 'specialist_action_required',
+       ('2024-08-05 08:00:00', '2024-08-05 10:00:00', 500, 'Gniazdka w kuchni i łazience', 'accepted', 2, 1, 1, 3),
+       ('2024-08-08 17:00:00', '2024-08-08 20:00:00', 200, 'Gniazdka w garażu i piwnicy', 'specialist_action_required',
         1, 1, 1, 3);
 
 --
 -- Data for Name: services; Type: TABLE DATA; Schema: public; Owner: -
 --
-INSERT INTO public.reviews (rating, description, specialist_id, client_id, created_at, specialist_service_id)
-VALUES (4, 'Bardzo dobry specjalista, zna się na fachu', 1, 1, '2023-12-13 12:23:22', 1),
-       (5, 'Pan poradził sobie z zadaniem jak mało kto', 1, 1, '2024-03-23 20:49:00', 3),
-       (4, 'Ok', 1, 1, '2024-02-05 18:05:12', 2),
-       (3, 'Mogło być lepiej', 1, 1, '2024-01-16 07:49:50', 1),
-       (4, 'Pan bardzo rzetelny', 2, 1, '2021-05-13 18:55:12', 4),
-       (5, 'Lepiej nie mogłem trafić, najlepszy specjalista w okolicy!', 2, 1, '2023-08-02 22:02:42', 5),
-       (5, 'Bardzo porządna Pani, prace wykonuje od deski do deski', 3, 1, '2024-02-12 08:22:02', 8);
+INSERT INTO public.reviews (rating, description, specialist_id, client_id, created_at, specialist_service_id, visit_id)
+VALUES (4, 'Bardzo dobry specjalista, zna się na fachu', 1, 1, '2024-08-06 08:23:22', 1, 1),
+       (5, 'Pan poradził sobie z zadaniem jak mało kto', 1, 1, '2024-03-23 20:49:00', 3, 2);
 
 --
 -- Name: cities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
@@ -627,7 +623,7 @@ SELECT pg_catalog.setval('public.messages_id_seq', 1, true);
 --
 -- Name: reviews_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
-SELECT pg_catalog.setval('public.reviews_id_seq', 7, true);
+SELECT pg_catalog.setval('public.reviews_id_seq', 2, true);
 
 --
 -- Name: users users_role; Type: CONSTRAINT; Schema: public; Owner: -
@@ -864,6 +860,16 @@ CASCADE;
 --
 ALTER TABLE ONLY public.reviews
     ADD CONSTRAINT reviews_specialist_service_id_fk FOREIGN KEY (specialist_service_id) REFERENCES public.specialists_services(id) ON
+UPDATE CASCADE
+ON
+DELETE
+CASCADE;
+
+--
+-- Name: reviews reviews_visit_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+ALTER TABLE ONLY public.reviews
+    ADD CONSTRAINT reviews_visit_id_fk FOREIGN KEY (visit_id) REFERENCES public.visits(id) ON
 UPDATE CASCADE
 ON
 DELETE

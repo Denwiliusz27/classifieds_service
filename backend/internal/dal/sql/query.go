@@ -211,6 +211,34 @@ const GetReviewsBySpecialistId = `
 	;
 `
 
+const GetReviewByVisitId = `
+	SELECT
+		reviews.id, reviews.rating, clients.id, users.name, users.second_name, users.email, users.id, 
+		specialists_services.id, services.name, services.price_per, specialists_services.price_min, specialists_services.price_max, specialists_services.service_id,
+		reviews.description, reviews.created_at
+	FROM
+	    reviews
+	LEFT JOIN
+		clients ON reviews.client_id = clients.id
+	LEFT JOIN
+		users ON clients.user_id = users.id
+ 	LEFT JOIN
+		specialists_services ON reviews.specialist_service_id = specialists_services.id  
+	LEFT JOIN
+		services ON services.id = specialists_services.service_id
+	WHERE
+	    reviews.visit_id = ($1)
+`
+
+const CreateReview = `
+	INSERT INTO
+		reviews
+	(rating, description, specialist_id, client_id, created_at, specialist_service_id, visit_id)
+	VALUES
+	    ($1, $2, $3, $4, $5, $6, $7)
+	RETURNING id;
+`
+
 // --- TIME_OFF ---
 
 const GetTimeOffBySpecialistId = `

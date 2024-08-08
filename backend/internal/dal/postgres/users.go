@@ -20,7 +20,7 @@ func (m *PG) CreateUser(name string, secondName string, email string, password s
 		secondName,
 		email,
 		password,
-		time.Now(),
+		time.Now().Add(2*time.Hour),
 		role,
 	).Scan(&newUserId)
 

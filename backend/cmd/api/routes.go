@@ -21,6 +21,7 @@ func (app *Application) Routes() http.Handler {
 		mux.Get("/addresses/{client_id}", app.GetClientAddressesByClientId)
 		mux.Post("/create_visit", app.CreateVisit)
 		mux.Patch("/update_visit", app.UpdateVisitByClient)
+		mux.Post("/visit/create", app.CreateReview)
 	})
 
 	mux.Post("/register_client", app.CreateClient)
@@ -50,6 +51,9 @@ func (app *Application) Routes() http.Handler {
 
 	mux.Get("/visits/{specialist_id}/{client_id}", app.GetCalendarVisitsBySpecialistIdOrClientId)
 
+	mux.Route("/reviews", func(mux chi.Router) {
+		mux.Get("/{visit_id}", app.GetReviewByVisitId)
+	})
 	return mux
 }
 

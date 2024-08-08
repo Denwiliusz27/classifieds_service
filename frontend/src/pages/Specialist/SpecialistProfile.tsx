@@ -70,21 +70,25 @@ function SpecialistProfile() {
             headers: headers,
         }
 
+        console.log(location.state.specialistId)
+
         fetch(`http://localhost:8080/specialist/detailed_info/${location.state.specialistId}`, requestOptions)
             .then((response) => response.json())
             .then((data) => {
                 data.specialist.created_at = new Date(data.specialist.created_at).toLocaleDateString()
 
-                data.reviews.forEach((r: Review) => {
-                    const d = new Date(r.created_at)
-                    const year = d.getUTCFullYear();
-                    const month = String(d.getUTCMonth() + 1).padStart(2, '0'); // Miesiące są 0-indeksowane
-                    const day = String(d.getUTCDate()).padStart(2, '0');
-                    const hours = String(d.getUTCHours()).padStart(2, '0');
-                    const minutes = String(d.getUTCMinutes()).padStart(2, '0');
+                if (data.reviews) {
+                    data.reviews.forEach((r: Review) => {
+                        const d = new Date(r.created_at)
+                        const year = d.getUTCFullYear();
+                        const month = String(d.getUTCMonth() + 1).padStart(2, '0'); // Miesiące są 0-indeksowane
+                        const day = String(d.getUTCDate()).padStart(2, '0');
+                        const hours = String(d.getUTCHours()).padStart(2, '0');
+                        const minutes = String(d.getUTCMinutes()).padStart(2, '0');
 
-                    r.created_at = String(hours + ":" + minutes + " " + day + "." + month + "." + year)
-                })
+                        r.created_at = String(hours + ":" + minutes + " " + day + "." + month + "." + year)
+                    })
+                }
 
                 setSpecialist(data)
             })
@@ -157,13 +161,15 @@ function SpecialistProfile() {
 
                 const tmp: VisitCalendar[] = []
 
-                data.forEach((v: VisitCalendar) => {
-                    v.info.start_date = new Date(v.info.start_date)
-                    v.info.end_date = new Date(v.info.end_date)
-                    if (v.info.status !== 'declined') {
-                        tmp.push(v)
-                    }
-                })
+                if(data) {
+                    data.forEach((v: VisitCalendar) => {
+                        v.info.start_date = new Date(v.info.start_date)
+                        v.info.end_date = new Date(v.info.end_date)
+                        if (v.info.status !== 'declined') {
+                            tmp.push(v)
+                        }
+                    })
+                }
 
                 setVisits(tmp)
             })
@@ -194,11 +200,14 @@ function SpecialistProfile() {
     };
 
     const isDateOverlapping = (date: Date): boolean => {
-        for (let i = 0; i < visits.length; i++) {
-            if (date >= visits[i].info.start_date && date < visits[i].info.end_date) {
-                return true
+        if(visits) {
+            for (let i = 0; i < visits.length; i++) {
+                if (date >= visits[i].info.start_date && date < visits[i].info.end_date) {
+                    return true
+                }
             }
         }
+
         return false;
     }
 
@@ -613,7 +622,7 @@ function SpecialistProfile() {
                                         startAccessor={(event: VisitCalendar) => event.info.start_date}
                                         endAccessor={(event: VisitCalendar) => event.info.end_date}
                                         style={{
-                                            height: (specialist?.reviews.length! <= 2) ? 900 : 1300,
+                                            height: (specialist?.reviews && specialist?.reviews.length! <= 2) ? 900 : 1300,
                                             fontSize: "x-large"
                                         }}
                                         messages={{
