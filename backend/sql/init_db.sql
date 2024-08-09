@@ -202,6 +202,21 @@ CREATE TABLE public.reviews
 );
 
 --
+-- Name: notifications; Type: TABLE; Schema: public; Owner: -
+--
+CREATE TABLE public.notifications
+(
+    id            integer PRIMARY KEY      NOT NULL,
+    type          character varying(255)   NOT NULL,
+    notifier      character varying(255)   NOT NULL,
+    read          boolean                  NOT NULL,
+    client_id     integer                  NOT NULL,
+    specialist_id integer                  NOT NULL,
+    visit_id      integer                  NOT NULL,
+    created_at    timestamp with time zone NOT NULL
+);
+
+--
 -- Name: cities_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 ALTER TABLE public.cities ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
@@ -362,6 +377,18 @@ ALTER TABLE public.messages ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 --
 ALTER TABLE public.reviews ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
     SEQUENCE NAME public.reviews_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+--
+-- Name: notifications_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+ALTER TABLE public.notifications ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.notifications_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -542,11 +569,15 @@ VALUES ('2024-07-26 14:00:00', '2024-07-26 18:00:00', 1),
 INSERT INTO public.visits (start_date, end_date, price, description, status, client_address_id, client_id,
                            specialist_id,
                            specialist_service_id)
-VALUES ('2024-08-05 12:00:00', '2024-08-05 15:00:00', 300,
+VALUES ('2024-08-10 12:00:00', '2024-08-10 15:00:00', 300,
         'Potrzebuje zrobić to w kilku pomieszczeniach, w tym w kuchni i łazience', 'accepted', 1, 1, 1, 1),
-       ('2024-08-05 08:00:00', '2024-08-05 10:00:00', 500, 'Gniazdka w kuchni i łazience', 'accepted', 2, 1, 1, 3),
-       ('2024-08-08 17:00:00', '2024-08-08 20:00:00', 200, 'Gniazdka w garażu i piwnicy', 'specialist_action_required',
-        1, 1, 1, 3);
+       ('2024-08-10 08:00:00', '2024-08-10 10:00:00', 500, 'Gniazdka w kuchni i łazience', 'accepted', 2, 1, 1, 3),
+       ('2024-08-11 17:00:00', '2024-08-11 20:00:00', 200, 'Gniazdka w garażu i piwnicy', 'specialist_action_required',
+        1, 1, 1, 3),
+       ('2024-08-10 18:00:00', '2024-08-10 22:00:00', 333,
+        'Trzeba wykonać pracę w całym mieszkaniu, 3 pokoje + łazienka + kuchnia', 'client_action_required', 1, 1, 1, 1),
+       ('2024-08-11 08:00:00', '2024-08-11 10:00:00', 765, 'Gniazdka trzeba zamontowac na całym poddaszu', 'specialist_action_required', 2, 1, 1, 3),
+       ('2024-08-12 17:00:00', '2024-08-12 20:00:00', 250, 'Cała hala targowa', 'declined', 1, 1, 1, 3);
 
 --
 -- Data for Name: services; Type: TABLE DATA; Schema: public; Owner: -
@@ -554,6 +585,19 @@ VALUES ('2024-08-05 12:00:00', '2024-08-05 15:00:00', 300,
 INSERT INTO public.reviews (rating, description, specialist_id, client_id, created_at, specialist_service_id, visit_id)
 VALUES (4, 'Bardzo dobry specjalista, zna się na fachu', 1, 1, '2024-08-06 08:23:22', 1, 1),
        (5, 'Pan poradził sobie z zadaniem jak mało kto', 1, 1, '2024-03-23 20:49:00', 3, 2);
+
+--
+-- Data for Name: notifications; Type: TABLE DATA; Schema: public; Owner: -
+--
+INSERT INTO public.notifications (type, notifier, read, client_id, specialist_id, visit_id, created_at)
+VALUES ('created', 'client', true, 1, 1, 4, '2024-08-06 08:23:22'),
+       ('modified_price', 'specialist', false, 1, 1, 4, '2024-08-06 12:05:11'),
+       ('modified', 'specialist', true, 1, 1, 5, '2024-08-04 15:15:32'),
+       ('modified_price', 'specialist', true, 1, 1, 5, '2024-08-05 08:55:32'),
+       ('modified_date', 'specialist', false, 1, 1, 5, '2024-08-05 21:12:02'),
+       ('modified_address', 'client', false, 1, 1, 5, '2024-08-06 07:52:12'),
+       ('modified_description', 'client', false, 1, 1, 5, '2024-08-07 11:44:02'),
+       ('declined', 'specialist', false, 1, 1, 6, '2024-08-07 21:12:02');
 
 --
 -- Name: cities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
@@ -626,6 +670,11 @@ SELECT pg_catalog.setval('public.messages_id_seq', 1, true);
 SELECT pg_catalog.setval('public.reviews_id_seq', 2, true);
 
 --
+-- Name: notifications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+SELECT pg_catalog.setval('public.notifications_id_seq', 4, true);
+
+--
 -- Name: users users_role; Type: CONSTRAINT; Schema: public; Owner: -
 --
 ALTER TABLE public.users
@@ -637,13 +686,26 @@ ALTER TABLE public.users
 ALTER TABLE public.services
     ADD CONSTRAINT service_price_per CHECK ( price_per IN ('meter', 'amount', ''));
 
-
 --
 -- Name: visits visit_status; Type: CONSTRAINT; Schema: public; Owner: -
 --
 ALTER TABLE public.visits
     ADD CONSTRAINT visit_status CHECK ( visits.status IN ('accepted', 'declined', 'specialist_action_required',
                                                           'client_action_required'));
+
+--
+-- Name: notifications notifications_type; Type: CONSTRAINT; Schema: public; Owner: -
+--
+ALTER TABLE public.notifications
+    ADD CONSTRAINT notifications_type CHECK ( notifications.type IN ('created', 'declined', 'accepted', 'modified', 'modified_price', 'modified_date', 'modified_address', 'modified_description'));
+
+--
+-- Name: notifications notifications_notifier; Type: CONSTRAINT; Schema: public; Owner: -
+--
+ALTER TABLE public.notifications
+    ADD CONSTRAINT notifications_notifier CHECK ( notifications.notifier IN ('client', 'specialist'));
+
+
 --
 -- Name: clients clients_user_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
@@ -870,6 +932,36 @@ CASCADE;
 --
 ALTER TABLE ONLY public.reviews
     ADD CONSTRAINT reviews_visit_id_fk FOREIGN KEY (visit_id) REFERENCES public.visits(id) ON
+UPDATE CASCADE
+ON
+DELETE
+CASCADE;
+
+--
+-- Name: notifications notifications_client_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT notifications_client_id_fk FOREIGN KEY (client_id) REFERENCES public.clients(id) ON
+UPDATE CASCADE
+ON
+DELETE
+CASCADE;
+
+--
+-- Name: notifications notifications_specialist_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT notifications_specialist_id_fk FOREIGN KEY (specialist_id) REFERENCES public.specialists(id) ON
+UPDATE CASCADE
+ON
+DELETE
+CASCADE;
+
+--
+-- Name: notifications notifications_visit_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT notifications_visit_id_fk FOREIGN KEY (visit_id) REFERENCES public.visits(id) ON
 UPDATE CASCADE
 ON
 DELETE

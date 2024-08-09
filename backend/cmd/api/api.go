@@ -690,6 +690,42 @@ func (app *Application) CreateReview(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, newReviewId)
 }
 
+func (app *Application) GetNotificationsByClientId(w http.ResponseWriter, r *http.Request) {
+	clientId, err := strconv.Atoi(chi.URLParam(r, "client_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter client_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	notifications, err := app.DB.GetNotificationsByClientId(clientId)
+	if err != nil {
+		fmt.Println("error getting Notifications from db for clientId=", clientId, " : ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, notifications)
+}
+
+func (app *Application) GetNotificationsBySpecialistId(w http.ResponseWriter, r *http.Request) {
+	specialistId, err := strconv.Atoi(chi.URLParam(r, "specialist_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter specialist_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	notifications, err := app.DB.GetNotificationsBySpecialistId(specialistId)
+	if err != nil {
+		fmt.Println("error getting Notifications from db for specialistId=", specialistId, " : ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, notifications)
+}
+
 func isVisitOverlapping(visitStartDate, visitEndDate, existingStartDate, existingEndDate time.Time) bool {
 	if (visitStartDate.Before(existingStartDate) && (visitEndDate.After(existingStartDate) && visitEndDate.Before(existingEndDate))) ||
 		(visitStartDate.Before(existingStartDate) && visitEndDate.Equal(existingEndDate)) ||
