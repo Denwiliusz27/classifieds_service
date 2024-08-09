@@ -354,7 +354,8 @@ const GetNotificationsByClientId = `
   	LEFT JOIN
   		services on specialists_services.service_id = services.id  
 	WHERE
-	    n.client_id = ($1)
+	    n.client_id = ($1) AND
+	    n.notifier = 'specialist'
 	ORDER BY 
 	    n.created_at DESC;
 `
@@ -385,7 +386,8 @@ const GetNotificationsBySpecialistId = `
   	LEFT JOIN
   		services on specialists_services.service_id = services.id  
 	WHERE
-	    n.specialist_id = ($1)
+	    n.specialist_id = ($1) AND
+	    n.notifier = 'client'
 	ORDER BY 
 	    n.created_at DESC;
 `

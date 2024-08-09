@@ -647,7 +647,7 @@ SELECT pg_catalog.setval('public.time_off_id_seq', 2, true);
 --
 -- Name: visits_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
-SELECT pg_catalog.setval('public.visits_id_seq', 3, true);
+SELECT pg_catalog.setval('public.visits_id_seq', 6, true);
 
 --
 -- Name: offers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
@@ -672,7 +672,7 @@ SELECT pg_catalog.setval('public.reviews_id_seq', 2, true);
 --
 -- Name: notifications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
-SELECT pg_catalog.setval('public.notifications_id_seq', 4, true);
+SELECT pg_catalog.setval('public.notifications_id_seq', 8, true);
 
 --
 -- Name: users users_role; Type: CONSTRAINT; Schema: public; Owner: -

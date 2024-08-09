@@ -5,22 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/notifications.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/internal/models/Notification.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/models/Notification.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/routes.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/dal.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/dal.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/sql/query.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/models/Client.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/models/Client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/models/Specialist.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/models/Specialist.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/internal/models/Visit.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/models/Visit.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/sql/init_db.sql" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/sql/init_db.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../baza_danych.dia" beforeDir="false" afterPath="$PROJECT_DIR$/../baza_danych.dia" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/Client.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Client.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/Specialist.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Specialist.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/Visit.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Visit.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientReservations.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientReservations.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -188,7 +175,8 @@
       <workItem from="1722962778636" duration="7065000" />
       <workItem from="1723060049586" duration="391000" />
       <workItem from="1723134538366" duration="5211000" />
-      <workItem from="1723200176943" duration="2264000" />
+      <workItem from="1723200176943" duration="6562000" />
+      <workItem from="1723221827791" duration="13323000" />
     </task>
     <servers />
   </component>

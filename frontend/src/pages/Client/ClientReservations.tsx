@@ -1,4 +1,4 @@
-import {Link, useNavigate, useOutletContext} from "react-router-dom";
+import {Link, useLocation, useNavigate, useOutletContext} from "react-router-dom";
 import {AuthContextType} from "../../App";
 import React, {useEffect, useState} from "react";
 import CalendarForVisits from "../../components/CalendarForVisits";
@@ -20,6 +20,7 @@ import {ReviewRequest} from "../../models/Review";
 function ClientReservations() {
     const {jwtToken, userRole} = useOutletContext<AuthContextType>();
     const navigate = useNavigate()
+    const location = useLocation()
 
     const [client, setClient] = useState<Client>()
     const [clientAddresses, setClientAddresses] = useState<ClientAddressExtended[]>()
@@ -97,6 +98,18 @@ function ClientReservations() {
                 })
         }
     }, [client, jwtToken]);
+
+    useEffect(() => {
+        if(location.state && visits) {
+            console.log("hello : ", location.state.visitId)
+
+            visits.forEach((v: VisitCalendar) => {
+                if (v.info.id === location.state.visitId) {
+                    selectVisit(v)
+                }
+            })
+        }
+    }, [visits]);
 
     const eventBackgroundAdjustment = (event: VisitCalendar): React.CSSProperties => {
         let backgroundColor = 'Maroon';
