@@ -44,4 +44,6 @@ type DAL interface {
 
 	GetNotificationsByClientId(clientId int) ([]models.Notification, error)
 	GetNotificationsBySpecialistId(specialistId int) ([]models.Notification, error)
+	UpdateNotificationsByVisitId(visitId int) error
+	CreateNotification(notification models.NotificationRequest) (int, error)
 }

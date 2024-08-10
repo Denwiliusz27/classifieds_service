@@ -726,6 +726,45 @@ func (app *Application) GetNotificationsBySpecialistId(w http.ResponseWriter, r 
 	app.writeJSON(w, http.StatusOK, notifications)
 }
 
+func (app *Application) UpdateNotificationsByVisitId(w http.ResponseWriter, r *http.Request) {
+	visitId, err := strconv.Atoi(chi.URLParam(r, "visit_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter visit_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	err = app.DB.UpdateNotificationsByVisitId(visitId)
+	if err != nil {
+		log.Println(err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, visitId)
+}
+
+func (app *Application) CreateNotification(w http.ResponseWriter, r *http.Request) {
+	var newNotification models.NotificationRequest
+
+	err := app.readJSON(w, r, &newNotification)
+	if err != nil {
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	log.Println("I got new Notification to create: ", newNotification)
+
+	newNotificationId, err := app.DB.CreateNotification(newNotification)
+	if err != nil {
+		log.Println(err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, newNotificationId)
+}
+
 func isVisitOverlapping(visitStartDate, visitEndDate, existingStartDate, existingEndDate time.Time) bool {
 	if (visitStartDate.Before(existingStartDate) && (visitEndDate.After(existingStartDate) && visitEndDate.Before(existingEndDate))) ||
 		(visitStartDate.Before(existingStartDate) && visitEndDate.Equal(existingEndDate)) ||

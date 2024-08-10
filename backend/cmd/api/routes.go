@@ -23,6 +23,8 @@ func (app *Application) Routes() http.Handler {
 		mux.Patch("/update_visit", app.UpdateVisitByClient)
 		mux.Post("/visit/create", app.CreateReview)
 		mux.Get("/notifications/{client_id}", app.GetNotificationsByClientId)
+		mux.Patch("/notifications/update/{visit_id}", app.UpdateNotificationsByVisitId)
+		mux.Post("/notifications/create", app.CreateNotification)
 	})
 
 	mux.Post("/register_client", app.CreateClient)

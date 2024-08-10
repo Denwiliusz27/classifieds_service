@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 )
 
 func (m *PG) GetNotificationsByClientId(clientId int) ([]models.Notification, error) {
@@ -102,4 +103,45 @@ func (m *PG) GetNotificationsBySpecialistId(specialistId int) ([]models.Notifica
 	log.Println("Successfully retrieved Notifications for specialistId: ", specialistId)
 
 	return notifications, nil
+}
+
+func (m *PG) UpdateNotificationsByVisitId(visitId int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	q := sql.UpdateNotificationForVisitAsRead
+
+	_, err := m.DB.ExecContext(ctx, q, visitId)
+
+	if err != nil {
+		return fmt.Errorf("cannot update Notifications for visitId=%d : %w", visitId, err)
+	}
+	log.Println("Successfully updated Notifications for visitId=", visitId)
+
+	return nil
+}
+
+func (m *PG) CreateNotification(notification models.NotificationRequest) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	var newNotificationId int
+
+	q := sql.CreateNotification
+	err := m.DB.QueryRowContext(ctx, q,
+		notification.Type,
+		notification.Notifier,
+		false,
+		notification.ClientId,
+		notification.SpecialistId,
+		notification.VisitId,
+		time.Now().Add(2*time.Hour),
+	).Scan(&newNotificationId)
+
+	if err != nil {
+		return 0, fmt.Errorf("cannot create new Review: %w", err)
+	}
+	log.Println("Successfully created Notification with id ", newNotificationId)
+
+	return newNotificationId, nil
 }

@@ -391,3 +391,21 @@ const GetNotificationsBySpecialistId = `
 	ORDER BY 
 	    n.created_at DESC;
 `
+
+const UpdateNotificationForVisitAsRead = `
+	UPDATE notifications
+	SET
+	  read = 'true'
+	WHERE
+	  visit_id = $1
+	RETURNING id;
+`
+
+const CreateNotification = `
+	INSERT INTO
+		notifications
+	(type, notifier, read, client_id, specialist_id, visit_id, created_at)
+	VALUES 
+	    ($1, $2, $3, $4, $5, $6, $7)
+	RETURNING id;
+`

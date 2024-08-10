@@ -12,3 +12,11 @@ type Notification struct {
 	Specialist SpecialistBasicInfo `json:"specialist"`
 	Visit      VisitBasicInfo      `json:"visit"`
 }
+
+type NotificationRequest struct {
+	Type         string `json:"type"`
+	Notifier     string `json:"notifier"`
+	ClientId     int    `json:"client_id"`
+	SpecialistId int    `json:"specialist_id"`
+	VisitId      int    `json:"visit_id"`
+}

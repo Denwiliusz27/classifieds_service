@@ -16,6 +16,7 @@ import {Client} from "../../models/Client";
 import {ClientAddressExtended} from "../../models/ClientAddress";
 import {TimeOff} from "../../models/TimeOff";
 import {ReviewRequest} from "../../models/Review";
+import {NotificationRequest} from "../../models/Notification";
 
 function ClientReservations() {
     const {jwtToken, userRole} = useOutletContext<AuthContextType>();
@@ -26,8 +27,17 @@ function ClientReservations() {
     const [clientAddresses, setClientAddresses] = useState<ClientAddressExtended[]>()
     const [visits, setVisits] = useState<VisitCalendar[]>([])
     const [selectedVisit, setSelectedVisit] = useState<VisitCalendar>()
+    const [baseVisit, setBaseVisit] = useState<VisitCalendar>()
     const [selectedSpecialistVisits, setSelectedSpecialistVisits] = useState<VisitCalendar[]>()
     const [selectedSpecialistTimeOffs, setSelectedSpecialistTimeOffs] = useState<TimeOff[]>()
+    const [typeState, setTypeState] = useState<string[]>([])
+    const [notification, setNotification] = useState<NotificationRequest>({
+        type: '',
+        notifier: 'client',
+        client_id: 0,
+        specialist_id: 0,
+        visit_id: 0,
+    })
     const [showVisitWindow, setShowVisitWindow] = useState(false)
     const [universalError, setUniversalError] = useState("")
     const [descriptionError, setDescriptionError] = useState("")
@@ -100,16 +110,17 @@ function ClientReservations() {
     }, [client, jwtToken]);
 
     useEffect(() => {
-        if(location.state && visits) {
+        if(location.state && visits && location.state.visitId !== 0) {
             console.log("hello : ", location.state.visitId)
 
             visits.forEach((v: VisitCalendar) => {
                 if (v.info.id === location.state.visitId) {
                     selectVisit(v)
+                    location.state.visitId = 0
                 }
             })
         }
-    }, [visits]);
+    }, [visits, location]);
 
     const eventBackgroundAdjustment = (event: VisitCalendar): React.CSSProperties => {
         let backgroundColor = 'Maroon';
@@ -217,8 +228,44 @@ function ClientReservations() {
             })
     }
 
+    function clearVariables(){
+        setShowVisitWindow(false)
+        setDescriptionError("")
+        setInfo("")
+        setDateError("")
+        setSuccessMessage("")
+        setUniversalError("")
+        setIsVisitOld(false)
+        setRating(0)
+        setReviewNotExists(false)
+        setNewReview({
+            rating: 0,
+            description: "",
+            client_id: 0,
+            specialist_id: 0,
+            specialist_service_id: 0,
+            visit_id: 0
+        })
+        setOpenCalendar(false)
+        setTypeState([])
+        setNotification({
+            type: '',
+            notifier: 'client',
+            client_id: 0,
+            specialist_id: 0,
+            visit_id: 0,
+        })
+    }
+
     const selectVisit = (visit: VisitCalendar) => {
+        setBaseVisit(visit)
         setSelectedVisit(visit)
+        setNotification({
+            ...notification,
+            client_id: visit.client.id,
+            specialist_id: visit.specialist.id,
+            visit_id: visit.info.id,
+        })
 
         setNewReview({
             ...newReview,
@@ -236,25 +283,7 @@ function ClientReservations() {
             Swal.fire({
                 customClass: 'swal-wide',
                 didOpen: () => setShowVisitWindow(true),
-                didClose: () => {
-                    setShowVisitWindow(false)
-                    setDescriptionError("")
-                    setInfo("")
-                    setDateError("")
-                    setSuccessMessage("")
-                    setUniversalError("")
-                    setIsVisitOld(false)
-                    setRating(0)
-                    setReviewNotExists(false)
-                    setNewReview({
-                        rating: 0,
-                        description: "",
-                        client_id: 0,
-                        specialist_id: 0,
-                        specialist_service_id: 0,
-                        visit_id: 0
-                    })
-                },
+                didClose: () => clearVariables(),
                 showConfirmButton: false,
             })
             return
@@ -266,14 +295,7 @@ function ClientReservations() {
             Swal.fire({
                 customClass: 'swal-wide',
                 didOpen: () => setShowVisitWindow(true),
-                didClose: () => {
-                    setShowVisitWindow(false)
-                    setDescriptionError("")
-                    setInfo("")
-                    setDateError("")
-                    setSuccessMessage("")
-                    setUniversalError("")
-                },
+                didClose: () => clearVariables(),
                 showConfirmButton: false,
             })
         } else if (visit.info.status === 'client_action_required') {
@@ -320,15 +342,7 @@ function ClientReservations() {
             Swal.fire({
                 customClass: 'swal-extra_wide',
                 didOpen: () => setShowVisitWindow(true),
-                didClose: () => {
-                    setShowVisitWindow(false)
-                    setInfo("")
-                    setDescriptionError("")
-                    setUniversalError("")
-                    setDateError("")
-                    setOpenCalendar(false)
-                    setSuccessMessage("")
-                },
+                didClose: () => clearVariables(),
                 showConfirmButton: false,
             })
         } else if (visit.info.status === 'specialist_action_required') {
@@ -337,14 +351,7 @@ function ClientReservations() {
             Swal.fire({
                 customClass: 'swal-wide',
                 didOpen: () => setShowVisitWindow(true),
-                didClose: () => {
-                    setShowVisitWindow(false)
-                    setInfo("")
-                    setDateError("")
-                    setDescriptionError("")
-                    setUniversalError("")
-                    setSuccessMessage("")
-                },
+                didClose: () => clearVariables(),
                 showConfirmButton: false,
             })
         } else if (visit.info.status === 'accepted') {
@@ -353,14 +360,7 @@ function ClientReservations() {
             Swal.fire({
                 customClass: 'swal-wide',
                 didOpen: () => setShowVisitWindow(true),
-                didClose: () => {
-                    setShowVisitWindow(false)
-                    setDateError("")
-                    setInfo("")
-                    setDescriptionError("")
-                    setUniversalError("")
-                    setSuccessMessage("")
-                },
+                didClose: () => clearVariables(),
                 showConfirmButton: false,
             })
         }
@@ -402,6 +402,7 @@ function ClientReservations() {
             })
         }
 
+        setNotificationType(baseVisit?.info.client_address.id, tmp!.id, 'modified_address')
         setUniversalError("")
         setSuccessMessage("")
     }
@@ -410,61 +411,119 @@ function ClientReservations() {
         setSuccessMessage("")
         setUniversalError("")
 
-        const headers = new Headers()
-        headers.append("Content-Type", "application/json")
-        headers.append("Authorization", "Bearer " + jwtToken)
-        const method = "PATCH"
+        createNotification()
 
-        fetch(`/client/update_visit`, {
-            body: JSON.stringify(visit),
-            method: method,
-            headers: headers,
-            credentials: 'include'
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.error) {
-                    console.log("ERRORS")
-                    setUniversalError(data.message)
+
+        // const headers = new Headers()
+        // headers.append("Content-Type", "application/json")
+        // headers.append("Authorization", "Bearer " + jwtToken)
+        // const method = "PATCH"
+        //
+        // fetch(`/client/update_visit`, {
+        //     body: JSON.stringify(visit),
+        //     method: method,
+        //     headers: headers,
+        //     credentials: 'include'
+        // })
+        //     .then((response) => response.json())
+        //     .then((data) => {
+        //         if (data.error) {
+        //             console.log("ERRORS")
+        //             setUniversalError(data.message)
+        //         } else {
+        //             console.log("SUCCESSFULLY UPDATED VISIT")
+        //             setSuccessMessage(message)
+        //
+        //             if (!data.error && selectedVisit) {
+        //                 setSelectedVisit({
+        //                     ...selectedVisit,
+        //                     info: {
+        //                         ...selectedVisit?.info,
+        //                         status: newStatus
+        //                     }
+        //                 })
+        //             }
+        //
+        //             const headers = new Headers()
+        //             headers.append("Content-Type", "application/json")
+        //             const requestOptions = {
+        //                 method: "GET",
+        //                 headers: headers,
+        //             }
+        //
+        //             fetch(`http://localhost:8080/visits/0/${client!.id}`, requestOptions)
+        //                 .then((response) => response.json())
+        //                 .then((data) => {
+        //                     data.forEach((v: VisitCalendar) => {
+        //                         v.info.start_date = new Date(v.info.start_date)
+        //                         v.info.end_date = new Date(v.info.end_date)
+        //                     })
+        //
+        //                     setVisits(data)
+        //                 })
+        //                 .catch(err => {
+        //                     console.log("Error retrieving Visits: ", err)
+        //                 })
+        //
+        //             createNotification()
+        //         }
+        //     })
+        //     .catch((err) => {
+        //         console.log(err)
+        //     })
+    }
+
+    function setNotificationType(v1: any, v2: any, type: string) {
+        if (v1 !== v2) {
+            if (!typeState.includes(type)) {
+                if (notification.type === '') {
+                    setNotification({
+                        ...notification,
+                        type: type
+                    })
                 } else {
-                    console.log("SUCCESSFULLY UPDATED VISIT")
-                    setSuccessMessage(message)
-
-                    if (!data.error && selectedVisit) {
-                        setSelectedVisit({
-                            ...selectedVisit,
-                            info: {
-                                ...selectedVisit?.info,
-                                status: newStatus
-                            }
-                        })
-                    }
-
-                    const headers = new Headers()
-                    headers.append("Content-Type", "application/json")
-                    const requestOptions = {
-                        method: "GET",
-                        headers: headers,
-                    }
-
-                    fetch(`http://localhost:8080/visits/0/${client!.id}`, requestOptions)
-                        .then((response) => response.json())
-                        .then((data) => {
-                            data.forEach((v: VisitCalendar) => {
-                                v.info.start_date = new Date(v.info.start_date)
-                                v.info.end_date = new Date(v.info.end_date)
-                            })
-
-                            setVisits(data)
-                        })
-                        .catch(err => {
-                            console.log("Error retrieving Visits: ", err)
-                        })
+                    setNotification({
+                        ...notification,
+                        type: 'modified'
+                    })
                 }
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+
+                setTypeState([
+                    ...typeState,
+                    type
+                ])
+            }
+        } else {
+            if (notification.type === type) {
+                setNotification({
+                    ...notification,
+                    type: ''
+                })
+            } else {
+                let tmp = typeState.filter(s => s !== type)
+
+                if (tmp.length === 1) {
+                    setNotification({
+                        ...notification,
+                        type: tmp[0]
+                    })
+                } else {
+                    setNotification({
+                        ...notification,
+                        type: 'modified'
+                    })
+                }
+            }
+
+            setTypeState(
+                typeState.filter(s => s !== type)
+            )
+        }
+    }
+
+    function createNotification() {
+        console.log("type: ", notification.type)
+
     }
 
     function hasVisitChanged(): boolean {
@@ -522,6 +581,12 @@ function ClientReservations() {
 
         const updatedVisit = cloneDeep(selectedVisit!)
         updatedVisit!.info.status = 'specialist_action_required'
+
+        // setNotification({
+        //     ...notification,
+        //     type: setNotificationType(updatedVisit)
+        // })
+
         updateVisit(updatedVisit, 'specialist_action_required', "Pomyślnie zaktualizowano wizytę")
     }
 
@@ -599,7 +664,7 @@ function ClientReservations() {
     }
 
     return (
-        <div className="flex flex-col items-center overflow-auto h-full bg-fixed fixed w-full pb-32">
+        <div className="flex flex-col items-center overflow-auto h-full bg-fixed fixed w-full pb-32" id="portal-root">
             <div className="w-2/3">
                 <div className="flex flex-col text-center pt-8">
                     <div className="flex flex-row text-3xl font-bold mb-6 justify-center">
@@ -864,6 +929,8 @@ function ClientReservations() {
                                                                         }
                                                                     })
                                                                 }
+                                                                setNotificationType(baseVisit?.info.start_date.getTime(), value!.toDate().getTime(), 'modified_date')
+
                                                                 setDateError("")
                                                                 setSuccessMessage("")
                                                                 setUniversalError("")
@@ -895,6 +962,8 @@ function ClientReservations() {
                                                                         }
                                                                     })
                                                                 }
+                                                                setNotificationType(baseVisit?.info.end_date.getTime(), value!.toDate().getTime(), 'modified_date')
+
                                                                 setDateError("")
                                                                 setUniversalError("")
                                                                 setSuccessMessage("")
@@ -923,7 +992,7 @@ function ClientReservations() {
                                                 onChange={changeVisitAddress}
                                                 className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
                                             >
-                                                {clientAddresses!.map((address) => {
+                                                {clientAddresses?.map((address) => {
                                                     return (
                                                         <>
                                                             {address.flat_nr === 0 ?
@@ -999,6 +1068,8 @@ function ClientReservations() {
                                                             }
                                                         })
                                                     }
+                                                    setNotificationType(baseVisit?.info.description, value.currentTarget.value, 'modified_description')
+
                                                     setDescriptionError("")
                                                     setUniversalError("")
                                                     setSuccessMessage("")

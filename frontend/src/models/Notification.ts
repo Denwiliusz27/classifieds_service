@@ -12,3 +12,11 @@ export interface Notification {
     specialist: SpecialistBasicInfo
     visit: VisitBasicInfo
 }
+
+export interface NotificationRequest {
+    type: string
+    notifier: string
+    client_id: number
+    specialist_id: number
+    visit_id: number
+}

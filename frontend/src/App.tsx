@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Link, Outlet, useNavigate} from "react-router-dom";
 import {Notification} from "./models/Notification";
+import {VisitCalendar} from "./models/Visit";
 
 export interface AuthContextType {
     jwtToken: string;
@@ -105,8 +106,10 @@ function App() {
     }, [jwtToken, userRole, toggleRefresh])
 
     const getNotifications = () => {
-        const user = sessionStorage.getItem(userRole)
         console.log("HERE")
+        console.log("userRole: ", userRole)
+
+        const user = sessionStorage.getItem(userRole)
 
         const headers = new Headers()
         headers.append("Content-Type", "application/json")
@@ -179,6 +182,33 @@ function App() {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    function navigateToVisit(id: number) {
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+        headers.append("Authorization", "Bearer " + jwtToken)
+        const method = "PATCH"
+
+        fetch(`/client/notifications/update/${id}`, {
+            method: method,
+            headers: headers,
+            credentials: 'include'
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    console.log("ERRORS")
+                } else {
+                    console.log("SUCCESSFULLY UPDATED NOTIFICATIONS")
+                    getNotifications()
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+
+        navigate('/klient/rezerwacje', { state: { visitId: id }});
+    }
 
     return (
         <>
@@ -301,10 +331,13 @@ function App() {
                                     {
                                         notifications!.map((n) => {
                                             return (
-                                                <Link to="/klient/rezerwacje"
-                                                      state={{visitId: n.visit.id}}
-                                                      onClick={e => setIsNotificationsOpen(false)}
-                                                    className={`w-full flex flex-row items-center drop-shadow-lg bg-amber-900 my-1 p-2 ${n.read ? 'font-normal' : 'font-bold'}`}>
+                                                <div
+
+                                                      onClick={e => {
+                                                          setIsNotificationsOpen(false)
+                                                          navigateToVisit(n.visit.id)
+                                                      }}
+                                                    className={`w-full flex flex-row items-center drop-shadow-lg bg-amber-900 my-1 p-2 ${n.read ? 'font-normal' : 'font-bold'} hover:cursor-pointer `}>
                                                     {!n.read &&
                                                         <div className="w-10 flex items-center justify-center">
                                                             <div className="w-3 h-3 bg-red-600 rounded-3xl"></div>
@@ -331,7 +364,7 @@ function App() {
                                                         </p>
                                                     </div>
 
-                                                </Link>
+                                                </div>
                                             )
                                         })}
                                 </div>
