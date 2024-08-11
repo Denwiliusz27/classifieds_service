@@ -5,10 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="173f3503-7436-42e1-8ab6-1a4c089377a4" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../backend/cmd/api/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/cmd/api/api.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/internal/dal/postgres/notifications.go" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/internal/dal/postgres/notifications.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/Notification.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Notification.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Client/ClientReservations.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Client/ClientReservations.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Specialist/SpecialistReservations.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Specialist/SpecialistReservations.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -178,7 +180,8 @@
       <workItem from="1723134538366" duration="5211000" />
       <workItem from="1723200176943" duration="6562000" />
       <workItem from="1723221827791" duration="13554000" />
-      <workItem from="1723300515384" duration="17160000" />
+      <workItem from="1723300515384" duration="20901000" />
+      <workItem from="1723368229597" duration="3155000" />
     </task>
     <servers />
   </component>

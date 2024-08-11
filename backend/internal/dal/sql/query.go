@@ -392,12 +392,23 @@ const GetNotificationsBySpecialistId = `
 	    n.created_at DESC;
 `
 
-const UpdateNotificationForVisitAsRead = `
+const UpdateNotificationForVisitIdAndClientAsRead = `
 	UPDATE notifications
 	SET
 	  read = 'true'
 	WHERE
-	  visit_id = $1
+	  visit_id = $1 AND
+	  notifier = 'specialist'
+	RETURNING id;
+`
+
+const UpdateNotificationForVisitIdAndSpecialistAsRead = `
+	UPDATE notifications
+	SET
+	  read = 'true'
+	WHERE
+	  visit_id = $1 AND
+	  notifier = 'client'
 	RETURNING id;
 `
 

@@ -97,6 +97,8 @@ func (m *PG) GetNotificationsBySpecialistId(specialistId int) ([]models.Notifica
 			return nil, fmt.Errorf("error scanning row: %w", err)
 		}
 
+		n.CreatedAt = n.CreatedAt.Add(-2 * time.Hour)
+
 		notifications = append(notifications, n)
 	}
 
@@ -105,11 +107,27 @@ func (m *PG) GetNotificationsBySpecialistId(specialistId int) ([]models.Notifica
 	return notifications, nil
 }
 
-func (m *PG) UpdateNotificationsByVisitId(visitId int) error {
+func (m *PG) UpdateNotificationsByVisitIdAndClient(visitId int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	q := sql.UpdateNotificationForVisitAsRead
+	q := sql.UpdateNotificationForVisitIdAndClientAsRead
+
+	_, err := m.DB.ExecContext(ctx, q, visitId)
+
+	if err != nil {
+		return fmt.Errorf("cannot update Notifications for visitId=%d : %w", visitId, err)
+	}
+	log.Println("Successfully updated Notifications for visitId=", visitId)
+
+	return nil
+}
+
+func (m *PG) UpdateNotificationsByVisitIdAndSpecialist(visitId int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	q := sql.UpdateNotificationForVisitIdAndSpecialistAsRead
 
 	_, err := m.DB.ExecContext(ctx, q, visitId)
 

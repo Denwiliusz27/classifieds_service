@@ -1,4 +1,4 @@
-import {useNavigate, useOutletContext} from "react-router-dom";
+import {useLocation, useNavigate, useOutletContext} from "react-router-dom";
 import {AuthContextType} from "../../App";
 import React, {useEffect, useState} from "react";
 import CalendarForVisits from "../../components/CalendarForVisits";
@@ -18,6 +18,7 @@ import cloneDeep from "lodash/cloneDeep";
 function SpecialistReservations() {
     const {jwtToken, userRole} = useOutletContext<AuthContextType>();
     const navigate = useNavigate()
+    const location = useLocation()
 
     const [showTimeOffWindow, setShowTimeOffWindow] = useState(false)
     const [showVisitWindow, setShowVisitWindow] = useState(false)
@@ -58,6 +59,19 @@ function SpecialistReservations() {
             getVisits()
         }
     }, [specialist, jwtToken]);
+
+    useEffect(() => {
+        if(location.state && visits && location.state.visitId !== 0) {
+            console.log("hello : ", location.state.visitId)
+
+            visits.forEach((v: VisitCalendar) => {
+                if (v.info.id === location.state.visitId) {
+                    selectVisit(v)
+                    location.state.visitId = 0
+                }
+            })
+        }
+    }, [visits, location]);
 
     function getTimeOff() {
         const headers = new Headers()

@@ -375,8 +375,16 @@ function ClientReservations() {
 
         if (status === 'declined') {
             updateVisit(updatedVisit!, 'declined', "Pomyślnie odrzucono wizytę")
+            setNotification({
+                ...notification,
+                type: 'declined'
+            })
         } else if (status === 'accepted') {
             updateVisit(updatedVisit!, 'accepted', "Pomyślnie zaakceptowano wizytę")
+            setNotification({
+                ...notification,
+                type: 'accepted'
+            })
         }
     }
 
@@ -411,66 +419,63 @@ function ClientReservations() {
         setSuccessMessage("")
         setUniversalError("")
 
-        createNotification()
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+        headers.append("Authorization", "Bearer " + jwtToken)
+        const method = "PATCH"
 
+        fetch(`/client/update_visit`, {
+            body: JSON.stringify(visit),
+            method: method,
+            headers: headers,
+            credentials: 'include'
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    console.log("ERRORS")
+                    setUniversalError(data.message)
+                } else {
+                    console.log("SUCCESSFULLY UPDATED VISIT")
+                    setSuccessMessage(message)
 
-        // const headers = new Headers()
-        // headers.append("Content-Type", "application/json")
-        // headers.append("Authorization", "Bearer " + jwtToken)
-        // const method = "PATCH"
-        //
-        // fetch(`/client/update_visit`, {
-        //     body: JSON.stringify(visit),
-        //     method: method,
-        //     headers: headers,
-        //     credentials: 'include'
-        // })
-        //     .then((response) => response.json())
-        //     .then((data) => {
-        //         if (data.error) {
-        //             console.log("ERRORS")
-        //             setUniversalError(data.message)
-        //         } else {
-        //             console.log("SUCCESSFULLY UPDATED VISIT")
-        //             setSuccessMessage(message)
-        //
-        //             if (!data.error && selectedVisit) {
-        //                 setSelectedVisit({
-        //                     ...selectedVisit,
-        //                     info: {
-        //                         ...selectedVisit?.info,
-        //                         status: newStatus
-        //                     }
-        //                 })
-        //             }
-        //
-        //             const headers = new Headers()
-        //             headers.append("Content-Type", "application/json")
-        //             const requestOptions = {
-        //                 method: "GET",
-        //                 headers: headers,
-        //             }
-        //
-        //             fetch(`http://localhost:8080/visits/0/${client!.id}`, requestOptions)
-        //                 .then((response) => response.json())
-        //                 .then((data) => {
-        //                     data.forEach((v: VisitCalendar) => {
-        //                         v.info.start_date = new Date(v.info.start_date)
-        //                         v.info.end_date = new Date(v.info.end_date)
-        //                     })
-        //
-        //                     setVisits(data)
-        //                 })
-        //                 .catch(err => {
-        //                     console.log("Error retrieving Visits: ", err)
-        //                 })
-        //
-        //             createNotification()
-        //         }
-        //     })
-        //     .catch((err) => {
-        //         console.log(err)
-        //     })
+                    if (!data.error && selectedVisit) {
+                        setSelectedVisit({
+                            ...selectedVisit,
+                            info: {
+                                ...selectedVisit?.info,
+                                status: newStatus
+                            }
+                        })
+                    }
+
+                    const headers = new Headers()
+                    headers.append("Content-Type", "application/json")
+                    const requestOptions = {
+                        method: "GET",
+                        headers: headers,
+                    }
+
+                    fetch(`http://localhost:8080/visits/0/${client!.id}`, requestOptions)
+                        .then((response) => response.json())
+                        .then((data) => {
+                            data.forEach((v: VisitCalendar) => {
+                                v.info.start_date = new Date(v.info.start_date)
+                                v.info.end_date = new Date(v.info.end_date)
+                            })
+
+                            setVisits(data)
+                        })
+                        .catch(err => {
+                            console.log("Error retrieving Visits: ", err)
+                        })
+
+                    createNotification(newStatus)
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
     }
 
     function setNotificationType(v1: any, v2: any, type: string) {
@@ -521,9 +526,40 @@ function ClientReservations() {
         }
     }
 
-    function createNotification() {
-        console.log("type: ", notification.type)
+    function createNotification(type: string) {
+        let tmp = cloneDeep(notification!)
+        if (type === 'declined'){
+            tmp.type = 'declined'
+        } else if (type === 'accepted') {
+            tmp.type = 'accepted'
+        }
 
+        console.log("selected: ", selectedVisit)
+        console.log("notification: ", tmp)
+
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+        headers.append("Authorization", "Bearer " + jwtToken)
+        const method = "POST"
+
+        fetch(`/client/notifications/create`, {
+            body: JSON.stringify(tmp),
+            method: method,
+            headers: headers,
+            credentials: 'include'
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    console.log("ERRORS")
+                    setUniversalError(data.message)
+                } else {
+                    console.log("SUCCESSFULLY CREATED NOTIFICATION")
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
     }
 
     function hasVisitChanged(): boolean {

@@ -490,6 +490,21 @@ func (app *Application) CreateVisit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	notification := models.NotificationRequest{
+		Type:         "created",
+		Notifier:     "client",
+		ClientId:     newVisitRequest.ClientId,
+		SpecialistId: newVisitRequest.SpecialistId,
+		VisitId:      visitId,
+	}
+
+	_, err = app.DB.CreateNotification(notification)
+	if err != nil {
+		log.Println(err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
 	_ = app.writeJSON(w, http.StatusOK, visitId)
 }
 
@@ -726,7 +741,7 @@ func (app *Application) GetNotificationsBySpecialistId(w http.ResponseWriter, r 
 	app.writeJSON(w, http.StatusOK, notifications)
 }
 
-func (app *Application) UpdateNotificationsByVisitId(w http.ResponseWriter, r *http.Request) {
+func (app *Application) UpdateNotificationsByVisitIdAndClient(w http.ResponseWriter, r *http.Request) {
 	visitId, err := strconv.Atoi(chi.URLParam(r, "visit_id"))
 	if err != nil {
 		fmt.Println("cannot find parameter visit_id: ", err)
@@ -734,7 +749,25 @@ func (app *Application) UpdateNotificationsByVisitId(w http.ResponseWriter, r *h
 		return
 	}
 
-	err = app.DB.UpdateNotificationsByVisitId(visitId)
+	err = app.DB.UpdateNotificationsByVisitIdAndClient(visitId)
+	if err != nil {
+		log.Println(err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, visitId)
+}
+
+func (app *Application) UpdateNotificationsByVisitIdAndSpecialist(w http.ResponseWriter, r *http.Request) {
+	visitId, err := strconv.Atoi(chi.URLParam(r, "visit_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter visit_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	err = app.DB.UpdateNotificationsByVisitIdAndSpecialist(visitId)
 	if err != nil {
 		log.Println(err)
 		_ = app.errorJSON(w, err)

@@ -106,9 +106,6 @@ function App() {
     }, [jwtToken, userRole, toggleRefresh])
 
     const getNotifications = () => {
-        console.log("HERE")
-        console.log("userRole: ", userRole)
-
         const user = sessionStorage.getItem(userRole)
 
         const headers = new Headers()
@@ -140,7 +137,7 @@ function App() {
                     console.log("cannot retrieve Notifications for client: ", err)
                 })
 
-        } else if (userRole === 'specialist') {
+        } else if (userRole === 'specialist' && user) {
             console.log("Specjalista")
 
             fetch(`/specialist/notifications/${JSON.parse(user!).id}`, {
@@ -149,7 +146,16 @@ function App() {
                 credentials: 'include'
             }).then((response) => response.json())
                 .then((data) => {
-                    setNotifications(data)
+                    const tmp: Notification[] = []
+
+                    if(data) {
+                        data.forEach((n: Notification) => {
+                            n.created_at = new Date(n.created_at)
+                            tmp.push(n)
+                        })
+                    }
+
+                    setNotifications(tmp)
                     console.log(data)
                 })
                 .catch((err) => {
@@ -160,7 +166,7 @@ function App() {
 
     useEffect(() => {
         notifications?.forEach((n: Notification) => {
-            if( !n.read) {
+            if(!n.read) {
                 setUnread(true)
             }
         })
@@ -183,7 +189,7 @@ function App() {
         };
     }, []);
 
-    function navigateToVisit(id: number) {
+    function navigateToClientVisit(id: number) {
         const headers = new Headers()
         headers.append("Content-Type", "application/json")
         headers.append("Authorization", "Bearer " + jwtToken)
@@ -208,6 +214,33 @@ function App() {
             })
 
         navigate('/klient/rezerwacje', { state: { visitId: id }});
+    }
+
+    function navigateToSpecialistVisit(id: number) {
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+        headers.append("Authorization", "Bearer " + jwtToken)
+        const method = "PATCH"
+
+        fetch(`/specialist/notifications/update/${id}`, {
+            method: method,
+            headers: headers,
+            credentials: 'include'
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    console.log("ERRORS")
+                } else {
+                    console.log("SUCCESSFULLY UPDATED NOTIFICATIONS")
+                    getNotifications()
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+
+        navigate('/specjalista/rezerwacje', { state: { visitId: id }});
     }
 
     return (
@@ -291,6 +324,7 @@ function App() {
                     </Link>
                 }
 
+                {/* NOTIFICATIONS*/}
                 {jwtToken && userRole === 'client' && notifications &&
                     <div className={`flex h-full justify-center items-center text-center`}
                          ref={notificationsRef}>
@@ -309,7 +343,7 @@ function App() {
                                               d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"></path>
                                     </svg>
                                 </div>
-                                {notifications?.length !== 0 && unread &&
+                                {notifications.find(n => !n.read) &&
                                     <>
                                         <span className="relative flex h-3 w-3 mb-8">
                                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
@@ -331,11 +365,9 @@ function App() {
                                     {
                                         notifications!.map((n) => {
                                             return (
-                                                <div
-
-                                                      onClick={e => {
+                                                <div onClick={e => {
                                                           setIsNotificationsOpen(false)
-                                                          navigateToVisit(n.visit.id)
+                                                          navigateToClientVisit(n.visit.id)
                                                       }}
                                                     className={`w-full flex flex-row items-center drop-shadow-lg bg-amber-900 my-1 p-2 ${n.read ? 'font-normal' : 'font-bold'} hover:cursor-pointer `}>
                                                     {!n.read &&
@@ -345,19 +377,105 @@ function App() {
                                                     }
                                                     <div className={`flex flex-col w-full text-left text-xl ${n.read ? 'ml-12' : 'ml-2'}`}>
                                                         {n.type === 'declined' &&
-                                                            <p>{n.specialist.name} {n.specialist.second_name[0]}. ({n.specialist.specialization}) odrzucił realizację wizyty "{n.visit.service}"</p>
+                                                            <p>{n.specialist.name} {n.specialist.second_name} ({n.specialist.specialization}) odrzucił realizację usługi "{n.visit.service}"</p>
                                                         }
                                                         {n.type === 'accepted' &&
-                                                            <p>{n.specialist.name} {n.specialist.second_name[0]}. ({n.specialist.specialization}) zaakceptował nową wizytę "{n.visit.service}"</p>
+                                                            <p>{n.specialist.name} {n.specialist.second_name} ({n.specialist.specialization}) zaakceptował realizację usługi "{n.visit.service}"</p>
                                                         }
                                                         {n.type === 'modified' &&
-                                                            <p>{n.specialist.name} {n.specialist.second_name[0]}. ({n.specialist.specialization}) zmodyfikował wizytę "{n.visit.service}"</p>
+                                                            <p>{n.specialist.name} {n.specialist.second_name} ({n.specialist.specialization}) zmodyfikował rezerwację usługi "{n.visit.service}"</p>
                                                         }
                                                         {n.type === 'modified_price' &&
-                                                            <p>{n.specialist.name} {n.specialist.second_name[0]}. ({n.specialist.specialization}) zmodyfikował cenę wizyty "{n.visit.service}"</p>
+                                                            <p>{n.specialist.name} {n.specialist.second_name} ({n.specialist.specialization}) zmodyfikował cenę usługi "{n.visit.service}"</p>
                                                         }
                                                         {n.type === 'modified_date' &&
-                                                            <p>{n.specialist.name} {n.specialist.second_name[0]}. ({n.specialist.specialization}) zmodyfikował datę wizyty "{n.visit.service}"</p>
+                                                            <p>{n.specialist.name} {n.specialist.second_name} ({n.specialist.specialization}) zmodyfikował datę realizacji usługi "{n.visit.service}"</p>
+                                                        }
+                                                        <p className="text-left text-base font-light text-white mt-2">
+                                                            {n.created_at.getHours().toString()[0] === '0' ? '0' : '' }{n.created_at.getHours()}:{n.created_at.getMinutes()}{n.created_at.getMinutes().toString().length === 1 ? '0' : ''} {n.created_at.toLocaleDateString()}
+                                                        </p>
+                                                    </div>
+
+                                                </div>
+                                            )
+                                        })}
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                {jwtToken && userRole === 'specialist' && notifications &&
+                    <div className={`flex h-full justify-center items-center text-center`}
+                         ref={notificationsRef}>
+                        <div className="w-16" id="notifications">
+                            <div className="h-18 flex flex-row h-full justify-center items-center hover:cursor-pointer"
+                                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                                 onMouseEnter={() => setFill(true)}
+                                 onMouseLeave={() => setFill(false)}
+                            >
+                                <div className="w-7">
+                                    <svg data-slot="icon" fill={fill || isNotificationsOpen ? "white" : "none"}
+                                         stroke-width="1.5"
+                                         stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                                         aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"></path>
+                                    </svg>
+                                </div>
+                                {notifications.find(n => !n.read) &&
+                                    <>
+                                        <span className="relative flex h-3 w-3 mb-8">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
+                                        </span>
+                                    </>
+                                }
+                            </div>
+                        </div>
+
+                        <div
+                            className={`absolute w-96 top-20 right-[60px] flex flex-col items-center bg-amber-900 rounded-b-2xl  border-x-4 border-amber-950 shadow-lg transition-max-height duration-300 ease-out overflow-hidden ${isNotificationsOpen ? 'border-b-4 max-h-[600px]' : 'max-h-0'}`}>
+                            {notifications && notifications?.length === 0 ?
+                                <div>
+                                    <p className="my-5">Brak powiadomień</p>
+                                </div>
+                                :
+                                <div className="w-full overflow-auto">
+                                    {
+                                        notifications!.map((n) => {
+                                            return (
+                                                <div onClick={e => {
+                                                    setIsNotificationsOpen(false)
+                                                    navigateToSpecialistVisit(n.visit.id)
+                                                }}
+                                                     className={`w-full flex flex-row items-center drop-shadow-lg bg-amber-900 my-1 p-2 ${n.read ? 'font-normal' : 'font-bold'} hover:cursor-pointer `}>
+                                                    {!n.read &&
+                                                        <div className="w-10 flex items-center justify-center">
+                                                            <div className="w-3 h-3 bg-red-600 rounded-3xl"></div>
+                                                        </div>
+                                                    }
+                                                    <div className={`flex flex-col w-full text-left text-xl ${n.read ? 'ml-12' : 'ml-2'}`}>
+                                                        {n.type === 'created' &&
+                                                            <p>{n.client.name} {n.client.second_name[0]}. utworzył nową rezerwację usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'declined' &&
+                                                            <p>{n.client.name} {n.client.second_name[0]}. odrzucił realizację usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'accepted' &&
+                                                            <p>{n.client.name} {n.client.second_name[0]}. zaakceptował realizację usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'modified' &&
+                                                            <p>{n.client.name} {n.client.second_name[0]}. zmodyfikował realizację usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'modified_address' &&
+                                                            <p>{n.client.name} {n.client.second_name[0]}. zmodyfikował adres zarezerwowanej usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'modified_date' &&
+                                                            <p>{n.client.name} {n.client.second_name[0]}. zmodyfikował datę realizacji usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'modified_description' &&
+                                                            <p>{n.client.name} {n.client.second_name[0]}. zmodyfikował opis zarezerwowanej usługi "{n.visit.service}"</p>
                                                         }
                                                         <p className="text-left text-base font-light text-white mt-2">
                                                             {n.created_at.getHours()}:{n.created_at.getMinutes()}{n.created_at.getMinutes().toString().length === 1 ? '0' : ''} {n.created_at.toLocaleDateString()}
@@ -371,7 +489,6 @@ function App() {
                             }
                         </div>
                     </div>
-
                 }
 
                 {/* CLIENT MENU */}

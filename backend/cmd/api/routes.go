@@ -23,7 +23,7 @@ func (app *Application) Routes() http.Handler {
 		mux.Patch("/update_visit", app.UpdateVisitByClient)
 		mux.Post("/visit/create", app.CreateReview)
 		mux.Get("/notifications/{client_id}", app.GetNotificationsByClientId)
-		mux.Patch("/notifications/update/{visit_id}", app.UpdateNotificationsByVisitId)
+		mux.Patch("/notifications/update/{visit_id}", app.UpdateNotificationsByVisitIdAndClient)
 		mux.Post("/notifications/create", app.CreateNotification)
 	})
 
@@ -36,6 +36,8 @@ func (app *Application) Routes() http.Handler {
 		mux.Post("/create_time_off", app.CreateTimeOff)
 		mux.Patch("/update_visit", app.UpdateVisitBySpecialist)
 		mux.Get("/notifications/{specialist_id}", app.GetNotificationsBySpecialistId)
+		mux.Patch("/notifications/update/{visit_id}", app.UpdateNotificationsByVisitIdAndSpecialist)
+		mux.Post("/notifications/create", app.CreateNotification)
 	})
 
 	mux.Get("/specialists/{specialization_id}/{city_id}/{service_id}", app.GetSpecialistsBySpecializationIdCityIdServiceId)
