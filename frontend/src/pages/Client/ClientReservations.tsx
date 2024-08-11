@@ -111,8 +111,6 @@ function ClientReservations() {
 
     useEffect(() => {
         if(location.state && visits && location.state.visitId !== 0) {
-            console.log("hello : ", location.state.visitId)
-
             visits.forEach((v: VisitCalendar) => {
                 if (v.info.id === location.state.visitId) {
                     selectVisit(v)
@@ -534,9 +532,6 @@ function ClientReservations() {
             tmp.type = 'accepted'
         }
 
-        console.log("selected: ", selectedVisit)
-        console.log("notification: ", tmp)
-
         const headers = new Headers()
         headers.append("Content-Type", "application/json")
         headers.append("Authorization", "Bearer " + jwtToken)
@@ -617,12 +612,6 @@ function ClientReservations() {
 
         const updatedVisit = cloneDeep(selectedVisit!)
         updatedVisit!.info.status = 'specialist_action_required'
-
-        // setNotification({
-        //     ...notification,
-        //     type: setNotificationType(updatedVisit)
-        // })
-
         updateVisit(updatedVisit, 'specialist_action_required', "Pomyślnie zaktualizowano wizytę")
     }
 
@@ -695,8 +684,6 @@ function ClientReservations() {
             .catch((err) => {
                 console.log(err)
             })
-
-        console.log(newReview)
     }
 
     return (

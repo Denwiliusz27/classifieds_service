@@ -49,6 +49,8 @@ func (m *PG) GetNotificationsByClientId(clientId int) ([]models.Notification, er
 			return nil, fmt.Errorf("error scanning row: %w", err)
 		}
 
+		n.CreatedAt = n.CreatedAt.Add(-2 * time.Hour)
+
 		notifications = append(notifications, n)
 	}
 

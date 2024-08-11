@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Link, Outlet, useNavigate} from "react-router-dom";
 import {Notification} from "./models/Notification";
-import {VisitCalendar} from "./models/Visit";
 
 export interface AuthContextType {
     jwtToken: string;
@@ -113,8 +112,6 @@ function App() {
         headers.append("Authorization", "Bearer " + jwtToken)
 
         if (userRole === 'client' && user) {
-            console.log("KLIENCIK")
-
             fetch(`/client/notifications/${JSON.parse(user!).id}`, {
                 method: "GET",
                 headers: headers,
@@ -131,15 +128,12 @@ function App() {
                     }
 
                     setNotifications(tmp)
-                    console.log(notifications)
                 })
                 .catch((err) => {
                     console.log("cannot retrieve Notifications for client: ", err)
                 })
 
         } else if (userRole === 'specialist' && user) {
-            console.log("Specjalista")
-
             fetch(`/specialist/notifications/${JSON.parse(user!).id}`, {
                 method: "GET",
                 headers: headers,
@@ -156,7 +150,6 @@ function App() {
                     }
 
                     setNotifications(tmp)
-                    console.log(data)
                 })
                 .catch((err) => {
                     console.log("cannot retrieve Notifications for specialist: ", err)
@@ -355,7 +348,7 @@ function App() {
                         </div>
 
                         <div
-                            className={`absolute w-96 top-20 right-[60px] flex flex-col items-center bg-amber-900 rounded-b-2xl  border-x-4 border-amber-950 shadow-lg transition-max-height duration-300 ease-out overflow-hidden ${isNotificationsOpen ? 'border-b-4 max-h-[600px]' : 'max-h-0'}`}>
+                            className={`absolute w-[450px] top-20 right-[20px] flex flex-col items-center bg-amber-900 rounded-b-2xl  border-x-4 border-amber-950 shadow-lg transition-max-height duration-300 ease-out overflow-hidden ${isNotificationsOpen ? 'border-b-4 max-h-[600px]' : 'max-h-0'}`}>
                             {notifications && notifications?.length === 0 ?
                                 <div>
                                     <p className="my-5">Brak powiadomień</p>
@@ -375,7 +368,7 @@ function App() {
                                                             <div className="w-3 h-3 bg-red-600 rounded-3xl"></div>
                                                         </div>
                                                     }
-                                                    <div className={`flex flex-col w-full text-left text-xl ${n.read ? 'ml-12' : 'ml-2'}`}>
+                                                    <div className={`flex flex-col w-full text-left text-xl mr-5 ${n.read ? 'ml-12' : 'ml-2'}`}>
                                                         {n.type === 'declined' &&
                                                             <p>{n.specialist.name} {n.specialist.second_name} ({n.specialist.specialization}) odrzucił realizację usługi "{n.visit.service}"</p>
                                                         }
@@ -435,7 +428,7 @@ function App() {
                         </div>
 
                         <div
-                            className={`absolute w-96 top-20 right-[60px] flex flex-col items-center bg-amber-900 rounded-b-2xl  border-x-4 border-amber-950 shadow-lg transition-max-height duration-300 ease-out overflow-hidden ${isNotificationsOpen ? 'border-b-4 max-h-[600px]' : 'max-h-0'}`}>
+                            className={`absolute w-[450px] top-20 right-[20px] flex flex-col items-center bg-amber-900 rounded-b-2xl  border-x-4 border-amber-950 shadow-lg transition-max-height duration-300 ease-out overflow-hidden ${isNotificationsOpen ? 'border-b-4 max-h-[600px]' : 'max-h-0'}`}>
                             {notifications && notifications?.length === 0 ?
                                 <div>
                                     <p className="my-5">Brak powiadomień</p>
@@ -455,7 +448,7 @@ function App() {
                                                             <div className="w-3 h-3 bg-red-600 rounded-3xl"></div>
                                                         </div>
                                                     }
-                                                    <div className={`flex flex-col w-full text-left text-xl ${n.read ? 'ml-12' : 'ml-2'}`}>
+                                                    <div className={`flex flex-col w-full text-left text-xl mr-5 ${n.read ? 'ml-12' : 'ml-2'}`}>
                                                         {n.type === 'created' &&
                                                             <p>{n.client.name} {n.client.second_name[0]}. utworzył nową rezerwację usługi "{n.visit.service}"</p>
                                                         }
@@ -481,7 +474,6 @@ function App() {
                                                             {n.created_at.getHours()}:{n.created_at.getMinutes()}{n.created_at.getMinutes().toString().length === 1 ? '0' : ''} {n.created_at.toLocaleDateString()}
                                                         </p>
                                                     </div>
-
                                                 </div>
                                             )
                                         })}

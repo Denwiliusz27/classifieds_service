@@ -14,6 +14,7 @@ import {DemoItem} from "@mui/x-date-pickers/internals/demo";
 import {DateTimePicker} from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import cloneDeep from "lodash/cloneDeep";
+import {NotificationRequest} from "../../models/Notification";
 
 function SpecialistReservations() {
     const {jwtToken, userRole} = useOutletContext<AuthContextType>();
@@ -29,11 +30,19 @@ function SpecialistReservations() {
     const [successMessage, setSuccessMessage] = useState("")
     const [info, setInfo] = useState("")
     const [isVisitOld, setIsVisitOld] = useState(false)
-
     const [timeOffs, setTimeOffs] = useState<TimeOff[]>([])
+    const [typeState, setTypeState] = useState<string[]>([])
+    const [notification, setNotification] = useState<NotificationRequest>({
+        type: '',
+        notifier: 'specialist',
+        client_id: 0,
+        specialist_id: 0,
+        visit_id: 0,
+    })
     const [specialist, setSpecialist] = useState<Specialist>()
     const [visits, setVisits] = useState<VisitCalendar[]>([])
     const [selectedVisit, setSelectedVisit] = useState<VisitCalendar>()
+    const [baseVisit, setBaseVisit] = useState<VisitCalendar>()
     const [newTimeOff, setNewTimeOff] = useState<TimeOffRequest>({
         start_date: new Date(),
         end_date: new Date(),
@@ -62,8 +71,6 @@ function SpecialistReservations() {
 
     useEffect(() => {
         if(location.state && visits && location.state.visitId !== 0) {
-            console.log("hello : ", location.state.visitId)
-
             visits.forEach((v: VisitCalendar) => {
                 if (v.info.id === location.state.visitId) {
                     selectVisit(v)
@@ -120,10 +127,7 @@ function SpecialistReservations() {
 
             Swal.fire({
                 didOpen: () => setShowErrorWindow(true),
-                didClose: () => {
-                    setShowErrorWindow(false)
-                    setUniversalError("")
-                },
+                didClose: () => clearVariables(),
                 showConfirmButton: false,
             })
             return;
@@ -134,10 +138,7 @@ function SpecialistReservations() {
 
             Swal.fire({
                 didOpen: () => setShowErrorWindow(true),
-                didClose: () => {
-                    setShowErrorWindow(false)
-                    setUniversalError("")
-                },
+                didClose: () => clearVariables(),
                 showConfirmButton: false,
             })
             return;
@@ -149,10 +150,7 @@ function SpecialistReservations() {
 
             Swal.fire({
                 didOpen: () => setShowErrorWindow(true),
-                didClose: () => {
-                    setShowErrorWindow(false)
-                    setUniversalError("")
-                },
+                didClose: () => clearVariables(),
                 showConfirmButton: false,
             })
             return;
@@ -167,11 +165,7 @@ function SpecialistReservations() {
 
         Swal.fire({
             didOpen: () => setShowTimeOffWindow(true),
-            didClose: () => {
-                setShowTimeOffWindow(false)
-                setUniversalError("")
-                setSuccessMessage("")
-            },
+            didClose: () => clearVariables(),
             showConfirmButton: false,
         })
     }
@@ -215,8 +209,35 @@ function SpecialistReservations() {
         return {};
     }
 
+    function clearVariables(){
+        setShowVisitWindow(false)
+        setInfo("")
+        setDateError("")
+        setSuccessMessage("")
+        setPriceError("")
+        setUniversalError("")
+        setIsVisitOld(false)
+        setShowErrorWindow(false)
+        setShowTimeOffWindow(false)
+        setTypeState([])
+        setNotification({
+            type: '',
+            notifier: 'specialist',
+            client_id: 0,
+            specialist_id: 0,
+            visit_id: 0,
+        })
+    }
+
     const selectVisit = (visit: VisitCalendar) => {
+        setBaseVisit(visit)
         setSelectedVisit(visit)
+        setNotification({
+            ...notification,
+            client_id: visit.client.id,
+            specialist_id: visit.specialist.id,
+            visit_id: visit.info.id,
+        })
 
         if (visit.info.start_date < new Date()) {
             setInfo("Wybrana wizyta jest wizytą z przeszłości")
@@ -225,15 +246,7 @@ function SpecialistReservations() {
             Swal.fire({
                 customClass: 'swal-wide',
                 didOpen: () => setShowVisitWindow(true),
-                didClose: () => {
-                    setShowVisitWindow(false)
-                    setInfo("")
-                    setDateError("")
-                    setSuccessMessage("")
-                    setPriceError("")
-                    setUniversalError("")
-                    setIsVisitOld(false)
-                },
+                didClose: () => clearVariables(),
                 showConfirmButton: false,
             })
             return
@@ -245,14 +258,7 @@ function SpecialistReservations() {
             Swal.fire({
                 customClass: 'swal-wide',
                 didOpen: () => setShowVisitWindow(true),
-                didClose: () => {
-                    setShowVisitWindow(false)
-                    setPriceError("")
-                    setDateError("")
-                    setInfo("")
-                    setSuccessMessage("")
-                    setUniversalError("")
-                },
+                didClose: () => clearVariables(),
                 showConfirmButton: false,
             })
         } else if (visit.info.status === 'client_action_required') {
@@ -261,14 +267,7 @@ function SpecialistReservations() {
             Swal.fire({
                 customClass: 'swal-wide',
                 didOpen: () => setShowVisitWindow(true),
-                didClose: () => {
-                    setShowVisitWindow(false)
-                    setInfo("")
-                    setPriceError("")
-                    setDateError("")
-                    setUniversalError("")
-                    setSuccessMessage("")
-                },
+                didClose: () => clearVariables(),
                 showConfirmButton: false,
             })
         } else if (visit.info.status === 'specialist_action_required') {
@@ -277,14 +276,7 @@ function SpecialistReservations() {
             Swal.fire({
                 customClass: 'swal-wide',
                 didOpen: () => setShowVisitWindow(true),
-                didClose: () => {
-                    setShowVisitWindow(false)
-                    setInfo("")
-                    setDateError("")
-                    setPriceError("")
-                    setUniversalError("")
-                    setSuccessMessage("")
-                },
+                didClose: () => clearVariables(),
                 showConfirmButton: false,
             })
         } else if (visit.info.status === 'accepted') {
@@ -293,14 +285,7 @@ function SpecialistReservations() {
             Swal.fire({
                 customClass: 'swal-wide',
                 didOpen: () => setShowVisitWindow(true),
-                didClose: () => {
-                    setShowVisitWindow(false)
-                    setInfo("")
-                    setPriceError("")
-                    setDateError("")
-                    setUniversalError("")
-                    setSuccessMessage("")
-                },
+                didClose: () => clearVariables(),
                 showConfirmButton: false,
             })
         }
@@ -441,6 +426,7 @@ function SpecialistReservations() {
                     }
 
                     getVisits()
+                    createNotification(newStatus)
                 }
             })
             .catch((err) => {
@@ -456,8 +442,16 @@ function SpecialistReservations() {
         updatedVisit!.info.status = status
 
         if (status === 'declined') {
+            setNotification({
+                ...notification,
+                type: 'declined'
+            })
             updateVisit(updatedVisit!, 'declined', "Pomyślnie odrzucono wizytę")
         } else if (status === 'accepted') {
+            setNotification({
+                ...notification,
+                type: 'accepted'
+            })
             updateVisit(updatedVisit!, 'accepted', "Pomyślnie zaakceptowano wizytę")
         }
     }
@@ -524,6 +518,87 @@ function SpecialistReservations() {
         const updatedVisit = cloneDeep(selectedVisit!)
         updatedVisit!.info.status = 'client_action_required'
         updateVisit(updatedVisit, 'client_action_required', "Pomyślnie zaktualizowano wizytę")
+    }
+
+    function setNotificationType(v1: any, v2: any, type: string) {
+        if (v1 !== v2) {
+            if (!typeState.includes(type)) {
+                if (notification.type === '') {
+                    setNotification({
+                        ...notification,
+                        type: type
+                    })
+                } else {
+                    setNotification({
+                        ...notification,
+                        type: 'modified'
+                    })
+                }
+
+                setTypeState([
+                    ...typeState,
+                    type
+                ])
+            }
+        } else {
+            if (notification.type === type) {
+                setNotification({
+                    ...notification,
+                    type: ''
+                })
+            } else {
+                let tmp = typeState.filter(s => s !== type)
+
+                if (tmp.length === 1) {
+                    setNotification({
+                        ...notification,
+                        type: tmp[0]
+                    })
+                } else {
+                    setNotification({
+                        ...notification,
+                        type: 'modified'
+                    })
+                }
+            }
+
+            setTypeState(
+                typeState.filter(s => s !== type)
+            )
+        }
+    }
+
+    function createNotification(type: string) {
+        let tmp = cloneDeep(notification!)
+        if (type === 'declined'){
+            tmp.type = 'declined'
+        } else if (type === 'accepted') {
+            tmp.type = 'accepted'
+        }
+
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+        headers.append("Authorization", "Bearer " + jwtToken)
+        const method = "POST"
+
+        fetch(`/specialist/notifications/create`, {
+            body: JSON.stringify(tmp),
+            method: method,
+            headers: headers,
+            credentials: 'include'
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    console.log("ERRORS")
+                    setUniversalError(data.message)
+                } else {
+                    console.log("SUCCESSFULLY CREATED NOTIFICATION")
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
     }
 
     return (
@@ -762,6 +837,7 @@ function SpecialistReservations() {
                                                             }
                                                         })
                                                     }
+                                                    setNotificationType(baseVisit?.info.start_date.getTime(), value!.toDate().getTime(), 'modified_date')
                                                     setDateError("")
                                                     setSuccessMessage("")
                                                     setUniversalError("")
@@ -793,6 +869,7 @@ function SpecialistReservations() {
                                                             }
                                                         })
                                                     }
+                                                    setNotificationType(baseVisit?.info.end_date.getTime(), value!.toDate().getTime(), 'modified_date')
                                                     setDateError("")
                                                     setUniversalError("")
                                                     setSuccessMessage("")
@@ -836,9 +913,6 @@ function SpecialistReservations() {
                                     value={0 || selectedVisit!.info.price}
                                     className={`w-full h-14 border-2 text-lg border-gray-300 rounded-md pl-2`}
                                     onChange={(value) => {
-                                        setPriceError("")
-                                        setSuccessMessage("")
-                                        setUniversalError("")
                                         if (selectedVisit) {
                                             setSelectedVisit({
                                                 ...selectedVisit,
@@ -848,6 +922,10 @@ function SpecialistReservations() {
                                                 }
                                             })
                                         }
+                                        setNotificationType(baseVisit?.info.price, value.target.value, 'modified_price')
+                                        setPriceError("")
+                                        setSuccessMessage("")
+                                        setUniversalError("")
                                     }}
                                 />
                             </div>
