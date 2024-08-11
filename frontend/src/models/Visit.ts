@@ -29,3 +29,8 @@ export interface VisitRequest {
     specialist_id: number
     specialist_service_id: number
 }
+
+export interface VisitBasicInfo {
+    id: number
+    service: string
+}

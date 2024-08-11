@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Link, Outlet, useNavigate} from "react-router-dom";
+import {Notification} from "./models/Notification";
 
 export interface AuthContextType {
     jwtToken: string;
@@ -16,9 +17,14 @@ function App() {
     const [tickInterval, setTickInterval] = useState<any>()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [name, setName] = useState("")
+    const [notifications, setNotifications] = useState<Notification[]>()
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
+    const [fill, setFill] = useState(false)
+    const [unread, setUnread] = useState(false)
 
     const navigate = useNavigate()
     const menuRef = useRef<HTMLDivElement | null>(null);
+    const notificationsRef = useRef<HTMLDivElement | null>(null);
 
     const logout = () => {
         console.log("LOGOUT")
@@ -34,6 +40,7 @@ function App() {
                 setUserRole("")
                 setIsMenuOpen(false)
                 toggleRefresh(false)
+                setNotifications([])
                 setName("")
                 sessionStorage.removeItem(userRole)
                 navigate("/wybor_konta")
@@ -53,6 +60,7 @@ function App() {
                             console.log("Refreshed Token")
                             setJwtToken(data.access_token)
                             setUserRole(data.user_role)
+                            getNotifications()
                         }
                     })
                     .catch((err) => {
@@ -91,12 +99,79 @@ function App() {
                 .catch((err) => {
                     console.log("user isn't logged", err)
                 })
+        } else {
+            getNotifications()
         }
     }, [jwtToken, userRole, toggleRefresh])
+
+    const getNotifications = () => {
+        const user = sessionStorage.getItem(userRole)
+
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+        headers.append("Authorization", "Bearer " + jwtToken)
+
+        if (userRole === 'client' && user) {
+            fetch(`/client/notifications/${JSON.parse(user!).id}`, {
+                method: "GET",
+                headers: headers,
+                credentials: 'include'
+            }).then((response) => response.json())
+                .then((data) => {
+                    const tmp: Notification[] = []
+
+                    if(data) {
+                        data.forEach((n: Notification) => {
+                            n.created_at = new Date(n.created_at)
+                            tmp.push(n)
+                        })
+                    }
+
+                    setNotifications(tmp)
+                })
+                .catch((err) => {
+                    console.log("cannot retrieve Notifications for client: ", err)
+                })
+
+        } else if (userRole === 'specialist' && user) {
+            fetch(`/specialist/notifications/${JSON.parse(user!).id}`, {
+                method: "GET",
+                headers: headers,
+                credentials: 'include'
+            }).then((response) => response.json())
+                .then((data) => {
+                    const tmp: Notification[] = []
+
+                    if(data) {
+                        data.forEach((n: Notification) => {
+                            n.created_at = new Date(n.created_at)
+                            tmp.push(n)
+                        })
+                    }
+
+                    setNotifications(tmp)
+                })
+                .catch((err) => {
+                    console.log("cannot retrieve Notifications for specialist: ", err)
+                })
+        }
+    }
+
+    useEffect(() => {
+        notifications?.forEach((n: Notification) => {
+            if(!n.read) {
+                setUnread(true)
+            }
+        })
+    }, [notifications]);
 
     const handleClickOutside = (event: MouseEvent) => {
         if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
             setIsMenuOpen(false);
+        }
+
+        if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) {
+            setIsNotificationsOpen(false)
         }
     };
 
@@ -107,13 +182,68 @@ function App() {
         };
     }, []);
 
+    function navigateToClientVisit(id: number) {
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+        headers.append("Authorization", "Bearer " + jwtToken)
+        const method = "PATCH"
+
+        fetch(`/client/notifications/update/${id}`, {
+            method: method,
+            headers: headers,
+            credentials: 'include'
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    console.log("ERRORS")
+                } else {
+                    console.log("SUCCESSFULLY UPDATED NOTIFICATIONS")
+                    getNotifications()
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+
+        navigate('/klient/rezerwacje', { state: { visitId: id }});
+    }
+
+    function navigateToSpecialistVisit(id: number) {
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json")
+        headers.append("Authorization", "Bearer " + jwtToken)
+        const method = "PATCH"
+
+        fetch(`/specialist/notifications/update/${id}`, {
+            method: method,
+            headers: headers,
+            credentials: 'include'
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    console.log("ERRORS")
+                } else {
+                    console.log("SUCCESSFULLY UPDATED NOTIFICATIONS")
+                    getNotifications()
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+
+        navigate('/specjalista/rezerwacje', { state: { visitId: id }});
+    }
+
     return (
         <>
             <div
                 className="flex flex-row sticky top-0 h-20 justify-center items-center bg-amber-900 text-white text-2xl font-medium z-40">
 
                 {/* Logo */}
-                <Link to="/" className="flex w-24 ml-10 justify-center items-center hover:cursor-pointer transition-all hover:tracking-widest duration-300">
+                <Link to="/"
+                      className="flex w-24 ml-10 justify-center items-center hover:cursor-pointer transition-all hover:tracking-widest duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                          stroke="currentColor" className="w-6 h-6 mx-1">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -187,50 +317,229 @@ function App() {
                     </Link>
                 }
 
+                {/* NOTIFICATIONS*/}
+                {jwtToken && userRole === 'client' && notifications &&
+                    <div className={`flex h-full justify-center items-center text-center`}
+                         ref={notificationsRef}>
+                        <div className="w-16" id="notifications">
+                            <div className="h-18 flex flex-row h-full justify-center items-center hover:cursor-pointer"
+                                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                                 onMouseEnter={() => setFill(true)}
+                                 onMouseLeave={() => setFill(false)}
+                            >
+                                <div className="w-7">
+                                    <svg data-slot="icon" fill={fill || isNotificationsOpen ? "white" : "none"}
+                                         stroke-width="1.5"
+                                         stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                                         aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"></path>
+                                    </svg>
+                                </div>
+                                {notifications.find(n => !n.read) &&
+                                    <>
+                                        <span className="relative flex h-3 w-3 mb-8">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
+                                        </span>
+                                    </>
+                                }
+                            </div>
+                        </div>
+
+                        <div
+                            className={`absolute w-[450px] top-20 right-[20px] flex flex-col items-center bg-amber-900 rounded-b-2xl  border-x-4 border-amber-950 shadow-lg transition-max-height duration-300 ease-out overflow-hidden ${isNotificationsOpen ? 'border-b-4 max-h-[600px]' : 'max-h-0'}`}>
+                            {notifications && notifications?.length === 0 ?
+                                <div>
+                                    <p className="my-5">Brak powiadomień</p>
+                                </div>
+                                :
+                                <div className="w-full overflow-auto">
+                                    {
+                                        notifications!.map((n) => {
+                                            return (
+                                                <div onClick={e => {
+                                                          setIsNotificationsOpen(false)
+                                                          navigateToClientVisit(n.visit.id)
+                                                      }}
+                                                    className={`w-full flex flex-row items-center drop-shadow-lg bg-amber-900 my-1 p-2 ${n.read ? 'font-normal' : 'font-bold'} hover:cursor-pointer `}>
+                                                    {!n.read &&
+                                                        <div className="w-10 flex items-center justify-center">
+                                                            <div className="w-3 h-3 bg-red-600 rounded-3xl"></div>
+                                                        </div>
+                                                    }
+                                                    <div className={`flex flex-col w-full text-left text-xl mr-5 ${n.read ? 'ml-12' : 'ml-2'}`}>
+                                                        {n.type === 'declined' &&
+                                                            <p>{n.specialist.name} {n.specialist.second_name} ({n.specialist.specialization}) odrzucił realizację usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'accepted' &&
+                                                            <p>{n.specialist.name} {n.specialist.second_name} ({n.specialist.specialization}) zaakceptował realizację usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'modified' &&
+                                                            <p>{n.specialist.name} {n.specialist.second_name} ({n.specialist.specialization}) zmodyfikował rezerwację usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'modified_price' &&
+                                                            <p>{n.specialist.name} {n.specialist.second_name} ({n.specialist.specialization}) zmodyfikował cenę usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'modified_date' &&
+                                                            <p>{n.specialist.name} {n.specialist.second_name} ({n.specialist.specialization}) zmodyfikował datę realizacji usługi "{n.visit.service}"</p>
+                                                        }
+                                                        <p className="text-left text-base font-light text-white mt-2">
+                                                            {n.created_at.getHours().toString()[0] === '0' ? '0' : '' }{n.created_at.getHours()}:{n.created_at.getMinutes()}{n.created_at.getMinutes().toString().length === 1 ? '0' : ''} {n.created_at.toLocaleDateString()}
+                                                        </p>
+                                                    </div>
+
+                                                </div>
+                                            )
+                                        })}
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                {jwtToken && userRole === 'specialist' && notifications &&
+                    <div className={`flex h-full justify-center items-center text-center`}
+                         ref={notificationsRef}>
+                        <div className="w-16" id="notifications">
+                            <div className="h-18 flex flex-row h-full justify-center items-center hover:cursor-pointer"
+                                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                                 onMouseEnter={() => setFill(true)}
+                                 onMouseLeave={() => setFill(false)}
+                            >
+                                <div className="w-7">
+                                    <svg data-slot="icon" fill={fill || isNotificationsOpen ? "white" : "none"}
+                                         stroke-width="1.5"
+                                         stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                                         aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"></path>
+                                    </svg>
+                                </div>
+                                {notifications.find(n => !n.read) &&
+                                    <>
+                                        <span className="relative flex h-3 w-3 mb-8">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
+                                        </span>
+                                    </>
+                                }
+                            </div>
+                        </div>
+
+                        <div
+                            className={`absolute w-[450px] top-20 right-[20px] flex flex-col items-center bg-amber-900 rounded-b-2xl  border-x-4 border-amber-950 shadow-lg transition-max-height duration-300 ease-out overflow-hidden ${isNotificationsOpen ? 'border-b-4 max-h-[600px]' : 'max-h-0'}`}>
+                            {notifications && notifications?.length === 0 ?
+                                <div>
+                                    <p className="my-5">Brak powiadomień</p>
+                                </div>
+                                :
+                                <div className="w-full overflow-auto">
+                                    {
+                                        notifications!.map((n) => {
+                                            return (
+                                                <div onClick={e => {
+                                                    setIsNotificationsOpen(false)
+                                                    navigateToSpecialistVisit(n.visit.id)
+                                                }}
+                                                     className={`w-full flex flex-row items-center drop-shadow-lg bg-amber-900 my-1 p-2 ${n.read ? 'font-normal' : 'font-bold'} hover:cursor-pointer `}>
+                                                    {!n.read &&
+                                                        <div className="w-10 flex items-center justify-center">
+                                                            <div className="w-3 h-3 bg-red-600 rounded-3xl"></div>
+                                                        </div>
+                                                    }
+                                                    <div className={`flex flex-col w-full text-left text-xl mr-5 ${n.read ? 'ml-12' : 'ml-2'}`}>
+                                                        {n.type === 'created' &&
+                                                            <p>{n.client.name} {n.client.second_name[0]}. utworzył nową rezerwację usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'declined' &&
+                                                            <p>{n.client.name} {n.client.second_name[0]}. odrzucił realizację usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'accepted' &&
+                                                            <p>{n.client.name} {n.client.second_name[0]}. zaakceptował realizację usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'modified' &&
+                                                            <p>{n.client.name} {n.client.second_name[0]}. zmodyfikował realizację usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'modified_address' &&
+                                                            <p>{n.client.name} {n.client.second_name[0]}. zmodyfikował adres zarezerwowanej usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'modified_date' &&
+                                                            <p>{n.client.name} {n.client.second_name[0]}. zmodyfikował datę realizacji usługi "{n.visit.service}"</p>
+                                                        }
+                                                        {n.type === 'modified_description' &&
+                                                            <p>{n.client.name} {n.client.second_name[0]}. zmodyfikował opis zarezerwowanej usługi "{n.visit.service}"</p>
+                                                        }
+                                                        <p className="text-left text-base font-light text-white mt-2">
+                                                            {n.created_at.getHours()}:{n.created_at.getMinutes()}{n.created_at.getMinutes().toString().length === 1 ? '0' : ''} {n.created_at.toLocaleDateString()}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            )
+                                        })}
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
                 {/* CLIENT MENU */}
                 {jwtToken !== "" && userRole === "client" &&
-                    <div className={`flex w-52 h-full justify-center items-center text-center ${isMenuOpen ? 'border-t-4 border-x-4 border-amber-950': ''}`} ref={menuRef}>
+                    <div
+                        className={`flex w-52 h-full justify-center items-center text-center ${isMenuOpen ? 'border-t-4 rounded-t-2xl border-x-4 border-amber-950' : ''}`}
+                        ref={menuRef}>
                         <div id="menu"
                              className="flex items-center justify-center mx-5 top-0 right-2 text-white rounded cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 duration-300 ..."
                              onClick={e => setIsMenuOpen(!isMenuOpen)}>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                 stroke="currentColor" className="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                             </svg>
-                            <p className="ml-2">{name? name : "Konto"}</p>
+                            <p className="ml-2">{name ? name : "Konto"}</p>
                         </div>
-                        <div className={`absolute w-52 top-20 flex flex-col items-center bg-amber-900  border-x-4 border-amber-950 shadow-lg transition-max-height duration-300 ease-out overflow-hidden ${isMenuOpen ? 'border-b-4 max-h-[600px]' : 'max-h-0'}`}>
+                        <div
+                            className={`absolute w-52 top-20 flex flex-col items-center bg-amber-900 rounded-b-2xl border-x-4 border-amber-950 shadow-lg transition-max-height duration-300 ease-out overflow-hidden ${isMenuOpen ? 'border-b-4 max-h-[600px]' : 'max-h-0'}`}>
                             <div className="bg-white rounded-md h-1 mb-6 w-2/3"></div>
 
                             <div className="flex flex-col items-center justify-items-center">
                                 <Link to="/klient/moje_oferty" onClick={e => setIsMenuOpen(false)}
                                       className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
                                     <p className="drop-shadow-lg mr-2 ">moje oferty</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                         stroke-width="1.5" stroke="currentColor" className="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"/>
                                     </svg>
                                 </Link>
 
                                 <Link to="/klient/rezerwacje" onClick={e => setIsMenuOpen(false)}
                                       className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
                                     <p className="drop-shadow-lg mr-2 ">moje rezerwacje</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                         stroke-width="1.5" stroke="currentColor" className="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/>
                                     </svg>
                                 </Link>
 
                                 <Link to="/klient/czaty" onClick={e => setIsMenuOpen(false)}
                                       className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
                                     <p className="drop-shadow-lg mr-2 ">czaty</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                         stroke-width="1.5" stroke="currentColor" className="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/>
                                     </svg>
                                 </Link>
 
                                 <Link to="/klient/profil" onClick={e => setIsMenuOpen(false)}
                                       className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
                                     <p className="drop-shadow-lg mr-2 ">edytuj profil</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                         stroke-width="1.5" stroke="currentColor" className="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/>
                                     </svg>
                                 </Link>
                             </div>
@@ -249,40 +558,51 @@ function App() {
 
                 {/* SPECIALIST MENU */}
                 {jwtToken !== "" && userRole === "specialist" &&
-                    <div className={`flex w-52 h-full justify-center items-center text-center ${isMenuOpen ? 'border-t-4 border-x-4 border-amber-950': ''}`} ref={menuRef}>
+                    <div
+                        className={`flex w-52 h-full justify-center items-center text-center ${isMenuOpen ? 'border-t-4 rounded-t-2xl border-x-4 border-amber-950' : ''}`}
+                        ref={menuRef}>
                         <div id="menu"
                              className="flex items-center justify-center mx-5 top-0 right-2 text-white rounded cursor-pointer p-2 transition ease-in-out delay-0 bg-amber-900 hover:bg-white hover:text-amber-900 duration-300 ..."
                              onClick={e => setIsMenuOpen(!isMenuOpen)}>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                 stroke="currentColor" className="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                             </svg>
-                            <p className="ml-2">{name? name : "Konto"}</p>
+                            <p className="ml-2">{name ? name : "Konto"}</p>
                         </div>
-                        <div className={`absolute w-52 top-20 flex flex-col items-center bg-amber-900  border-x-4 border-amber-950 shadow-lg transition-max-height duration-300 ease-out overflow-hidden ${isMenuOpen ? 'border-b-4 max-h-[600px]' : 'max-h-0'}`}>
+                        <div
+                            className={`absolute w-52 top-20 flex flex-col items-center bg-amber-900  border-x-4 rounded-b-2xl border-amber-950 shadow-lg transition-max-height duration-300 ease-out overflow-hidden ${isMenuOpen ? 'border-b-4 max-h-[600px]' : 'max-h-0'}`}>
                             <div className="bg-white rounded-md h-1 mb-6 w-2/3"></div>
 
                             <div className="flex flex-col items-center justify-items-center">
                                 <Link to="/specjalista/rezerwacje" onClick={e => setIsMenuOpen(false)}
                                       className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
                                     <p className="drop-shadow-lg mr-2 ">moje rezerwacje</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                         stroke-width="1.5" stroke="currentColor" className="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/>
                                     </svg>
                                 </Link>
 
                                 <Link to="/specjalista/czaty" onClick={e => setIsMenuOpen(false)}
                                       className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
                                     <p className="drop-shadow-lg mr-2 ">czaty</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                         stroke-width="1.5" stroke="currentColor" className="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/>
                                     </svg>
                                 </Link>
 
                                 <Link to="/specjalista/profil" onClick={e => setIsMenuOpen(false)}
                                       className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
                                     <p className="drop-shadow-lg mr-2 ">edytuj profil</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                         stroke-width="1.5" stroke="currentColor" className="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/>
                                     </svg>
                                 </Link>
                             </div>
@@ -304,13 +624,13 @@ function App() {
             <div>
                 <Outlet
                     context={{
-                    jwtToken,
-                    setJwtToken,
-                    userRole,
-                    setUserRole,
-                    toggleRefresh,
-                    setName,
-                }}/>
+                        jwtToken,
+                        setJwtToken,
+                        userRole,
+                        setUserRole,
+                        toggleRefresh,
+                        setName,
+                    }}/>
             </div>
         </>
     );

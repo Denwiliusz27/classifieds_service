@@ -41,4 +41,10 @@ type DAL interface {
 	GetCalendarVisitsBySpecialistIdOrClientId(specialistId *int, clientId *int) ([]models.VisitCalendar, error)
 	CreateVisit(visitRequest models.VisitRequest) (int, error)
 	UpdateVisit(visit models.VisitCalendar) error
+
+	GetNotificationsByClientId(clientId int) ([]models.Notification, error)
+	GetNotificationsBySpecialistId(specialistId int) ([]models.Notification, error)
+	UpdateNotificationsByVisitIdAndClient(visitId int) error
+	UpdateNotificationsByVisitIdAndSpecialist(visitId int) error
+	CreateNotification(notification models.NotificationRequest) (int, error)
 }

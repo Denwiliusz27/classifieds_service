@@ -325,3 +325,98 @@ const UpdateVisit = `
 	  id = $1
 	RETURNING id;
 `
+
+// --- NOTIFICATIONS ---
+
+const GetNotificationsByClientId = `
+	SELECT
+		n.id, n.type, n.notifier, n.read, n.created_at, clients.id, uc.name, uc.second_name,
+    	specialists.id, us.name, us.second_name, specializations.name, cities.name,
+    	n.visit_id, services.name  
+	FROM
+	    notifications as n
+	LEFT JOIN
+		clients ON n.client_id = clients.id
+	LEFT JOIN
+		users as uc ON clients.user_id = uc.id
+ 	LEFT JOIN
+		specialists ON n.specialist_id = specialists.id  
+	LEFT JOIN
+		users as us ON specialists.user_id = us.id
+	LEFT JOIN
+		specializations ON specialists.specialization_id = specializations.id
+    LEFT JOIN 
+  		cities ON cities.id = specialists.city_id
+    LEFT JOIN 
+  		visits ON visits.id = n.visit_id  
+    LEFT JOIN
+  		specialists_services ON specialists_services.id = visits.specialist_service_id
+  	LEFT JOIN
+  		services on specialists_services.service_id = services.id  
+	WHERE
+	    n.client_id = ($1) AND
+	    n.notifier = 'specialist'
+	ORDER BY 
+	    n.created_at DESC;
+`
+
+const GetNotificationsBySpecialistId = `
+	SELECT
+		n.id, n.type, n.notifier, n.read, n.created_at, clients.id, uc.name, uc.second_name,
+    	specialists.id, us.name, us.second_name, specializations.name, cities.name,
+    	n.visit_id, services.name  
+	FROM
+	    notifications as n
+	LEFT JOIN
+		clients ON n.client_id = clients.id
+	LEFT JOIN
+		users as uc ON clients.user_id = uc.id
+ 	LEFT JOIN
+		specialists ON n.specialist_id = specialists.id  
+	LEFT JOIN
+		users as us ON specialists.user_id = us.id
+	LEFT JOIN
+		specializations ON specialists.specialization_id = specializations.id
+    LEFT JOIN 
+  		cities ON cities.id = specialists.city_id
+    LEFT JOIN 
+  		visits ON visits.id = n.visit_id  
+    LEFT JOIN
+  		specialists_services ON specialists_services.id = visits.specialist_service_id
+  	LEFT JOIN
+  		services on specialists_services.service_id = services.id  
+	WHERE
+	    n.specialist_id = ($1) AND
+	    n.notifier = 'client'
+	ORDER BY 
+	    n.created_at DESC;
+`
+
+const UpdateNotificationForVisitIdAndClientAsRead = `
+	UPDATE notifications
+	SET
+	  read = 'true'
+	WHERE
+	  visit_id = $1 AND
+	  notifier = 'specialist'
+	RETURNING id;
+`
+
+const UpdateNotificationForVisitIdAndSpecialistAsRead = `
+	UPDATE notifications
+	SET
+	  read = 'true'
+	WHERE
+	  visit_id = $1 AND
+	  notifier = 'client'
+	RETURNING id;
+`
+
+const CreateNotification = `
+	INSERT INTO
+		notifications
+	(type, notifier, read, client_id, specialist_id, visit_id, created_at)
+	VALUES 
+	    ($1, $2, $3, $4, $5, $6, $7)
+	RETURNING id;
+`

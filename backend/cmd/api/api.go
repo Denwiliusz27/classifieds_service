@@ -490,6 +490,21 @@ func (app *Application) CreateVisit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	notification := models.NotificationRequest{
+		Type:         "created",
+		Notifier:     "client",
+		ClientId:     newVisitRequest.ClientId,
+		SpecialistId: newVisitRequest.SpecialistId,
+		VisitId:      visitId,
+	}
+
+	_, err = app.DB.CreateNotification(notification)
+	if err != nil {
+		log.Println(err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
 	_ = app.writeJSON(w, http.StatusOK, visitId)
 }
 
@@ -688,6 +703,99 @@ func (app *Application) CreateReview(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = app.writeJSON(w, http.StatusOK, newReviewId)
+}
+
+func (app *Application) GetNotificationsByClientId(w http.ResponseWriter, r *http.Request) {
+	clientId, err := strconv.Atoi(chi.URLParam(r, "client_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter client_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	notifications, err := app.DB.GetNotificationsByClientId(clientId)
+	if err != nil {
+		fmt.Println("error getting Notifications from db for clientId=", clientId, " : ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, notifications)
+}
+
+func (app *Application) GetNotificationsBySpecialistId(w http.ResponseWriter, r *http.Request) {
+	specialistId, err := strconv.Atoi(chi.URLParam(r, "specialist_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter specialist_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	notifications, err := app.DB.GetNotificationsBySpecialistId(specialistId)
+	if err != nil {
+		fmt.Println("error getting Notifications from db for specialistId=", specialistId, " : ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, notifications)
+}
+
+func (app *Application) UpdateNotificationsByVisitIdAndClient(w http.ResponseWriter, r *http.Request) {
+	visitId, err := strconv.Atoi(chi.URLParam(r, "visit_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter visit_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	err = app.DB.UpdateNotificationsByVisitIdAndClient(visitId)
+	if err != nil {
+		log.Println(err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, visitId)
+}
+
+func (app *Application) UpdateNotificationsByVisitIdAndSpecialist(w http.ResponseWriter, r *http.Request) {
+	visitId, err := strconv.Atoi(chi.URLParam(r, "visit_id"))
+	if err != nil {
+		fmt.Println("cannot find parameter visit_id: ", err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	err = app.DB.UpdateNotificationsByVisitIdAndSpecialist(visitId)
+	if err != nil {
+		log.Println(err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, visitId)
+}
+
+func (app *Application) CreateNotification(w http.ResponseWriter, r *http.Request) {
+	var newNotification models.NotificationRequest
+
+	err := app.readJSON(w, r, &newNotification)
+	if err != nil {
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	log.Println("I got new Notification to create: ", newNotification)
+
+	newNotificationId, err := app.DB.CreateNotification(newNotification)
+	if err != nil {
+		log.Println(err)
+		_ = app.errorJSON(w, err)
+		return
+	}
+
+	_ = app.writeJSON(w, http.StatusOK, newNotificationId)
 }
 
 func isVisitOverlapping(visitStartDate, visitEndDate, existingStartDate, existingEndDate time.Time) bool {

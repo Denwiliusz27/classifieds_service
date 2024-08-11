@@ -28,3 +28,8 @@ type VisitRequest struct {
 	SpecialistId        int       `json:"specialist_id"`
 	SpecialistServiceId int       `json:"specialist_service_id"`
 }
+
+type VisitBasicInfo struct {
+	Id      int    `json:"id"`
+	Service string `json:"service"`
+}

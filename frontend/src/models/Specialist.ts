@@ -42,3 +42,11 @@ export interface SpecialistExtendedInfo {
     services: SpecialistService[]
     reviews: Review[]
 }
+
+export interface SpecialistBasicInfo {
+    id: number
+    name: string
+    second_name: string
+    specialization: string
+    city: string
+}
