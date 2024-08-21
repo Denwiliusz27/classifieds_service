@@ -6,7 +6,7 @@ type DefaultType = {
 }
 
 function Select<T extends DefaultType>(
-    {labelName, name, placeholder, onChange, value, options, error}: {
+    {labelName, name, placeholder, onChange, value, options, error, disable}: {
         labelName: string
         name: string
         placeholder: string
@@ -14,6 +14,7 @@ function Select<T extends DefaultType>(
         value: any
         options: Array<T>
         error?: string
+        disable?: boolean
     }
 ) {
     return (
@@ -27,7 +28,7 @@ function Select<T extends DefaultType>(
                 onChange={onChange}
                 className={`w-full h-14 drop-shadow-2xl border-2 focus:border-4 rounded-2xl text-2xl px-6  ${error ? 'border-red-500' : 'border-amber-900 mb-7'}`}
             >
-                <option value="" disabled={value !== 0}>{placeholder}</option>
+                <option value="" disabled={value !== 0 && disable}>{placeholder}</option>
                 {options.map((option) => {
                     return (
                         <option

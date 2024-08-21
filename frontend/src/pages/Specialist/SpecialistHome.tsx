@@ -23,9 +23,8 @@ function SpecialistHome() {
                 {/* Header with general info */}
                 <div className="flex flex-col text-center pt-8">
                     <div className="flex flex-row text-3xl font-bold mb-6 justify-center">
-                        <h1 className="mx-2">Z nami będziesz miał pełne </h1>
-                        <h1 className="text-amber-900">ręce</h1>
-                        <h1 className="ml-2">roboty!</h1>
+                        <h1 className="mx-2">Z nami będziesz miał pełne
+                            <span className="text-amber-900"> ręce</span> roboty!</h1>
                     </div>
                     <p className="text-xl text-gray-500">Działamy na rynku już od 5 lat. Nasze grono specjalistów
                         pomogło niejednej osobie, może ty będziesz jednym z nich?</p>

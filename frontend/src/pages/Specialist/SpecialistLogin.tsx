@@ -103,15 +103,16 @@ function SpecialistLogin() {
                         }).then((response) => response.json())
                             .then((data) => {
                                 const specialist: Specialist = {
-                                    Id: data.id,
-                                    Name: data.name,
-                                    SecondName: data.second_name,
-                                    Email: data.email,
-                                    Description: data.description,
-                                    PhoneNr: data.phone_nr,
-                                    SpecializationId: data.specialization_id,
-                                    CityId: data.city_id,
-                                    UserId: data.user_id
+                                    id: data.id,
+                                    name: data.name,
+                                    second_name: data.second_name,
+                                    email: data.email,
+                                    description: data.description,
+                                    phone_nr: data.phone_nr,
+                                    specialization_id: data.specialization_id,
+                                    city_id: data.city_id,
+                                    user_id: data.user_id,
+                                    created_at: data.created_at
                                 }
                                 sessionStorage.setItem("specialist", JSON.stringify(specialist))
                                 setName(data.name)

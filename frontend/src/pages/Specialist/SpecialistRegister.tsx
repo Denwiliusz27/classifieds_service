@@ -7,7 +7,7 @@ import 'react-international-phone/style.css';
 import {Service, Specialization} from "../../models/Specialization";
 import {createPortal} from "react-dom";
 import {Link, useNavigate, useOutletContext} from "react-router-dom";
-import {SpecialistRequest, SpecialistService} from "../../models/SpecialistRequest";
+import {SpecialistRequest, SpecialistServiceRequest} from "../../models/SpecialistRequest";
 import {AuthContextType} from "../../App";
 
 
@@ -136,7 +136,7 @@ function SpecialistRegister() {
 
     const handleServiceChange = (event: React.ChangeEvent<HTMLInputElement>, serviceId: number) => {
         if (event.target.checked) {
-            const newService: SpecialistService = {service_id: serviceId, min_price: 0, max_price: 0}
+            const newService: SpecialistServiceRequest = {service_id: serviceId, min_price: 0, max_price: 0}
 
             setSpecialist({
                 ...specialist,
@@ -406,6 +406,7 @@ function SpecialistRegister() {
                                 value={specialist.city_id}
                                 options={cities}
                                 error={errors["city_id"]}
+                                disable={true}
                             />
 
                             <Input
@@ -427,6 +428,7 @@ function SpecialistRegister() {
                             value={specialist.specialization_id}
                             options={specializations}
                             error={errors["specialization_id"]}
+                            disable={true}
                         />
 
                         {specialist.specialization_id !== 0 &&

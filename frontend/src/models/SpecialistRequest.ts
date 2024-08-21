@@ -7,11 +7,11 @@ export interface SpecialistRequest {
     city_id: number
     phone_nr: string
     specialization_id: number
-    services: SpecialistService[]
+    services: SpecialistServiceRequest[]
     description: string
 }
 
-export interface SpecialistService {
+export interface SpecialistServiceRequest {
     min_price: number
     max_price: number
     service_id: number

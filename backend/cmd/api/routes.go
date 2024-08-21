@@ -18,6 +18,13 @@ func (app *Application) Routes() http.Handler {
 		mux.Use(app.authRequired)
 		mux.Get("/reservations", app.GetClientReservations)
 		mux.Get("/info/{user_id}", app.GetClientInfoByUserId)
+		mux.Get("/addresses/{client_id}", app.GetClientAddressesByClientId)
+		mux.Post("/create_visit", app.CreateVisit)
+		mux.Patch("/update_visit", app.UpdateVisitByClient)
+		mux.Post("/visit/create", app.CreateReview)
+		mux.Get("/notifications/{client_id}", app.GetNotificationsByClientId)
+		mux.Patch("/notifications/update/{visit_id}", app.UpdateNotificationsByVisitIdAndClient)
+		mux.Post("/notifications/create", app.CreateNotification)
 	})
 
 	mux.Post("/register_client", app.CreateClient)
@@ -26,7 +33,15 @@ func (app *Application) Routes() http.Handler {
 		mux.Use(app.authRequired)
 		mux.Get("/reservations", app.GetSpecialistReservations)
 		mux.Get("/info/{user_id}", app.GetSpecialistInfoByUserId)
+		mux.Post("/create_time_off", app.CreateTimeOff)
+		mux.Patch("/update_visit", app.UpdateVisitBySpecialist)
+		mux.Get("/notifications/{specialist_id}", app.GetNotificationsBySpecialistId)
+		mux.Patch("/notifications/update/{visit_id}", app.UpdateNotificationsByVisitIdAndSpecialist)
+		mux.Post("/notifications/create", app.CreateNotification)
 	})
+
+	mux.Get("/specialists/{specialization_id}/{city_id}/{service_id}", app.GetSpecialistsBySpecializationIdCityIdServiceId)
+	mux.Get("/specialist/detailed_info/{specialist_id}", app.GetSpecialistDetailedInfo)
 
 	mux.Post("/register_specialist", app.CreateSpecialist)
 
@@ -38,6 +53,13 @@ func (app *Application) Routes() http.Handler {
 
 	mux.Get("/services", app.GetAllServices)
 
+	mux.Get("/time_off/{specialist_id}", app.GetTimeOffBySpecialistId)
+
+	mux.Get("/visits/{specialist_id}/{client_id}", app.GetCalendarVisitsBySpecialistIdOrClientId)
+
+	mux.Route("/reviews", func(mux chi.Router) {
+		mux.Get("/{visit_id}", app.GetReviewByVisitId)
+	})
 	return mux
 }
 
