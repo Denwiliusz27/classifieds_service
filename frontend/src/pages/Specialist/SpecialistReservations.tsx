@@ -394,13 +394,14 @@ function SpecialistReservations() {
     function updateVisit(visit: VisitCalendar, newStatus: string, message: string){
         setSuccessMessage("")
         setUniversalError("")
+        console.log(visit)
 
         const headers = new Headers()
         headers.append("Content-Type", "application/json")
         headers.append("Authorization", "Bearer " + jwtToken)
         const method = "PATCH"
 
-        fetch(`/specialist/update_visit`, {
+        fetch(`/specialist/visit/update`, {
             body: JSON.stringify(visit),
             method: method,
             headers: headers,
