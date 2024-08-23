@@ -394,6 +394,7 @@ function SpecialistReservations() {
     function updateVisit(visit: VisitCalendar, newStatus: string, message: string){
         setSuccessMessage("")
         setUniversalError("")
+        console.log(visit)
 
         const headers = new Headers()
         headers.append("Content-Type", "application/json")
