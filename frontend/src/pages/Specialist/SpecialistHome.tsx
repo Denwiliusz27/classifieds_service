@@ -32,13 +32,11 @@ function SpecialistHome() {
 
                 <div className="bg-amber-900 rounded-md h-1 my-6"></div>
 
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center my-20">
                     <h1 className="font-bold text-2xl mb-8">Jak zaoferować pomoc?</h1>
 
                     {/* First option - accept reservations */}
                     <div className="flex flex-row items-center  justify-center text-center text-gray-500 my-6">
-                        <p className="text-amber-900 font-bold text-3xl">1.</p>
-
                         {/* First element with magnifier */}
                         <HomepageOptionElement
                             img="https://logowik.com/content/uploads/images/calendar5662.jpg"
@@ -64,40 +62,6 @@ function SpecialistHome() {
                             img="https://icon-library.com/images/handshake-icon/handshake-icon-3.jpg"
                             alt="handshake1"
                             text="Dogadaj szczegóły z klientem i zaakceptuj wykonanie usługi"
-                            h={24}
-                        />
-                    </div>
-
-                    {/* Second option - creating offer */}
-                    <div className="flex flex-row items-center  justify-center text-center text-gray-500 my-6">
-                        <p className="text-amber-900 font-bold text-3xl">2.</p>
-
-                        {/* First element with searching offers */}
-                        <HomepageOptionElement
-                            img="https://icon-library.com/images/free-icon-list/free-icon-list-27.jpg"
-                            alt="list"
-                            text="Sprawdź listę dostępnych ofert utworzonych przez użytkowników"
-                        />
-
-                        {/* Arrow */}
-                        <Arrow/>
-
-                        {/* Second element with auction */}
-                        <HomepageOptionElement
-                            img="https://icon-library.com/images/hammer-icon-png/hammer-icon-png-5.jpg"
-                            alt="action"
-                            text="Złóż propozycję ceny i terminu wykonania usługi"
-                            h={32}
-                        />
-
-                        {/* Arrow */}
-                        <Arrow/>
-
-                        {/* Third element with handshake */}
-                        <HomepageOptionElement
-                            img="https://icon-library.com/images/handshake-icon/handshake-icon-3.jpg"
-                            alt="handshake"
-                            text="Dogadaj szczegóły z klientem"
                             h={24}
                         />
                     </div>

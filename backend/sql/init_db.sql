@@ -149,44 +149,6 @@ CREATE TABLE public.visits
 );
 
 --
--- Name: offers; Type: TABLE; Schema: public; Owner: -
---
-CREATE TABLE public.offers
-(
-    id                  integer PRIMARY KEY    NOT NULL,
-    title               character varying(255) NOT NULL,
-    description         text                   NOT NULL,
-    auctions_end_date   timestamp without time zone NOT NULL,
-    preferred_lead_date date                   NOT NULL,
-    client_id           integer                NOT NULL
-);
-
---
--- Name: offers_auctions; Type: TABLE; Schema: public; Owner: -
---
-CREATE TABLE public.offers_auctions
-(
-    id            integer PRIMARY KEY NOT NULL,
-    price         integer             NOT NULL,
-    start_date    timestamp without time zone NOT NULL,
-    end_date      timestamp without time zone NOT NULL,
-    specialist_id integer             NOT NULL,
-    offer_id      integer             NOT NULL
-);
-
---
--- Name: messages; Type: TABLE; Schema: public; Owner: -
---
-CREATE TABLE public.messages
-(
-    id            integer PRIMARY KEY NOT NULL,
-    message       text                NOT NULL,
-    send_date     timestamp without time zone NOT NULL,
-    specialist_id integer             NOT NULL,
-    client_id     integer             NOT NULL
-);
-
---
 -- Name: reviews; Type: TABLE; Schema: public; Owner: -
 --
 CREATE TABLE public.reviews
@@ -329,42 +291,6 @@ ALTER TABLE public.time_off ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 --
 ALTER TABLE public.visits ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
     SEQUENCE NAME public.visits_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
-
---
--- Name: offers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-ALTER TABLE public.offers ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.offers_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
-
---
--- Name: offers_auctions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-ALTER TABLE public.offers_auctions ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.offers_auctions_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
-
---
--- Name: messages_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-ALTER TABLE public.messages ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME public.messages_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -650,21 +576,6 @@ SELECT pg_catalog.setval('public.time_off_id_seq', 2, true);
 SELECT pg_catalog.setval('public.visits_id_seq', 6, true);
 
 --
--- Name: offers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-SELECT pg_catalog.setval('public.offers_id_seq', 1, true);
-
---
--- Name: offers_auctions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-SELECT pg_catalog.setval('public.offers_auctions_id_seq', 1, true);
-
---
--- Name: messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-SELECT pg_catalog.setval('public.messages_id_seq', 1, true);
-
---
 -- Name: reviews_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 SELECT pg_catalog.setval('public.reviews_id_seq', 2, true);
@@ -842,56 +753,6 @@ CASCADE;
 --
 ALTER TABLE ONLY public.visits
     ADD CONSTRAINT visits_client_address_id_fk FOREIGN KEY (client_address_id) REFERENCES public.clients_addresses(id) ON
-UPDATE CASCADE
-ON
-DELETE
-CASCADE;
-
---
--- Name: offers offers_client_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-ALTER TABLE ONLY public.offers
-    ADD CONSTRAINT offers_client_id_fk FOREIGN KEY (client_id) REFERENCES public.clients(id) ON
-UPDATE CASCADE
-ON
-DELETE
-CASCADE;
-
---
--- Name: offers_auctions offers_auctions_specialist_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-ALTER TABLE ONLY public.offers_auctions
-    ADD CONSTRAINT offers_auctions_specialist_id_fk FOREIGN KEY (specialist_id) REFERENCES public.specialists(id) ON
-UPDATE CASCADE
-ON
-DELETE
-CASCADE;
-
---
--- Name: offers_auctions offers_auctions_offer_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-ALTER TABLE ONLY public.offers_auctions
-    ADD CONSTRAINT offers_auctions_offer_id_fk FOREIGN KEY (offer_id) REFERENCES public.offers(id) ON
-UPDATE CASCADE
-ON
-DELETE
-CASCADE;
-
---
--- Name: messages messages_specialist_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-ALTER TABLE ONLY public.messages
-    ADD CONSTRAINT messages_specialist_id_fk FOREIGN KEY (specialist_id) REFERENCES public.specialists(id) ON
-UPDATE CASCADE
-ON
-DELETE
-CASCADE;
-
---
--- Name: messages messages_client_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-ALTER TABLE ONLY public.messages
-    ADD CONSTRAINT messages_client_id_fk FOREIGN KEY (client_id) REFERENCES public.clients(id) ON
 UPDATE CASCADE
 ON
 DELETE

@@ -259,7 +259,6 @@ function App() {
                 {/* Middle links */}
                 <div className="flex flex-1 justify-center items-center">
                     <div className="flex justify-center items-center space-x-4">
-
                         {userRole !== "specialist" &&
                             <Link to="/wyszukaj"
                                   className="flex items-center p-6 drop-shadow-lg transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110 duration-300 ...">
@@ -271,38 +270,6 @@ function App() {
                                 </svg>
                                 <p className="drop-shadow-lg">wyszukaj usługę</p>
                             </Link>
-                        }
-
-                        {jwtToken !== "" && userRole === "client" &&
-                            <>
-                                <div className="w-1 bg-white rounded-md h-10"></div>
-
-                                <Link to="/klient/stworz_oferte"
-                                      className="flex items-center p-6 drop-shadow-lg transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110 duration-300 ...">
-                                    <p className="drop-shadow-lg">stwórz ofertę</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                         stroke-width="1.5"
-                                         stroke="currentColor" className="w-6 h-6 mx-2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
-                                    </svg>
-                                </Link>
-                            </>
-                        }
-
-                        {jwtToken !== "" && userRole === "specialist" &&
-                            <>
-                                <Link to="/specjalista/oferty"
-                                      className="flex items-center p-6 drop-shadow-lg transition ease-in-out delay-100 hover:-translate-y-1 hover:scale-110 duration-300 ...">
-                                    <p className="drop-shadow-lg">przeglądaj oferty</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                         stroke-width="1.5"
-                                         stroke="currentColor" className="w-6 h-6 mx-2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
-                                    </svg>
-                                </Link>
-                            </>
                         }
                     </div>
                 </div>
@@ -385,7 +352,7 @@ function App() {
                                                             <p>{n.specialist.name} {n.specialist.second_name} ({n.specialist.specialization}) zmodyfikował datę realizacji usługi "{n.visit.service}"</p>
                                                         }
                                                         <p className="text-left text-base font-light text-white mt-2">
-                                                            {n.created_at.getHours().toString()[0] === '0' ? '0' : '' }{n.created_at.getHours()}:{n.created_at.getMinutes()}{n.created_at.getMinutes().toString().length === 1 ? '0' : ''} {n.created_at.toLocaleDateString()}
+                                                            {n.created_at.getHours().toString()[0] === '0' ? '0' : '' }{n.created_at.getHours()}:{n.created_at.getMinutes().toString().length === 1 ? '0' : ''}{n.created_at.getMinutes()} {n.created_at.toLocaleDateString()}
                                                         </p>
                                                     </div>
 
@@ -471,7 +438,7 @@ function App() {
                                                             <p>{n.client.name} {n.client.second_name[0]}. zmodyfikował opis zarezerwowanej usługi "{n.visit.service}"</p>
                                                         }
                                                         <p className="text-left text-base font-light text-white mt-2">
-                                                            {n.created_at.getHours()}:{n.created_at.getMinutes()}{n.created_at.getMinutes().toString().length === 1 ? '0' : ''} {n.created_at.toLocaleDateString()}
+                                                            {n.created_at.getHours()}:{n.created_at.getMinutes().toString().length === 1 ? '0' : ''}{n.created_at.getMinutes()} {n.created_at.toLocaleDateString()}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -503,16 +470,6 @@ function App() {
                             <div className="bg-white rounded-md h-1 mb-6 w-2/3"></div>
 
                             <div className="flex flex-col items-center justify-items-center">
-                                <Link to="/klient/moje_oferty" onClick={e => setIsMenuOpen(false)}
-                                      className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
-                                    <p className="drop-shadow-lg mr-2 ">moje oferty</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                         stroke-width="1.5" stroke="currentColor" className="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"/>
-                                    </svg>
-                                </Link>
-
                                 <Link to="/klient/rezerwacje" onClick={e => setIsMenuOpen(false)}
                                       className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
                                     <p className="drop-shadow-lg mr-2 ">moje rezerwacje</p>
@@ -520,26 +477,6 @@ function App() {
                                          stroke-width="1.5" stroke="currentColor" className="size-6">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                               d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/>
-                                    </svg>
-                                </Link>
-
-                                <Link to="/klient/czaty" onClick={e => setIsMenuOpen(false)}
-                                      className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
-                                    <p className="drop-shadow-lg mr-2 ">czaty</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                         stroke-width="1.5" stroke="currentColor" className="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/>
-                                    </svg>
-                                </Link>
-
-                                <Link to="/klient/profil" onClick={e => setIsMenuOpen(false)}
-                                      className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
-                                    <p className="drop-shadow-lg mr-2 ">edytuj profil</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                         stroke-width="1.5" stroke="currentColor" className="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/>
                                     </svg>
                                 </Link>
                             </div>
@@ -585,26 +522,6 @@ function App() {
                                               d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/>
                                     </svg>
                                 </Link>
-
-                                <Link to="/specjalista/czaty" onClick={e => setIsMenuOpen(false)}
-                                      className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
-                                    <p className="drop-shadow-lg mr-2 ">czaty</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                         stroke-width="1.5" stroke="currentColor" className="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/>
-                                    </svg>
-                                </Link>
-
-                                <Link to="/specjalista/profil" onClick={e => setIsMenuOpen(false)}
-                                      className="flex items-center justify-center p-6 drop-shadow-lg hover:bg-amber-800 w-full">
-                                    <p className="drop-shadow-lg mr-2 ">edytuj profil</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                         stroke-width="1.5" stroke="currentColor" className="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/>
-                                    </svg>
-                                </Link>
                             </div>
 
                             <div className="bg-white rounded-md h-1 my-6 w-2/3"></div>
@@ -618,7 +535,6 @@ function App() {
                         </div>
                     </div>
                 }
-
             </div>
 
             <div>

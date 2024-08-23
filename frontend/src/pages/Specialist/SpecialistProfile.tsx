@@ -362,7 +362,7 @@ function SpecialistProfile() {
         headers.append("Authorization", "Bearer " + jwtToken)
         const method = "POST"
 
-        fetch(`/client/create_visit`, {
+        fetch(`/client/visit/create`, {
             body: JSON.stringify(newVisit),
             method: method,
             headers: headers,

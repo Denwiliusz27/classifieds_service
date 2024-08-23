@@ -422,7 +422,7 @@ function ClientReservations() {
         headers.append("Authorization", "Bearer " + jwtToken)
         const method = "PATCH"
 
-        fetch(`/client/update_visit`, {
+        fetch(`/client/visit/update`, {
             body: JSON.stringify(visit),
             method: method,
             headers: headers,
@@ -664,7 +664,7 @@ function ClientReservations() {
         headers.append("Authorization", "Bearer " + jwtToken)
         const method = "POST"
 
-        fetch(`/client/visit/create`, {
+        fetch(`/client/review/create`, {
             body: JSON.stringify(newReview),
             method: method,
             headers: headers,
