@@ -400,7 +400,7 @@ function SpecialistReservations() {
         headers.append("Authorization", "Bearer " + jwtToken)
         const method = "PATCH"
 
-        fetch(`/specialist/update_visit`, {
+        fetch(`/specialist/visit/update`, {
             body: JSON.stringify(visit),
             method: method,
             headers: headers,
